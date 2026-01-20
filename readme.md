@@ -6,7 +6,6 @@
 ## 🌟 项目亮点
 
 ### 1. 简单启动
-
 python一键启动 无需安装
 
 ### 2. 全键盘
@@ -18,6 +17,12 @@ python一键启动 无需安装
 * **单指**：移动 / 左键单击。
 * **双指**：滚动 / 右键单击。
 * **三指**：拖拽。
+
+### 4. gyro
+陀螺仪飞鼠。
+/gyro/t-help.html 
+但是在任何的非https页面上，无法启动。
+
 
 ---
 
@@ -39,17 +44,21 @@ pip install -r requirements.txt
 2. **运行服务端**：
 ```bash
 python server.py
-
 ```
-如果你是macos，你要启动另一个，主要滚动它和 Windows 是反过来的
+
+如果你是macos，你要修改一下，主要滚动它和 Windows 是反过来的
 ```bash
-python3 servermac.py
-
+@socketio.on('scroll')
+def handle_scroll(data):
+    # 处理双指滑动或按钮连发发来的滚动信号
+    mouse.scroll(0, -data['dy']) # 这里改成 -data['dy'] 就可以了
 ```
-
 
 1. **连接**：
 确保手机与电脑在同一局域网，访问电脑 IP 的端口（默认 5888）。
+例如： http://192.168.31.18:5888/ 
+
+注意，可能会提示网页不安全，需要手工点进去信任，因为我们用的是自签的证书。
 
 ---
 

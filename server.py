@@ -1,3 +1,5 @@
+import os
+from OpenSSL import crypto
 import socket
 import psutil
 from flask import Flask, render_template
@@ -32,7 +34,7 @@ def keyboard_page():
 @app.route('/t')
 def air_mouse_test():
     return render_template('t.html')
-    
+
 # --- 鼠标控制逻辑 ---
 @socketio.on('move')
 def handle_move(data):
@@ -95,6 +97,7 @@ def handle_combo(data):
         target = SPECIAL_KEYS.get(k.lower(), k.lower())
         keyboard.release(target)
 
+
 # --- 自动获取局域网 IP 逻辑 ---
 def get_all_ip_addresses():
     ip_list = []
@@ -104,6 +107,38 @@ def get_all_ip_addresses():
                 ip_list.append((interface, addr.address))
     return ip_list
 
+# --- 证书生成函数 ---
+import time # 需要导入 time 模块来获取时间
+
+def generate_self_signed_cert(cert_file="cert.pem", key_file="key.pem"):
+    if not os.path.exists(cert_file) or not os.path.exists(key_file):
+        print("正在生成自签名 SSL 证书...")
+        k = crypto.PKey()
+        k.generate_key(crypto.TYPE_RSA, 4096)
+        
+        cert = crypto.X509()
+        cert.get_subject().CN = "127.0.0.1"
+        cert.set_serial_number(1000)
+        
+        # 修正部分：使用 set_notBefore 和 set_notAfter
+        # 格式必须是 YYYYMMDDhhmmssZ 的字节流
+        now = time.strftime("%Y%m%d%H%M%SZ", time.gmtime()).encode('ascii')
+        expire = time.strftime("%Y%m%d%H%M%SZ", time.gmtime(time.time() + 10*365*24*60*60)).encode('ascii')
+        
+        cert.set_notBefore(now)
+        cert.set_notAfter(expire)
+        
+        cert.set_issuer(cert.get_subject())
+        cert.set_pubkey(k)
+        cert.sign(k, 'sha256')
+        
+        with open(cert_file, "wb") as f:
+            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        with open(key_file, "wb") as f:
+            f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
+        print("证书生成完毕！")
+
+        
 if __name__ == '__main__':
     port = 5888
     ips = get_all_ip_addresses()
@@ -117,9 +152,16 @@ if __name__ == '__main__':
         tag = ""
         if any(keyword in interface.lower() for keyword in ["wlan", "wi-fi", "eth", "en0", "en1"]):
             tag = " [推荐]"
-        print(f"  ➤  http://{ip}:{port}{tag}")
+        print(f"  ➤  https://{ip}:{port}{tag}")
     
     print("═"*60 + "\n")
-    
+
+    generate_self_signed_cert()
     # 使用 allow_unsafe_werkzeug 确保在开发环境下稳定运行
-    socketio.run(app, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
+    socketio.run(
+            app, 
+            host='0.0.0.0', 
+            port=5888, 
+            certfile='cert.pem', 
+            keyfile='key.pem'
+        )
