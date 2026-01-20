@@ -1,7 +1,18 @@
 # Remote Touchpad & Keyboard
-内部代号：feishu
+内部代号：feishu（飞鼠）
 
 这是一个基于 Python 后端的轻量级远程控制工具，可将移动设备（Android/iOS）转化为电脑的**无线触控板**与**多功能键盘**。
+
+<table style="border: none;">
+  <tr style="border: none;">
+    <td style="border: none;">
+      <img src="img/Screenshot_20260120-225709.jpg" width="400">
+    </td>
+    <td style="border: none;">
+      <img src="img/Screenshot_20260120-225705.jpg" width="400">
+    </td>
+  </tr>
+</table>
 
 ## 🌟 项目亮点
 
