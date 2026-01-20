@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remote Pro v8.1</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        #mouse-page {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #pad {
+            flex: 1;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        /* 导航条 */
+        .nav-container {
+            background: #0f0f0f;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-color: #1a1a1a;
+            border-style: solid;
+        }
+
+        /* 竖屏布局 */
+        @media (orientation: portrait) {
+            #mouse-page {
+                flex-direction: column;
+            }
+
+            .nav-container {
+                height: 60px;
+                width: 100%;
+                border-top-width: 1px;
+                padding: 0 10px;
+            }
+
+            .sens-container {
+                width: 40%;
+            }
+        }
+
+        /* 横屏布局 */
+        @media (orientation: landscape) {
+            #mouse-page {
+                flex-direction: row;
+            }
+
+            .nav-container {
+                width: 60px;
+                height: 100vh;
+                flex-direction: column-reverse;
+                border-left-width: 1px;
+                padding: 15px 0;
+            }
+
+            .sens-container {
+                height: 120px;
+                writing-mode: vertical-lr;
+                transform: rotate(180deg);
+                margin: 15px 0;
+            }
+        }
+
+        /* 滚轮及功能按钮样式 */
+        .icon-btn {
+            background: transparent;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:active {
+            background: #1a1a1a;
+        }
+
+        .icon-btn svg {
+            fill: #444;
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-btn:active svg {
+            fill: #007AFF;
+        }
+
+        .sens-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #444;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            background: #222;
+            height: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #555;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="mouse-page">
+        <div id="pad">
+            <div
+                style="position:absolute; top:20px; left:20px; color:#1a1a1a; font-size:11px; font-weight:bold; letter-spacing: 3px;">
+                TOUCHPAD</div>
+        </div>
+
+        <div class="nav-container">
+            <div class="icon-btn" onclick="window.location.href = '/k';">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" oncontextmenu="return false;" ontouchstart="startScroll(-1)"
+                ontouchend="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" oncontextmenu="return false;" ontouchstart="startScroll(1)" ontouchend="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                </svg>
+            </div>
+
+            <div class="sens-container">
+                <span>SENSE</span>
+                <input type="range" id="sens-slider" min="1" max="10" step="0.1">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const slider = document.getElementById('sens-slider');
+
+        // LocalStorage 记忆 [cite: 88]
+        let sensitivity = parseFloat(localStorage.getItem('mouse_sense')) || 4.0;
+        slider.value = sensitivity;
+        slider.oninput = (e) => {
+            sensitivity = parseFloat(e.target.value);
+            localStorage.setItem('mouse_sense', sensitivity);
+        };
+
+        // 滚轮长按逻辑 
+        let scrollTimer;
+        function startScroll(dir) {
+            if (event.cancelable) event.preventDefault();
+            socket.emit('scroll', { dy: dir });
+            scrollTimer = setInterval(() => {
+                socket.emit('scroll', { dy: dir });
+            }, 100);
+        }
+        function stopScroll() { clearInterval(scrollTimer); }
+
+        // 还原第一版鼠标核心逻辑 [cite: 46, 47, 48, 49, 50, 51]
+        const pad = document.getElementById('pad');
+        let lx, ly, sx, sy, hMove, tCount, drag = false;
+
+        pad.addEventListener('touchstart', e => {
+            tCount = e.touches.length;
+            lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+            sx = lx; sy = ly; hMove = false;
+            if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
+        });
+
+        pad.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
+            if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
+            if (tCount === 1 || tCount === 3) {
+                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                lx = cx; ly = cy;
+            } else if (tCount === 2) {
+                const dy = cy - ly;
+                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+            }
+        }, { passive: false });
+
+        pad.addEventListener('touchend', () => {
+            if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a"; }
+            else if (!hMove) {
+                if (tCount === 1) socket.emit('click', { button: 'left' });
+                else if (tCount === 2) socket.emit('click', { button: 'right' });
+            }
+        });
+    </script>
+</body>
+
+</html>

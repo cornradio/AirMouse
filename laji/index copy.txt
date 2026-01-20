@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remote Pro v8</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        #mouse-page {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* 触控板区域 */
+        #pad {
+            flex: 1;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        /* 导航条极致瘦身 */
+        .nav-container {
+            background: #0f0f0f;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-color: #1a1a1a;
+            border-style: solid;
+        }
+
+        /* 竖屏：极窄底栏 */
+        @media (orientation: portrait) {
+            #mouse-page {
+                flex-direction: column;
+            }
+
+            .nav-container {
+                height: 50px;
+                /* 从 70px 缩减到 50px */
+                width: 100%;
+                border-top-width: 1px;
+                padding: 0 15px;
+            }
+        }
+
+        /* 横屏：极窄侧边栏 */
+        @media (orientation: landscape) {
+            #mouse-page {
+                flex-direction: row;
+            }
+
+            .nav-container {
+                width: 55px;
+                /* 从 70px 缩减到 55px */
+                height: 100vh;
+                flex-direction: column-reverse;
+                border-left-width: 1px;
+                padding: 15px 0;
+            }
+
+            /* 横屏时滑块的紧凑布局 */
+            .sens-container {
+                height: 150px;
+                writing-mode: vertical-lr;
+                transform: rotate(180deg);
+                margin-bottom: 20px;
+            }
+        }
+
+        .sens-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        /* 极窄滑块条 */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #1a1a1a;
+            height: 2px;
+            /* 进一步变窄 */
+            border-radius: 1px;
+            width: 80px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 14px;
+            /* 滑块头也稍微缩小 */
+            width: 14px;
+            border-radius: 50%;
+            background: #444;
+            border: 1px solid #000;
+        }
+
+        /* 灰色 Logo 图标按钮 */
+        .kb-icon-btn {
+            background: transparent;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kb-icon-btn:active svg {
+            fill: #007AFF;
+        }
+
+        /* 按下时稍微有点蓝色反馈 */
+
+        .kb-icon-btn svg {
+            fill: #444;
+            /* 平时是低调的灰色 */
+            width: 24px;
+            height: 24px;
+            transition: fill 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="mouse-page">
+        <div id="pad">
+            <div style="position:absolute; top:15px; left:15px; color:#1a1a1a; font-size:10px; letter-spacing: 2px;">
+                TOUCHPAD</div>
+        </div>
+
+        <div class="nav-container">
+            <div class="kb-icon-btn" onclick="window.location.href = '/k';">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
+                </svg>
+            </div>
+
+            <div class="sens-container">
+                <span>SENSE</span>
+                <input type="range" id="sens-slider" min="1" max="10" step="0.1">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const slider = document.getElementById('sens-slider');
+
+        // 1. 从 LocalStorage 读取 Sense，如果没有则默认 4.0 
+        let sensitivity = parseFloat(localStorage.getItem('mouse_sense')) || 4.0;
+        slider.value = sensitivity;
+
+        // 2. 监听滑动并实时保存 
+        slider.oninput = (e) => {
+            sensitivity = parseFloat(e.target.value);
+            localStorage.setItem('mouse_sense', sensitivity);
+        };
+
+        // 鼠标逻辑
+        const pad = document.getElementById('pad');
+        let lastX, lastY, startX, startY, isDragging = false, hasMoved = false, touchCount = 0;
+
+        pad.addEventListener('touchstart', e => {
+            hasMoved = false; touchCount = e.touches.length;
+            startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+            lastX = startX; lastY = startY;
+            if (touchCount === 3) { isDragging = true; socket.emit('drag_start'); pad.style.background = "#000810"; }
+        });
+
+        pad.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const curX = e.touches[0].clientX; const curY = e.touches[0].clientY;
+            if (Math.hypot(curX - startX, curY - startY) > 5) hasMoved = true;
+            if (e.touches.length === 1 || e.touches.length === 3) {
+                socket.emit('move', { dx: (curX - lastX) * sensitivity, dy: (curY - lastY) * sensitivity });
+                lastX = curX; lastY = curY;
+            } else if (e.touches.length === 2) {
+                const dy = curY - lastY;
+                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); lastY = curY; }
+            }
+        }, { passive: false });
+
+        pad.addEventListener('touchend', e => {
+            if (e.touches.length === 0) {
+                if (isDragging) { socket.emit('drag_end'); isDragging = false; pad.style.background = "#0a0a0a"; }
+                else if (!hasMoved) {
+                    if (touchCount === 2) socket.emit('click', { button: 'right' });
+                    else if (touchCount === 1) socket.emit('click', { button: 'left' });
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

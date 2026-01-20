@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ultimate Master Keyboard</title>
+    <style>
+        /* 同样在 body 增加动态高度支持 */
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+        }
+
+        /* 全屏按钮的基础样式 */
+        .fs-btn-kb {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fs-btn-kb svg {
+            fill: #444;
+            width: 22px;
+            height: 22px;
+        }
+
+        .fs-btn-kb:active {
+            background: #222;
+        }
+
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 5px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        /* 输入区 */
+        .input-section {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #111;
+            gap: 8px;
+            /* 间距 */
+            width: 100%;
+            /* 确保容器占满宽度 */
+        }
+
+        #text-input {
+            flex: 1;
+            /* 自动占据剩余空间 */
+            min-width: 0;
+            /* 关键：允许 input 缩小到比默认值更小 */
+            height: 40px;
+            background: #222;
+            border: none;
+            color: white;
+            padding: 0 10px;
+            border-radius: 6px;
+        }
+
+        .send-btn {
+            flex-shrink: 0;
+            padding: 0 15px;
+            height: 40px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .keyboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+        }
+
+        .row {
+            display: flex;
+            gap: 2px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* 基础按钮 */
+        button {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #eee;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        /* 交互反馈 */
+        button:active {
+            background: #007AFF !important;
+        }
+
+        button.locked {
+            background: #ff9500 !important;
+            color: #000;
+            border-color: #ff9500;
+        }
+
+        /* 键宽比例 */
+        .k-f {
+            height: 26px;
+            font-size: 9px;
+            color: #666;
+            background: #0d0d0d;
+        }
+
+        .k-esc {
+            flex: 0.8;
+            color: #ff3b30;
+        }
+
+        .k-wide {
+            flex: 1.5;
+            background: #222;
+        }
+
+        .k-caps {
+            flex: 1.6;
+            background: #222;
+            font-size: 9px;
+        }
+
+        .k-enter {
+            flex: 2;
+            background: #005bb5;
+        }
+
+        .k-shift {
+            flex: 2.2;
+        }
+
+        .k-space {
+            flex: 4;
+            background: #222;
+        }
+
+        .arrow-cluster {
+            display: grid;
+            grid-template-areas: ". up ." "left down right";
+            gap: 2px;
+            flex: 1.4;
+        }
+
+        .up {
+            grid-area: up;
+        }
+
+        .left {
+            grid-area: left;
+        }
+
+        .down {
+            grid-area: down;
+        }
+
+        .right {
+            grid-area: right;
+        }
+
+        .arrow-cluster button {
+            height: 38px;
+        }
+
+        /* 底部导航按钮 */
+        .footer-nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .nav-btn {
+            background: #222;
+            border: none;
+            color: #666;
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="input-section">
+            <input type="text" id="text-input" placeholder="Type..." autocomplete="off">
+
+            <div class="fs-btn-kb" onclick="toggleFullScreen()">
+                <svg id="fs-icon-kb" viewBox="0 0 24 24">
+                    <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                </svg>
+            </div>
+
+            <button class="send-btn" onclick="submitText()">SEND</button>
+        </div>
+        <div class="keyboard-grid">
+            <div class="row">
+                <button class="k-f" ontouchstart="hP('f1')" ontouchend="hR()">F1</button>
+                <button class="k-f" ontouchstart="hP('f2')" ontouchend="hR()">F2</button>
+                <button class="k-f" ontouchstart="hP('f3')" ontouchend="hR()">F3</button>
+                <button class="k-f" ontouchstart="hP('f4')" ontouchend="hR()">F4</button>
+                <button class="k-f" ontouchstart="hP('f5')" ontouchend="hR()">F5</button>
+                <button class="k-f" ontouchstart="hP('f6')" ontouchend="hR()">F6</button>
+                <button class="k-f" ontouchstart="hP('f7')" ontouchend="hR()">F7</button>
+                <button class="k-f" ontouchstart="hP('f8')" ontouchend="hR()">F8</button>
+                <button class="k-f" ontouchstart="hP('f9')" ontouchend="hR()">F9</button>
+                <button class="k-f" ontouchstart="hP('f10')" ontouchend="hR()">F10</button>
+                <button class="k-f" ontouchstart="hP('f11')" ontouchend="hR()">F11</button>
+                <button class="k-f" ontouchstart="hP('f12')" ontouchend="hR()">F12</button>
+            </div>
+
+            <div class="row">
+                <button class="k-esc" ontouchstart="hP('esc')" ontouchend="hR()">ESC</button>
+                <button class="k-sym" data-norm="1" data-shft="!" ontouchstart="hPS('1','!')"
+                    ontouchend="hR()">1</button>
+                <button class="k-sym" data-norm="2" data-shft="@" ontouchstart="hPS('2','@')"
+                    ontouchend="hR()">2</button>
+                <button class="k-sym" data-norm="3" data-shft="#" ontouchstart="hPS('3','#')"
+                    ontouchend="hR()">3</button>
+                <button class="k-sym" data-norm="4" data-shft="$" ontouchstart="hPS('4','$')"
+                    ontouchend="hR()">4</button>
+                <button class="k-sym" data-norm="5" data-shft="%" ontouchstart="hPS('5','%')"
+                    ontouchend="hR()">5</button>
+                <button class="k-sym" data-norm="6" data-shft="^" ontouchstart="hPS('6','^')"
+                    ontouchend="hR()">6</button>
+                <button class="k-sym" data-norm="7" data-shft="&" ontouchstart="hPS('7','&')"
+                    ontouchend="hR()">7</button>
+                <button class="k-sym" data-norm="8" data-shft="*" ontouchstart="hPS('8','*')"
+                    ontouchend="hR()">8</button>
+                <button class="k-sym" data-norm="9" data-shft="(" ontouchstart="hPS('9','(')"
+                    ontouchend="hR()">9</button>
+                <button class="k-sym" data-norm="0" data-shft=")" ontouchstart="hPS('0',')')"
+                    ontouchend="hR()">0</button>
+                <button class="k-sym" data-norm="-" data-shft="_" ontouchstart="hPS('-','_')"
+                    ontouchend="hR()">-</button>
+                <button class="k-sym" data-norm="=" data-shft="+" ontouchstart="hPS('=','+')"
+                    ontouchend="hR()">=</button>
+                <button class="k-wide" ontouchstart="hP('backspace')" ontouchend="hR()">BS</button>
+            </div>
+
+            <div class="row">
+                <button class="k-wide" ontouchstart="hP('tab')" ontouchend="hR()">TAB</button>
+                <button ontouchstart="hP('q')" ontouchend="hR()">Q</button>
+                <button ontouchstart="hP('w')" ontouchend="hR()">W</button>
+                <button ontouchstart="hP('e')" ontouchend="hR()">E</button>
+                <button ontouchstart="hP('r')" ontouchend="hR()">R</button>
+                <button ontouchstart="hP('t')" ontouchend="hR()">T</button>
+                <button ontouchstart="hP('y')" ontouchend="hR()">Y</button>
+                <button ontouchstart="hP('u')" ontouchend="hR()">U</button>
+                <button ontouchstart="hP('i')" ontouchend="hR()">I</button>
+                <button ontouchstart="hP('o')" ontouchend="hR()">O</button>
+                <button ontouchstart="hP('p')" ontouchend="hR()">P</button>
+                <button class="k-sym" data-norm="[" data-shft="{" ontouchstart="hPS('[','{')"
+                    ontouchend="hR()">[</button>
+                <button class="k-sym" data-norm="]" data-shft="}" ontouchstart="hPS(']','}')"
+                    ontouchend="hR()">]</button>
+            </div>
+
+            <div class="row">
+                <button id="caps-key" class="k-caps" onclick="toggleLock('caps')">CAPS</button>
+                <button ontouchstart="hP('a')" ontouchend="hR()">A</button>
+                <button ontouchstart="hP('s')" ontouchend="hR()">S</button>
+                <button ontouchstart="hP('d')" ontouchend="hR()">D</button>
+                <button ontouchstart="hP('f')" ontouchend="hR()">F</button>
+                <button ontouchstart="hP('g')" ontouchend="hR()">G</button>
+                <button ontouchstart="hP('h')" ontouchend="hR()">H</button>
+                <button ontouchstart="hP('j')" ontouchend="hR()">J</button>
+                <button ontouchstart="hP('k')" ontouchend="hR()">K</button>
+                <button ontouchstart="hP('l')" ontouchend="hR()">L</button>
+                <button class="k-sym" data-norm=";" data-shft=":" ontouchstart="hPS(';',':')"
+                    ontouchend="hR()">;</button>
+                <button class="k-sym" data-norm="'" data-shft='"' ontouchstart="hPS('\'','\"')" ontouchend="hR()">'
+                    </button>
+                    <button class="k-enter" ontouchstart="hP('enter')" ontouchend="hR()">ENTER</button>
+            </div>
+
+            <div class="row">
+                <button id="shift-key" class="k-shift" ontouchstart="hFuncStart('shift')"
+                    ontouchend="hFuncEnd('shift')">SHIFT</button>
+                <button ontouchstart="hP('z')" ontouchend="hR()">Z</button>
+                <button ontouchstart="hP('x')" ontouchend="hR()">X</button>
+                <button ontouchstart="hP('c')" ontouchend="hR()">C</button>
+                <button ontouchstart="hP('v')" ontouchend="hR()">V</button>
+                <button ontouchstart="hP('b')" ontouchend="hR()">B</button>
+                <button ontouchstart="hP('n')" ontouchend="hR()">N</button>
+                <button ontouchstart="hP('m')" ontouchend="hR()">M</button>
+                <button class="k-sym" data-norm="," data-shft="<" ontouchstart="hPS(',','<')"
+                    ontouchend="hR()">,</button>
+                <button class="k-sym" data-norm="." data-shft=">" ontouchstart="hPS('.', '>')"
+                    ontouchend="hR()">.</button>
+                <button class="k-sym" data-norm="/" data-shft="?" ontouchstart="hPS('/', '?')"
+                    ontouchend="hR()">/</button>
+                <button class="k-wide" ontouchstart="hP('delete')" ontouchend="hR()">DEL</button>
+            </div>
+
+            <div class="row">
+                <button id="ctrl-key" ontouchstart="hFuncStart('ctrl')" ontouchend="hFuncEnd('ctrl')">CTRL</button>
+                <button id="win-key" ontouchstart="hFuncStart('win')" ontouchend="hFuncEnd('win')">WIN</button>
+                <button id="alt-key" ontouchstart="hFuncStart('alt')" ontouchend="hFuncEnd('alt')">ALT</button>
+                <button class="k-space" ontouchstart="hP('space')" ontouchend="hR()">SPACE</button>
+
+                <div class="arrow-cluster">
+                    <button class="up" ontouchstart="hP('up')" ontouchend="hR()">↑</button>
+                    <button class="left" ontouchstart="hP('left')" ontouchend="hR()">←</button>
+                    <button class="down" ontouchstart="hP('down')" ontouchend="hR()">↓</button>
+                    <button class="right" ontouchstart="hP('right')" ontouchend="hR()">→</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-nav">
+            <button onclick="window.location.href = '/';" class="nav-btn">⇠ BACK TO MOUSE</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let locks = { ctrl: false, win: false, alt: false, shift: false, caps: false };
+        let rT, rI, lockTimer;
+        let didLock = false;
+
+        function hPS(norm, shft) { hP(locks.shift ? shft : norm); }
+
+        function hP(key) {
+            if (event.cancelable) event.preventDefault();
+            sendKey(key);
+            rT = setTimeout(() => { rI = setInterval(() => sendKey(key), 80); }, 500);
+        }
+
+        function hR() { clearTimeout(rT); clearInterval(rI); }
+
+        // --- 特殊功能键核心逻辑 ---
+        function hFuncStart(key) {
+            if (event.cancelable) event.preventDefault();
+            didLock = false;
+
+            // 如果当前是锁定状态，点一下准备解锁
+            if (locks[key]) {
+                return;
+            }
+
+            // 正常按下
+            socket.emit('key_action', { key: key, action: 'down' });
+
+            // 开启长按计时
+            lockTimer = setTimeout(() => {
+                locks[key] = true;
+                didLock = true;
+                document.getElementById(key + '-key').classList.add('locked');
+                if (key === 'shift') updateSymbols();
+            }, 600);
+        }
+
+        function hFuncEnd(key) {
+            clearTimeout(lockTimer);
+
+            // 场景 A: 如果已经是锁定状态，这次是“轻点一下”来恢复
+            if (locks[key] && !didLock) {
+                locks[key] = false;
+                document.getElementById(key + '-key').classList.remove('locked');
+                socket.emit('key_action', { key: key, action: 'up' });
+                if (key === 'shift') updateSymbols();
+                return;
+            }
+
+            // 场景 B: 如果是短按（没触发长按锁定），松手即弹起
+            if (!locks[key]) {
+                socket.emit('key_action', { key: key, action: 'up' });
+            }
+        }
+
+        function toggleLock(key) {
+            locks[key] = !locks[key];
+            document.getElementById(key + '-key').classList.toggle('locked', locks[key]);
+            socket.emit('key_action', { key: key, action: locks[key] ? 'down' : 'up' });
+        }
+
+        function updateSymbols() {
+            document.querySelectorAll('.k-sym').forEach(btn => {
+                btn.innerText = locks.shift ? btn.dataset.shft : btn.dataset.norm;
+            });
+        }
+
+        function sendKey(key) {
+            socket.emit('key_action', { key: key, action: 'down' });
+            setTimeout(() => { socket.emit('key_action', { key: key, action: 'up' }); }, 30);
+        }
+
+        function submitText() {
+            const input = document.getElementById('text-input');
+            if (input.value.length > 0) {
+                socket.emit('type_text', { text: input.value });
+                input.value = '';
+            }
+        }
+        // 1. 动态高度补丁 (防止键盘弹出时遮挡或布局跳动)
+        function resetHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        window.addEventListener('resize', resetHeight);
+        resetHeight();
+
+        // 2. 全屏切换函数
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => {
+                    console.log("Full screen failed");
+                });
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // 3. 监听全屏状态改变图标
+        document.addEventListener('fullscreenchange', () => {
+            const iconPath = document.querySelector('#fs-icon-kb path');
+            if (document.fullscreenElement) {
+                // 变成缩小图标
+                iconPath.setAttribute('d', 'M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z');
+            } else {
+                // 变成放大图标
+                iconPath.setAttribute('d', 'M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z');
+            }
+        });
+    </script>
+</body>
+
+</html>

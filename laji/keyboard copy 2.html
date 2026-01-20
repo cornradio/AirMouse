@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Standard Keyboard Pro</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 10px;
+        }
+
+        /* 限制宽度，防止横屏变形 */
+        .container {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        #text-input {
+            flex: 1;
+            height: 45px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #007AFF;
+            padding: 0 15px;
+            font-size: 16px;
+        }
+
+        .send-btn {
+            width: 80px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .keyboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .row {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        button {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #eee;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        button:active {
+            background: #444;
+            transform: scale(0.95);
+        }
+
+        button.locked {
+            background: #ff9500 !important;
+            color: #000;
+        }
+
+        /* 特殊宽度比例 */
+        .key-esc {
+            flex: 0.8;
+            background: #333;
+            color: #ff3b30;
+        }
+
+        .key-f {
+            flex: 0.7;
+            font-size: 10px;
+            color: #777;
+        }
+
+        .key-backspace {
+            flex: 1.8;
+            background: #222;
+        }
+
+        .key-tab {
+            flex: 1.2;
+        }
+
+        .key-enter {
+            flex: 1.8;
+            background: #007AFF;
+        }
+
+        .key-shift {
+            flex: 2;
+        }
+
+        .key-ctrl,
+        .key-win,
+        .key-alt {
+            flex: 1.2;
+        }
+
+        .key-space {
+            flex: 4;
+            background: #222;
+        }
+
+        /* 方向键集群布局 */
+        .arrow-cluster {
+            display: grid;
+            grid-template-areas: ". up ." "left down right";
+            gap: 4px;
+            flex: 1.5;
+        }
+
+        .up {
+            grid-area: up;
+        }
+
+        .left {
+            grid-area: left;
+        }
+
+        .down {
+            grid-area: down;
+        }
+
+        .right {
+            grid-area: right;
+        }
+
+        .arrow-cluster button {
+            height: 40px;
+            font-size: 16px;
+        }
+
+        .nav-btn {
+            height: 35px;
+            background: transparent;
+            border: none;
+            color: #444;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="input-section">
+            <input type="text" id="text-input" placeholder="Type and send..." autocomplete="off">
+            <button class="send-btn" onclick="submitText()">SEND</button>
+        </div>
+
+        <div class="keyboard-grid">
+            <div class="row">
+                <button class="key-esc" onclick="sendKey('esc')">ESC</button>
+                <button class="key-f" onclick="sendKey('f1')">F1</button>
+                <button class="key-f" onclick="sendKey('f2')">F2</button>
+                <button class="key-f" onclick="sendKey('f3')">F3</button>
+                <button class="key-f" onclick="sendKey('f4')">F4</button>
+                <button class="key-f" onclick="sendKey('f5')">F5</button>
+                <button class="key-f" onclick="sendKey('f11')">F11</button>
+                <button class="key-f" onclick="sendKey('f12')">F12</button>
+            </div>
+
+            <div class="row">
+                <button onclick="sendKey('1')">1</button><button onclick="sendKey('2')">2</button>
+                <button onclick="sendKey('3')">3</button><button onclick="sendKey('4')">4</button>
+                <button onclick="sendKey('5')">5</button><button onclick="sendKey('6')">6</button>
+                <button onclick="sendKey('7')">7</button><button onclick="sendKey('8')">8</button>
+                <button onclick="sendKey('9')">9</button><button onclick="sendKey('0')">0</button>
+                <button class="key-backspace" id="bs-btn">BACKSPACE</button>
+            </div>
+
+            <div class="row">
+                <button class="key-tab" onclick="sendKey('tab')">TAB</button>
+                <button onclick="sendKey('q')">Q</button><button onclick="sendKey('w')">W</button>
+                <button onclick="sendKey('e')">E</button><button onclick="sendKey('r')">R</button>
+                <button onclick="sendKey('t')">T</button><button onclick="sendKey('y')">Y</button>
+                <button onclick="sendKey('u')">U</button><button onclick="sendKey('i')">I</button>
+                <button onclick="sendKey('o')">O</button><button onclick="sendKey('p')">P</button>
+            </div>
+
+            <div class="row">
+                <button onclick="sendKey('a')">A</button><button onclick="sendKey('s')">S</button>
+                <button onclick="sendKey('d')">D</button><button onclick="sendKey('f')">F</button>
+                <button onclick="sendKey('g')">G</button><button onclick="sendKey('h')">H</button>
+                <button onclick="sendKey('j')">J</button><button onclick="sendKey('k')">K</button>
+                <button onclick="sendKey('l')">L</button>
+                <button class="key-enter" onclick="sendKey('enter')">ENTER</button>
+            </div>
+
+            <div class="row">
+                <button id="shift-key" class="key-shift" onclick="toggleKey('shift')">SHIFT</button>
+                <button onclick="sendKey('z')">Z</button><button onclick="sendKey('x')">X</button>
+                <button onclick="sendKey('c')">C</button><button onclick="sendKey('v')">V</button>
+                <button onclick="sendKey('b')">B</button><button onclick="sendKey('n')">N</button>
+                <button onclick="sendKey('m')">M</button>
+                <button class="key-backspace" onclick="sendKey('delete')">DEL</button>
+            </div>
+
+            <div class="row">
+                <button id="ctrl-key" class="key-ctrl" onclick="toggleKey('ctrl')">CTRL</button>
+                <button id="win-key" class="key-win" onclick="toggleKey('win')">WIN</button>
+                <button id="alt-key" class="key-alt" onclick="toggleKey('alt')">ALT</button>
+                <button class="key-space" onclick="sendKey('space')">SPACE</button>
+
+                <div class="arrow-cluster">
+                    <button class="up" onclick="sendKey('up')">↑</button>
+                    <button class="left" onclick="sendKey('left')">←</button>
+                    <button class="down" onclick="sendKey('down')">↓</button>
+                    <button class="right" onclick="sendKey('right')">→</button>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="window.location.href = '/';" class="nav-btn">⇠ RETURN TO MOUSE</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let locks = { ctrl: false, win: false, alt: false, shift: false };
+
+        function submitText() {
+            const input = document.getElementById('text-input');
+            if (input.value.length > 0) {
+                socket.emit('type_text', { text: input.value });
+                input.value = '';
+            }
+        }
+
+        function sendKey(key) {
+            socket.emit('key_action', { key: key, action: 'down' });
+            setTimeout(() => socket.emit('key_action', { key: key, action: 'up' }), 50);
+        }
+
+        function toggleKey(key) {
+            locks[key] = !locks[key];
+            const btn = document.getElementById(key + '-key');
+            if (btn) btn.classList.toggle('locked', locks[key]);
+            socket.emit('key_action', { key: key, action: locks[key] ? 'down' : 'up' });
+        }
+
+        // Backspace 长按连发 [cite: 53, 54]
+        let bsT, bsI;
+        const bsBtn = document.getElementById('bs-btn');
+        bsBtn.addEventListener('touchstart', e => {
+            e.preventDefault(); sendKey('backspace');
+            bsT = setTimeout(() => bsI = setInterval(() => sendKey('backspace'), 100), 500);
+        });
+        bsBtn.addEventListener('touchend', () => { clearTimeout(bsT); clearInterval(bsI); });
+    </script>
+</body>
+
+</html>

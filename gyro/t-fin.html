@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pro Air Mouse - Calibrated</title>
+    <style>
+        body {
+            margin: 0;
+            background: #050505;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: #111;
+            border-bottom: 1px solid #222;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #0f0;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        .control-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* 灵敏度控制 */
+        .sens-card {
+            background: #1a1a1a;
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            box-sizing: border-box;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+            margin-top: 15px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #007AFF;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* 点击触发区 */
+        .touch-pad {
+            width: 100%;
+            flex: 0.6;
+            background: #111;
+            border: 2px solid #333;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #444;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .touch-pad:active {
+            background: #222;
+            border-color: #007AFF;
+            color: #007AFF;
+        }
+
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .start-btn {
+            padding: 20px 60px;
+            background: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="start-overlay">
+        <button class="start-btn" onclick="init()">启动飞鼠模式</button>
+    </div>
+
+    <div class="header">
+        <div><span class="status-dot"></span> AIR MOUSE ACTIVE</div>
+        <div id="debug" style="font-family: monospace; font-size: 12px; color: #666; margin-top: 8px;">X: 0 | Y: 0</div>
+    </div>
+
+    <div class="control-panel">
+        <div class="sens-card">
+            <div style="display:flex; justify-content: space-between; font-size: 14px;">
+                <span>追踪灵敏度</span>
+                <span id="sens-label"></span>
+            </div>
+            <input type="range" id="sens-slider" min="1" max="20" value="10">
+        </div>
+
+        <div class="touch-pad" id="l-click">
+            Left Click
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let sensitivity = 25;
+        const debugEl = document.getElementById('debug');
+
+        document.getElementById('sens-slider').oninput = (e) => {
+            sensitivity = e.target.value;
+            document.getElementById('sens-label').innerText = sensitivity;
+        };
+
+        async function init() {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                const permission = await DeviceMotionEvent.requestPermission();
+                if (permission !== 'granted') return;
+            }
+            document.getElementById('start-overlay').style.display = 'none';
+
+            window.addEventListener('devicemotion', (event) => {
+                const rot = event.rotationRate;
+                if (!rot) return;
+
+                // 基于你提供的实测映射：
+                // Gama 增加 -> X向左 (需要负号)
+                // Alpha 增加 -> Y向上 (需要负号)
+                let rawX = rot.gamma;
+                let rawY = rot.alpha;
+
+                // 计算输出值
+                let dx = -rawX * (sensitivity / 5);
+                let dy = -rawY * (sensitivity / 5);
+
+                // 动态死区控制
+                if (Math.abs(dx) < 0.2) dx = 0;
+                if (Math.abs(dy) < 0.2) dy = 0;
+
+                if (dx !== 0 || dy !== 0) {
+                    socket.emit('move', { dx: dx, dy: dy });
+                    debugEl.innerText = `X: ${dx.toFixed(1)} | Y: ${dy.toFixed(1)}`;
+                }
+            });
+        }
+
+        // 点击交互
+        document.getElementById('l-click').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            socket.emit('click', { button: 'left' });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Remote Pro v7</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        .page {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            position: absolute;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 触控板页面 --- */
+        #pad {
+            flex: 1;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        .bottom-bar {
+            height: 65px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 15px;
+            border-top: 1px solid #222;
+        }
+
+        /* --- 键盘页面布局 --- */
+        #keyboard-page {
+            background: #0a0a0a;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* F键区 */
+        .f-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+
+        /* 核心键盘区 */
+        .main-kb-area {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .side-keys {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 60px;
+        }
+
+        .center-keys {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* 底部功能排 (Ctrl, Win, Alt) */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 2fr;
+            gap: 8px;
+        }
+
+        /* 样式增强 */
+        button {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #eee;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:active {
+            background: #444;
+            transform: scale(0.96);
+        }
+
+        .f-btn {
+            height: 32px;
+            background: #111;
+            font-size: 9px;
+            color: #777;
+        }
+
+        .std-btn {
+            height: 50px;
+        }
+
+        .accent-btn {
+            background: #007AFF;
+            color: white;
+            border: none;
+        }
+
+        .nav-btn {
+            background: #222;
+            height: 45px;
+            border-color: #444;
+        }
+
+        #text-input {
+            width: 100%;
+            height: 50px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            color: #007AFF;
+            padding: 0 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        #air-btn.active {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .sens-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 10px;
+            color: #444;
+        }
+
+        input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            background: #222;
+            height: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="mouse-page" class="page active">
+        <div id="pad">
+            <button id="fs-btn"
+                style="position:absolute; top:15px; left:15px; width:80px; height:30px; opacity:0.3">FULLSCREEN</button>
+        </div>
+        <div class="bottom-bar">
+            <button id="air-btn" style="width:50px; height:40px;">AIR</button>
+            <div class="sens-container">
+                <input type="range" id="sens-slider" min="2" max="8" step="0.1" value="4">
+            </div>
+            <button onclick="switchPage('keyboard-page')" class="accent-btn"
+                style="height:40px; padding:0 15px;">KEYBOARD ➔</button>
+        </div>
+    </div>
+
+    <div id="keyboard-page" class="page">
+        <div class="f-grid">
+            <button class="f-btn" onclick="sendKey('f1')">F1</button>
+            <button class="f-btn" onclick="sendKey('f2')">F2</button>
+            <button class="f-btn" onclick="sendKey('f3')">F3</button>
+            <button class="f-btn" onclick="sendKey('f4')">F4</button>
+            <button class="f-btn" onclick="sendKey('f5')">F5</button>
+            <button class="f-btn" onclick="sendKey('f6')">F6</button>
+            <button class="f-btn" onclick="sendKey('f7')">F7</button>
+            <button class="f-btn" onclick="sendKey('f8')">F8</button>
+            <button class="f-btn" onclick="sendKey('f9')">F9</button>
+            <button class="f-btn" onclick="sendKey('f10')">F10</button>
+            <button class="f-btn" onclick="sendKey('f11')">F11</button>
+            <button class="f-btn" onclick="sendKey('f12')">F12</button>
+        </div>
+
+        <div class="main-kb-area">
+            <div class="side-keys">
+                <button class="std-btn" onclick="sendKey('esc')">ESC</button>
+                <button class="std-btn" onclick="sendKey('tab')">TAB</button>
+                <button class="std-btn" onclick="sendKey('shift')">SHIFT</button>
+            </div>
+
+            <div class="center-keys">
+                <input type="text" id="text-input" placeholder="Type here..." autocomplete="off">
+                <div style="display:flex; gap:8px;">
+                    <button id="bs-btn" class="std-btn" style="flex:2; background:#333;">BACKSPACE</button>
+                    <button class="std-btn" style="flex:1" onclick="sendKey('delete')">DEL</button>
+                </div>
+                <div class="bottom-row">
+                    <button class="std-btn" onclick="sendKey('ctrl')">CTRL</button>
+                    <button class="std-btn" onclick="sendKey('win')">WIN</button>
+                    <button class="std-btn" onclick="sendKey('alt')">ALT</button>
+                    <button class="std-btn accent-btn" onclick="sendKey('enter')">ENTER</button>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="window.location.href = '/';" class="nav-btn">⇠ RETURN TO MOUSE</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let sensitivity = 4.0;
+        let locks = { ctrl: false, win: false, alt: false, shift: false };
+
+        // 页面切换
+        function switchPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // --- 核心修复：确保所有按键都通过 key_action 或 key_combo 发送 ---
+
+        // 1. 处理锁定键 (Ctrl, Alt, Win, Shift)
+        function toggleKey(key) {
+            locks[key] = !locks[key];
+            const btn = document.getElementById(key + '-key');
+            if (btn) btn.classList.toggle('locked', locks[key]);
+
+            // 发送到后端的 key_action
+            socket.emit('key_action', { key: key, action: locks[key] ? 'down' : 'up' });
+        }
+
+        // 2. 处理普通单键 (Esc, Enter, Space, Tab等)
+        function sendKey(key) {
+            // 立即按下并抬起
+            socket.emit('key_action', { key: key, action: 'down' });
+            setTimeout(() => {
+                socket.emit('key_action', { key: key, action: 'up' });
+            }, 50);
+        }
+
+        // 3. 处理组合宏 (Ctrl+C, Alt+F4)
+        function sendCombo(keys) {
+            // 发送到后端的 key_combo
+            socket.emit('key_combo', { keys: keys });
+        }
+
+        // 4. 文本输入
+        document.getElementById('text-input').addEventListener('input', e => {
+            if (e.target.value.length > 0) {
+                socket.emit('type_text', { text: e.target.value });
+                e.target.value = '';
+            }
+        });
+
+        // --- 鼠标逻辑保持现状 ---
+        function initPad(el) {
+            let lx, ly, sx, sy, hMove, tCount, drag = false;
+            el.addEventListener('touchstart', e => {
+                tCount = e.touches.length;
+                lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+                sx = lx; sy = ly; hMove = false;
+                if (tCount === 3) { drag = true; socket.emit('drag_start'); el.style.background = "#001a33"; }
+            });
+            el.addEventListener('touchmove', e => {
+                e.preventDefault();
+                const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
+                if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
+                if (tCount === 1 || tCount === 3) {
+                    socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                    lx = cx; ly = cy;
+                } else if (tCount === 2) {
+                    const dy = cy - ly;
+                    if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+                }
+            }, { passive: false });
+            el.addEventListener('touchend', () => {
+                if (drag) { socket.emit('drag_end'); drag = false; el.style.background = "#0a0a0a"; }
+                else if (!hMove && tCount === 1) socket.emit('click', { button: 'left' });
+                else if (!hMove && tCount === 2) socket.emit('click', { button: 'right' });
+            });
+        }
+
+        initPad(document.getElementById('pad'));
+        if (document.getElementById('mini-pad')) initPad(document.getElementById('mini-pad'));
+
+        // 退格连发
+        let bsT, bsI;
+        const bsBtn = document.getElementById('bs-btn');
+        if (bsBtn) {
+            bsBtn.addEventListener('touchstart', e => {
+                e.preventDefault();
+                sendKey('backspace');
+                bsT = setTimeout(() => bsI = setInterval(() => sendKey('backspace'), 100), 500);
+            });
+            bsBtn.addEventListener('touchend', () => { clearTimeout(bsT); clearInterval(bsI); });
+        }
+
+        document.getElementById('sens-slider').oninput = e => sensitivity = parseFloat(e.target.value);
+    </script>
+</body>
+
+</html>

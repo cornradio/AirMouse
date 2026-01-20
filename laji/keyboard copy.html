@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Full Keyboard Pro</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 5px;
+        }
+
+        /* 输入区域 */
+        .input-section {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 5px;
+        }
+
+        #text-input {
+            flex: 1;
+            height: 45px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #007AFF;
+            padding: 0 15px;
+            font-size: 16px;
+        }
+
+        .send-btn {
+            width: 80px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* 键盘容器 */
+        .keyboard-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .key-row {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* 按键通用样式 */
+        button {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #eee;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+            height: 42px;
+            min-width: 30px;
+        }
+
+        button:active {
+            background: #444;
+            transform: scale(0.95);
+        }
+
+        /* 特殊按键 */
+        button.locked {
+            background: #ff9500 !important;
+            color: #000;
+            border-color: #ff9500;
+        }
+
+        .wide-key {
+            flex: 1.5;
+        }
+
+        .extra-wide {
+            flex: 2;
+        }
+
+        .space-key {
+            flex: 5;
+            background: #222;
+        }
+
+        .f-btn {
+            height: 30px;
+            font-size: 10px;
+            color: #777;
+            background: #111;
+        }
+
+        .nav-btn {
+            height: 40px;
+            margin-top: 10px;
+            background: #222;
+            font-size: 11px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="input-section">
+        <input type="text" id="text-input" placeholder="Type message..." autocomplete="off">
+        <button class="send-btn" onclick="submitText()">SEND</button>
+    </div>
+
+    <div class="keyboard-container">
+        <div class="key-row">
+            <button class="f-btn" onclick="sendKey('f1')">F1</button>
+            <button class="f-btn" onclick="sendKey('f2')">F2</button>
+            <button class="f-btn" onclick="sendKey('f3')">F3</button>
+            <button class="f-btn" onclick="sendKey('f4')">F4</button>
+            <button class="f-btn" onclick="sendKey('f5')">F5</button>
+            <button class="f-btn" onclick="sendKey('f6')">F6</button>
+            <button class="f-btn" onclick="sendKey('f7')">F7</button>
+            <button class="f-btn" onclick="sendKey('f8')">F8</button>
+            <button class="f-btn" onclick="sendKey('f9')">F9</button>
+            <button class="f-btn" onclick="sendKey('f10')">F10</button>
+            <button class="f-btn" onclick="sendKey('f11')">F11</button>
+            <button class="f-btn" onclick="sendKey('f12')">F12</button>
+        </div>
+
+        <div class="key-row">
+            <button onclick="sendKey('`')">`</button>
+            <button onclick="sendKey('1')">1</button><button onclick="sendKey('2')">2</button>
+            <button onclick="sendKey('3')">3</button><button onclick="sendKey('4')">4</button>
+            <button onclick="sendKey('5')">5</button><button onclick="sendKey('6')">6</button>
+            <button onclick="sendKey('7')">7</button><button onclick="sendKey('8')">8</button>
+            <button onclick="sendKey('9')">9</button><button onclick="sendKey('0')">0</button>
+            <button id="bs-btn" class="wide-key" style="background:#333;">BS</button>
+        </div>
+
+        <div class="key-row">
+            <button class="wide-key" onclick="sendKey('tab')">TAB</button>
+            <button onclick="sendKey('q')">Q</button><button onclick="sendKey('w')">W</button>
+            <button onclick="sendKey('e')">E</button><button onclick="sendKey('r')">R</button>
+            <button onclick="sendKey('t')">T</button><button onclick="sendKey('y')">Y</button>
+            <button onclick="sendKey('u')">U</button><button onclick="sendKey('i')">I</button>
+            <button onclick="sendKey('o')">O</button><button onclick="sendKey('p')">P</button>
+            <button onclick="sendKey('[')">[</button><button onclick="sendKey(']')">]</button>
+        </div>
+
+        <div class="key-row">
+            <button class="wide-key" onclick="sendKey('esc')">ESC</button>
+            <button onclick="sendKey('a')">A</button><button onclick="sendKey('s')">S</button>
+            <button onclick="sendKey('d')">D</button><button onclick="sendKey('f')">F</button>
+            <button onclick="sendKey('g')">G</button><button onclick="sendKey('h')">H</button>
+            <button onclick="sendKey('j')">J</button><button onclick="sendKey('k')">K</button>
+            <button onclick="sendKey('l')">L</button><button onclick="sendKey(';')">;</button>
+            <button class="wide-key" onclick="sendKey('enter')" style="background:#007AFF">ENT</button>
+        </div>
+
+        <div class="key-row">
+            <button id="shift-key" class="extra-wide" onclick="toggleKey('shift')">SHIFT</button>
+            <button onclick="sendKey('z')">Z</button><button onclick="sendKey('x')">X</button>
+            <button onclick="sendKey('c')">C</button><button onclick="sendKey('v')">V</button>
+            <button onclick="sendKey('b')">B</button><button onclick="sendKey('n')">N</button>
+            <button onclick="sendKey('m')">M</button><button onclick="sendKey(',')">,</button>
+            <button onclick="sendKey('.')">.</button>
+            <button onclick="sendKey('delete')">DEL</button>
+        </div>
+
+        <div class="key-row">
+            <button id="ctrl-key" onclick="toggleKey('ctrl')">CTRL</button>
+            <button id="win-key" onclick="toggleKey('win')">WIN</button>
+            <button id="alt-key" onclick="toggleKey('alt')">ALT</button>
+            <button class="space-key" onclick="sendKey('space')">SPACE</button>
+            <button onclick="sendKey('left')">←</button>
+            <button onclick="sendKey('up')">↑</button>
+            <button onclick="sendKey('down')">↓</button>
+            <button onclick="sendKey('right')">→</button>
+        </div>
+    </div>
+
+    <button onclick="window.location.href = '/';" class="nav-btn">⇠ RETURN TO MOUSE</button>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let locks = { ctrl: false, win: false, alt: false, shift: false };
+
+        // 提交整个输入框内容 [针对你提出的“改成输入框发送”的需求]
+        function submitText() {
+            const input = document.getElementById('text-input');
+            if (input.value.length > 0) {
+                socket.emit('type_text', { text: input.value });
+                input.value = ''; // 发送后清空
+            }
+        }
+
+        // 支持回车键直接发送
+        document.getElementById('text-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitText();
+        });
+
+        // 核心按键发送逻辑 [cite: 42, 43, 44]
+        function sendKey(key) {
+            socket.emit('key_action', { key: key, action: 'down' });
+            setTimeout(() => {
+                socket.emit('key_action', { key: key, action: 'up' });
+            }, 50);
+        }
+
+        // 锁定按键逻辑 (用于组合键) [cite: 40, 41]
+        function toggleKey(key) {
+            locks[key] = !locks[key];
+            const btn = document.getElementById(key + '-key');
+            if (btn) btn.classList.toggle('locked', locks[key]);
+            socket.emit('key_action', { key: key, action: locks[key] ? 'down' : 'up' });
+        }
+
+        // 退格键长按连发逻辑 [cite: 54, 55]
+        let bsT, bsI;
+        const bsBtn = document.getElementById('bs-btn');
+        if (bsBtn) {
+            bsBtn.addEventListener('touchstart', e => {
+                e.preventDefault();
+                sendKey('backspace');
+                bsT = setTimeout(() => bsI = setInterval(() => sendKey('backspace'), 100), 500);
+            });
+            bsBtn.addEventListener('touchend', () => { clearTimeout(bsT); clearInterval(bsI); });
+        }
+    </script>
+</body>
+
+</html>

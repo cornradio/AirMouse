@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Remote Pro - 复合操控版</title>
+    <style>
+        :root {
+            --vh: 1vh;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: calc(var(--vh) * 100);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* 工具栏 */
+        .top-tools {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .tool-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 50%;
+            border: 1.5px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tool-btn.active {
+            border-color: #007AFF;
+            background: rgba(0, 122, 255, 0.3);
+            box-shadow: 0 0 15px #007aff;
+        }
+
+        .tool-btn svg {
+            fill: #888;
+            width: 22px;
+            height: 22px;
+        }
+
+        .tool-btn.active svg {
+            fill: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* 触控区域 - 始终保持激活状态 */
+        #touchpad {
+            flex: 1;
+            background: #0a0a0a;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #touchpad::after {
+            content: "HYBRID CONTROL";
+            color: #151515;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+        }
+
+        /* 底部控制栏 */
+        .control-bar {
+            background: #111;
+            padding: 12px 15px calc(12px + env(safe-area-inset-bottom));
+            border-top: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .slider-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            flex: 1;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            -webkit-appearance: none;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #666;
+            border-radius: 50%;
+        }
+
+        #gyro-slider::-webkit-slider-thumb {
+            background: #007AFF;
+            border: 2px solid #fff;
+        }
+
+        .btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #aaa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            background: #333;
+            color: #fff;
+        }
+
+        .btn-blue {
+            background: #007AFF;
+            border: none;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-tools">
+        <div class="tool-btn" id="air-mouse-btn" onclick="toggleAirMouse()">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+            </svg>
+        </div>
+        <div class="tool-btn" onclick="toggleFullscreen()">
+            <svg viewBox="0 0 24 24">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="touchpad"></div>
+
+        <div class="control-bar">
+            <div class="row">
+                <div class="slider-group">
+                    <div class="slider-box">
+                        <span style="width:40px">MOUSE</span>
+                        <input type="range" id="sense-slider" min="1" max="100" value="25">
+                        <span id="sense-val" style="width:25px; text-align:right">25</span>
+                    </div>
+                    <div class="slider-box">
+                        <span style="width:40px; color:#007AFF">GYRO</span>
+                        <input type="range" id="gyro-slider" min="0.1" max="5.0" step="0.1" value="1.0">
+                        <span id="gyro-val" style="width:25px; text-align:right; color:#007AFF">1.0</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="location.href='/k'" style="height:46px; padding:0 20px">KEYBOARD</button>
+            </div>
+
+            <div class="row">
+                <button class="btn" style="flex:1" ontouchstart="startScroll(2)" ontouchend="stopScroll()">UP</button>
+                <button class="btn" style="flex:1" ontouchstart="startScroll(-2)"
+                    ontouchend="stopScroll()">DOWN</button>
+                <button class="btn btn-blue" style="flex:1.5" onclick="socket.emit('click', {button:'right'})">RIGHT
+                    CLICK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const touchpad = document.getElementById('touchpad');
+
+        // 灵敏度逻辑
+        let padSense = parseInt(localStorage.getItem('padSense') || 25);
+        let gyroSense = parseFloat(localStorage.getItem('gyroSense') || 1.0);
+
+        const padSlider = document.getElementById('sense-slider');
+        const gyroSlider = document.getElementById('gyro-slider');
+        padSlider.value = padSense;
+        gyroSlider.value = gyroSense;
+        document.getElementById('sense-val').innerText = padSense;
+        document.getElementById('gyro-val').innerText = gyroSense.toFixed(1);
+
+        padSlider.oninput = (e) => {
+            padSense = e.target.value;
+            document.getElementById('sense-val').innerText = padSense;
+            localStorage.setItem('padSense', padSense);
+        };
+        gyroSlider.oninput = (e) => {
+            gyroSense = parseFloat(e.target.value);
+            document.getElementById('gyro-val').innerText = gyroSense.toFixed(1);
+            localStorage.setItem('gyroSense', gyroSense);
+        };
+
+        const setVh = () => {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        };
+        window.addEventListener('resize', setVh);
+        setVh();
+
+        // --- 触控板逻辑 (始终生效) ---
+        let lastX, lastY;
+        touchpad.addEventListener('touchstart', e => {
+            const t = e.touches;
+            lastX = t[0].clientX; lastY = t[0].clientY;
+            if (t.length === 3) socket.emit('drag_start');
+        });
+
+        touchpad.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const t = e.touches;
+            const dx = (t[0].clientX - lastX) * (padSense / 10);
+            const dy = (t[0].clientY - lastY) * (padSense / 10);
+
+            if (t.length === 1) {
+                socket.emit('move', { dx, dy });
+            } else if (t.length === 2) {
+                socket.emit('scroll', { dy: dy > 0 ? -1 : 1 });
+            }
+            lastX = t[0].clientX; lastY = t[0].clientY;
+        }, { passive: false });
+
+        touchpad.addEventListener('touchend', e => {
+            if (e.touches.length === 0) {
+                socket.emit('drag_end');
+            }
+            // 单击判定：如果是单指且位移极小，视为点击
+            if (e.changedTouches.length === 1) {
+                socket.emit('click', { button: 'left' });
+            }
+        });
+
+        // 滚轮连发
+        let scrollTimer;
+        function startScroll(step) {
+            scrollTimer = setInterval(() => socket.emit('scroll', { dy: step }), 60);
+        }
+        function stopScroll() { clearInterval(scrollTimer); }
+
+        // --- 飞鼠逻辑 (并行工作模式) ---
+        let isAirMouseActive = false;
+        async function toggleAirMouse() {
+            const btn = document.getElementById('air-mouse-btn');
+            if (!isAirMouseActive) {
+                if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                    const res = await DeviceMotionEvent.requestPermission();
+                    if (res !== 'granted') return;
+                }
+                isAirMouseActive = true;
+                btn.classList.add('active');
+                window.addEventListener('devicemotion', handleAir);
+            } else {
+                isAirMouseActive = false;
+                btn.classList.remove('active');
+                window.removeEventListener('devicemotion', handleAir);
+            }
+        }
+
+        function handleAir(e) {
+            const rot = e.rotationRate;
+            if (!rot) return;
+            // 采用你校准好的公式
+            let dx = -rot.gamma * gyroSense;
+            let dy = -rot.alpha * gyroSense;
+
+            // 细分分度下，死区也稍微收紧以保证精准度
+            if (Math.abs(dx) < 0.15) dx = 0;
+            if (Math.abs(dy) < 0.15) dy = 0;
+
+            if (dx !== 0 || dy !== 0) socket.emit('move', { dx, dy });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e => { });
+            else document.exitFullscreen();
+        }
+    </script>
+</body>
+
+</html>

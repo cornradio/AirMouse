@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Air Mouse Deep Debug</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .monitor {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .axis {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .alpha {
+            color: #ff4444;
+        }
+
+        /* 红色 */
+        .beta {
+            color: #44ff44;
+        }
+
+        /* 绿色 */
+        .gamma {
+            color: #4444ff;
+        }
+
+        /* 蓝色 */
+        .val {
+            font-weight: bold;
+        }
+
+        .setup-card {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .btn-start {
+            background: #007AFF;
+            color: #fff;
+        }
+
+        .btn-reset {
+            background: #333;
+            color: #ccc;
+        }
+
+        #log {
+            font-size: 10px;
+            color: #666;
+            height: 100px;
+            overflow-y: scroll;
+            background: #050505;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="setup-card">
+        <button id="start-btn" class="btn btn-start">1. 点击授权并启动</button>
+        <button onclick="location.reload()" class="btn btn-reset">重置页面</button>
+        <div style="font-size: 11px; color: #888; text-align: center;">请将手机平放，头部指向屏幕进行测试</div>
+    </div>
+
+    <div class="monitor">
+        <div style="font-size: 12px; color: #888; margin-bottom: 10px;">实时角速度 (Rotation Rate):</div>
+        <div class="axis alpha">Alpha (绕Z轴/平转): <span id="v-alpha" class="val">0</span></div>
+        <div class="axis beta">Beta (绕X轴/点头): <span id="v-beta" class="val">0</span></div>
+        <div class="axis gamma">Gamma (绕Y轴/侧翻): <span id="v-gamma" class="val">0</span></div>
+    </div>
+
+    <div class="setup-card">
+        <div style="margin-bottom: 10px;">测试增量 (已发往服务端):</div>
+        <div id="out-data" style="font-size: 24px; color: #007AFF;">DX: 0 | DY: 0</div>
+    </div>
+
+    <div id="log">系统日志: 等待启动...</div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const log = document.getElementById('log');
+        const vA = document.getElementById('v-alpha');
+        const vB = document.getElementById('v-beta');
+        const vG = document.getElementById('v-gamma');
+        const out = document.getElementById('out-data');
+
+        function addLog(msg) {
+            const div = document.createElement('div');
+            div.innerText = `> ${msg}`;
+            log.prepend(div);
+        }
+
+        async function start() {
+            addLog("尝试启动传感器...");
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                const res = await DeviceMotionEvent.requestPermission();
+                addLog("iOS 权限状态: " + res);
+                if (res !== 'granted') return;
+            }
+
+            window.addEventListener('devicemotion', (event) => {
+                const r = event.rotationRate;
+                if (!r) {
+                    vA.innerText = "无数据";
+                    return;
+                }
+
+                // 原始数据可视化
+                const a = r.alpha || 0;
+                const b = r.beta || 0;
+                const g = r.gamma || 0;
+
+                vA.innerText = a.toFixed(2);
+                vB.innerText = b.toFixed(2);
+                vG.innerText = g.toFixed(2);
+
+                // --- 极速响应算法 ---
+                // 根据你刚才的描述，我们先暂时用这个映射测试：
+                // 手机平放指向屏幕：
+                // 1. 左右转动 -> 对应 Alpha
+                // 2. 抬头低头 -> 对应 Beta
+
+                let dx = a * 15; // 提高基础灵敏度
+                let dy = b * 15;
+
+                // 过滤微小噪声
+                if (Math.abs(dx) < 0.5) dx = 0;
+                if (Math.abs(dy) < 0.5) dy = 0;
+
+                if (dx !== 0 || dy !== 0) {
+                    socket.emit('move', { dx: -dx, dy: -dy });
+                    out.innerText = `DX: ${(-dx).toFixed(1)} | DY: ${(-dy).toFixed(1)}`;
+                }
+            });
+
+            document.getElementById('start-btn').style.display = 'none';
+            addLog("监听运行中...");
+        }
+
+        document.getElementById('start-btn').onclick = start;
+    </script>
+</body>
+
+</html>

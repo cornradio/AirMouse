@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Air Mouse Debug</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .debug-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            width: 100%;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .debug-title {
+            color: #007AFF;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #000;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-bottom: 10px;
+            border: 1px solid #222;
+        }
+
+        .btn {
+            background: #333;
+            border: none;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-blue {
+            background: #007AFF;
+            padding: 15px 30px;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+
+        .status-on {
+            color: #0f0;
+        }
+
+        .status-off {
+            color: #f00;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="debug-card">
+        <div class="debug-title">第一步：复制此 Flag 路径</div>
+        <div class="code-block" id="flag-path">chrome://flags/#unsafely-treat-insecure-origin-as-secure</div>
+        <button class="btn" onclick="copyText('flag-path')">点击复制路径</button>
+        <p style="font-size: 11px; color: #888;">* 复制后，在浏览器地址栏粘贴并前往</p>
+    </div>
+
+    <div class="debug-card">
+        <div class="debug-title">第二步：复制你的服务器地址</div>
+        <div class="code-block" id="server-url"></div>
+        <button class="btn" onclick="copyText('server-url')">点击复制地址</button>
+        <p style="font-size: 11px; color: #888;">* 在 Flag 页面文本框粘贴此地址，选 Enabled，点 Relaunch</p>
+    </div>
+
+    <button id="start-btn" class="btn btn-blue" onclick="requestPermission()">START GYRO TEST</button>
+
+    <div id="data-display" style="font-family: monospace; font-size: 20px;">
+        B: <span id="beta">0</span> | G: <span id="gamma">0</span>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        // 自动填入当前地址
+        document.getElementById('server-url').innerText = window.location.origin;
+
+        function copyText(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('复制成功！');
+            });
+        }
+
+        function handleOrientation(event) {
+            let b = Math.round(event.beta || 0);
+            let g = Math.round(event.gamma || 0);
+            document.getElementById('beta').innerText = b;
+            document.getElementById('gamma').innerText = g;
+
+            if (b !== 0 || g !== 0) {
+                socket.emit('move', { dx: g * 1.2, dy: (b - 45) * 1.2 });
+            }
+        }
+
+        async function requestPermission() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                const state = await DeviceOrientationEvent.requestPermission();
+                if (state === 'granted') window.addEventListener('deviceorientation', handleOrientation);
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
+            document.getElementById('start-btn').innerText = "RUNNING...";
+        }
+    </script>
+</body>
+
+</html>

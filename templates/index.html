@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Remote Pro v8.5</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        /* 关键修复：使用变量获取动态高度 */
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            /* 回退方案 */
+            height: calc(var(--vh, 1vh) * 100);
+            display: flex;
+        }
+
+        #mouse-page {
+            display: flex;
+            width: 100vw;
+            height: 100%;
+        }
+
+        #pad {
+            flex: 1;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        .nav-container {
+            background: #0f0f0f;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-color: #1a1a1a;
+            border-style: solid;
+        }
+
+        @media (orientation: portrait) {
+            #mouse-page {
+                flex-direction: column;
+            }
+
+            .nav-container {
+                height: 60px;
+                width: 100%;
+                border-top-width: 1px;
+                padding: 0 10px;
+            }
+
+            .sens-container {
+                width: 30%;
+            }
+
+            /* 缩小占比给按钮留位 */
+        }
+
+        @media (orientation: landscape) {
+            #mouse-page {
+                flex-direction: row;
+            }
+
+            .nav-container {
+                width: 60px;
+                height: 100%;
+                flex-direction: column-reverse;
+                border-left-width: 1px;
+                padding: 10px 0;
+            }
+
+            .sens-container {
+                height: 100px;
+                writing-mode: vertical-lr;
+                transform: rotate(180deg);
+                margin: 10px 0;
+            }
+        }
+
+        .icon-btn {
+            background: transparent;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .icon-btn:active {
+            background: #1a1a1a;
+        }
+
+        .icon-btn svg {
+            fill: #444;
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-btn:active svg {
+            fill: #007AFF;
+        }
+
+        .sens-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #444;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            background: #222;
+            height: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #555;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="mouse-page">
+        <div id="pad">
+            <div
+                style="position:absolute; top:20px; left:20px; color:#1a1a1a; font-size:11px; font-weight:bold; letter-spacing: 3px;">
+                TOUCHPAD</div>
+        </div>
+
+        <div class="nav-container">
+            <div class="icon-btn" onclick="window.location.href = '/k';">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" onclick="toggleFullScreen()">
+                <svg id="fs-icon" viewBox="0 0 24 24">
+                    <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" oncontextmenu="return false;" ontouchstart="startScroll(2)" ontouchend="stopScroll()"
+                ontouchcancel="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" oncontextmenu="return false;" ontouchstart="startScroll(-2)" ontouchend="stopScroll()"
+                ontouchcancel="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                </svg>
+            </div>
+
+            <div class="sens-container">
+                <span>SENSE</span>
+                <input type="range" id="sens-slider" min="1" max="10" step="0.1">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        // --- 修复安卓 100vh 问题的 JS ---
+        function resetHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        window.addEventListener('resize', resetHeight);
+        resetHeight();
+
+        // --- 全屏控制逻辑 ---
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => {
+                    alert(`无法进入全屏: ${e.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // 监听全屏变化更新图标 (可选)
+        document.addEventListener('fullscreenchange', () => {
+            const icon = document.querySelector('#fs-icon path');
+            if (document.fullscreenElement) {
+                icon.setAttribute('d', 'M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z'); // 缩小图标
+            } else {
+                icon.setAttribute('d', 'M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z'); // 放大图标
+            }
+        });
+
+        const slider = document.getElementById('sens-slider');
+        let sensitivity = parseFloat(localStorage.getItem('mouse_sense')) || 4.0;
+        slider.value = sensitivity;
+        slider.oninput = (e) => {
+            sensitivity = parseFloat(e.target.value);
+            localStorage.setItem('mouse_sense', sensitivity);
+        };
+
+        // 滚轮逻辑
+        let scrollTimer = null;
+        function startScroll(step) {
+            if (event.cancelable) event.preventDefault();
+            if (scrollTimer) clearInterval(scrollTimer);
+            socket.emit('scroll', { dy: step });
+            scrollTimer = setInterval(() => socket.emit('scroll', { dy: step }), 60);
+        }
+        function stopScroll() { if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; } }
+
+        // 第一版核心逻辑
+        const pad = document.getElementById('pad');
+        let lx, ly, sx, sy, hMove, tCount, drag = false;
+
+        pad.addEventListener('touchstart', e => {
+            tCount = e.touches.length;
+            lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+            sx = lx; sy = ly; hMove = false;
+            if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
+        });
+
+        pad.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
+            if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
+            if (tCount === 1 || tCount === 3) {
+                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                lx = cx; ly = cy;
+            } else if (tCount === 2) {
+                const dy = cy - ly;
+                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+            }
+        }, { passive: false });
+
+        pad.addEventListener('touchend', () => {
+            if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a"; }
+            else if (!hMove) {
+                if (tCount === 1) socket.emit('click', { button: 'left' });
+                else if (tCount === 2) socket.emit('click', { button: 'right' });
+            }
+            stopScroll();
+        });
+    </script>
+</body>
+
+</html>
