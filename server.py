@@ -43,8 +43,20 @@ def handle_move(data):
 
 @socketio.on('click')
 def handle_click(data):
-    btn = Button.right if data.get('button') == 'right' else Button.left
-    mouse.click(btn)
+    button_type = data.get('button')
+    if button_type == 'left':
+        mouse.click(Button.left)
+    elif button_type == 'right':
+        mouse.click(Button.right)
+    elif button_type == 'middle':
+        # 释放并点击中键，用于关闭浏览器标签页或自动滚动
+        mouse.click(Button.middle)
+    elif button_type == 'x1':
+        # 侧键1 (通常是后退)
+        mouse.click(Button.x1)
+    elif button_type == 'x2':
+        # 侧键2 (通常是前进)
+        mouse.click(Button.x2)
 
 @socketio.on('drag_start')
 def handle_drag_start():
@@ -108,35 +120,35 @@ def get_all_ip_addresses():
     return ip_list
 
 # --- 证书生成函数 ---
-import time # 需要导入 time 模块来获取时间
+# import time # 需要导入 time 模块来获取时间
 
-def generate_self_signed_cert(cert_file="cert.pem", key_file="key.pem"):
-    if not os.path.exists(cert_file) or not os.path.exists(key_file):
-        print("正在生成自签名 SSL 证书...")
-        k = crypto.PKey()
-        k.generate_key(crypto.TYPE_RSA, 4096)
+# def generate_self_signed_cert(cert_file="cert.pem", key_file="key.pem"):
+#     if not os.path.exists(cert_file) or not os.path.exists(key_file):
+#         print("正在生成自签名 SSL 证书...")
+#         k = crypto.PKey()
+#         k.generate_key(crypto.TYPE_RSA, 4096)
         
-        cert = crypto.X509()
-        cert.get_subject().CN = "127.0.0.1"
-        cert.set_serial_number(1000)
+#         cert = crypto.X509()
+#         cert.get_subject().CN = "127.0.0.1"
+#         cert.set_serial_number(1000)
         
-        # 修正部分：使用 set_notBefore 和 set_notAfter
-        # 格式必须是 YYYYMMDDhhmmssZ 的字节流
-        now = time.strftime("%Y%m%d%H%M%SZ", time.gmtime()).encode('ascii')
-        expire = time.strftime("%Y%m%d%H%M%SZ", time.gmtime(time.time() + 10*365*24*60*60)).encode('ascii')
+#         # 修正部分：使用 set_notBefore 和 set_notAfter
+#         # 格式必须是 YYYYMMDDhhmmssZ 的字节流
+#         now = time.strftime("%Y%m%d%H%M%SZ", time.gmtime()).encode('ascii')
+#         expire = time.strftime("%Y%m%d%H%M%SZ", time.gmtime(time.time() + 10*365*24*60*60)).encode('ascii')
         
-        cert.set_notBefore(now)
-        cert.set_notAfter(expire)
+#         cert.set_notBefore(now)
+#         cert.set_notAfter(expire)
         
-        cert.set_issuer(cert.get_subject())
-        cert.set_pubkey(k)
-        cert.sign(k, 'sha256')
+#         cert.set_issuer(cert.get_subject())
+#         cert.set_pubkey(k)
+#         cert.sign(k, 'sha256')
         
-        with open(cert_file, "wb") as f:
-            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
-        with open(key_file, "wb") as f:
-            f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
-        print("证书生成完毕！")
+#         with open(cert_file, "wb") as f:
+#             f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+#         with open(key_file, "wb") as f:
+#             f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
+#         print("证书生成完毕！")
 
         
 if __name__ == '__main__':
@@ -156,12 +168,12 @@ if __name__ == '__main__':
     
     print("═"*60 + "\n")
 
-    generate_self_signed_cert()
+    # generate_self_signed_cert()
     # 使用 allow_unsafe_werkzeug 确保在开发环境下稳定运行
+    
     socketio.run(
             app, 
             host='0.0.0.0', 
             port=5888, 
-            certfile='cert.pem', 
-            keyfile='key.pem'
+            ssl_context=('cert.pem', 'key.pem')
         )

@@ -94,9 +94,20 @@
 
         .send-btn {
             flex-shrink: 0;
-            padding: 0 15px;
+            padding: 0px;
             height: 40px;
             background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .send-btn2 {
+            flex-shrink: 0;
+            padding: 0 0px;
+            height: 40px;
+            background: #4e4e4e;
             color: white;
             border: none;
             border-radius: 6px;
@@ -232,13 +243,20 @@
 
     <div class="container">
         <div class="input-section">
-            <input type="text" id="text-input" placeholder="Type..." autocomplete="off">
-
+            <div class="fs-btn-kb" onclick="window.location.href = '/';">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15 18l-6-6 6-6" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
             <div class="fs-btn-kb" onclick="toggleFullScreen()">
                 <svg id="fs-icon-kb" viewBox="0 0 24 24">
                     <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
                 </svg>
             </div>
+            <input type="text" id="text-input" placeholder="Type..." autocomplete="off">
+
+
 
             <button class="send-btn" onclick="submitText()">SEND</button>
         </div>

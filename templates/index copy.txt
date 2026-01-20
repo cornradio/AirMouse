@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Web-AirMouse | 网页体感飞鼠</title>
+    <title>Remote Pro v8.5 + Hybrid AirMouse</title>
     <style>
         * {
             -webkit-touch-callout: none;
@@ -38,18 +38,7 @@
             position: relative;
         }
 
-        /* 顶部/左侧栏：功能开关 */
-        .top-nav {
-            background: #0f0f0f;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            border-color: #1a1a1a;
-            border-style: solid;
-        }
-
-        /* 底部/右侧栏：鼠标按键与灵敏度 */
-        .bottom-nav {
+        .nav-container {
             background: #0f0f0f;
             display: flex;
             align-items: center;
@@ -63,26 +52,15 @@
                 flex-direction: column;
             }
 
-            .top-nav {
-                height: 60px;
-                width: 100%;
-                border-bottom-width: 1px;
-            }
-
-            .bottom-nav {
-                height: 100px;
+            .nav-container {
+                height: 85px;
                 width: 100%;
                 border-top-width: 1px;
                 padding: 0 10px;
             }
 
             .sens-group {
-                width: 45%;
-            }
-
-            .btn-group {
-                display: flex;
-                gap: 10px;
+                width: 35%;
             }
         }
 
@@ -91,33 +69,19 @@
                 flex-direction: row;
             }
 
-            .top-nav {
+            .nav-container {
                 width: 65px;
-                height: 100%;
-                flex-direction: column;
-                border-right-width: 1px;
-                padding: 20px 0;
-            }
-
-            .bottom-nav {
-                width: 80px;
                 height: 100%;
                 flex-direction: column-reverse;
                 border-left-width: 1px;
-                padding: 15px 0;
+                padding: 10px 0;
             }
 
             .sens-group {
-                height: 100px;
-                margin: 15px 0;
+                height: 80px;
+                margin: 10px 0;
                 writing-mode: vertical-lr;
                 transform: rotate(180deg);
-            }
-
-            .btn-group {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
             }
 
             /* 横屏自动隐藏飞鼠 UI */
@@ -128,44 +92,28 @@
         }
 
         .icon-btn {
-            width: 48px;
-            height: 48px;
+            background: transparent;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            transition: all 0.2s;
+            border-radius: 8px;
         }
 
         .icon-btn:active {
-            background: #333;
-            transform: scale(0.95);
+            background: #1a1a1a;
         }
 
         .icon-btn svg {
-            fill: #888;
+            fill: #444;
             width: 24px;
             height: 24px;
-        }
-
-        .icon-btn.active {
-            border-color: #007AFF;
-            background: #001a33;
         }
 
         .icon-btn.active svg {
             fill: #007AFF;
             filter: drop-shadow(0 0 5px #007AFF);
-        }
-
-        .side-text {
-            color: #888;
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        .icon-btn:active .side-text {
-            color: #fff;
         }
 
         .sens-group {
@@ -211,19 +159,28 @@
 </head>
 
 <body>
+
     <div id="mouse-page">
-        <div class="top-nav">
+        <div id="pad">
+            <div
+                style="position:absolute; top:20px; left:20px; color:#1a1a1a; font-size:11px; font-weight:bold; letter-spacing: 3px;">
+                HYBRID PAD</div>
+        </div>
+
+        <div class="nav-container">
             <div class="icon-btn" onclick="window.location.href = '/k';">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
                 </svg>
             </div>
+
             <div class="icon-btn" onclick="toggleFullScreen()">
                 <svg id="fs-icon" viewBox="0 0 24 24">
                     <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
                 </svg>
             </div>
+
             <div class="icon-btn" id="gyro-btn" onclick="toggleGyro()">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -231,43 +188,27 @@
                 </svg>
             </div>
 
-            <div class="btn-group">
-                <div class="icon-btn" ontouchstart="startScroll(2)" ontouchend="stopScroll()">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" />
-                    </svg>
-                </div>
-                <div class="icon-btn" ontouchstart="startScroll(-2)" ontouchend="stopScroll()">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <div id="pad">
-            <div
-                style="position:absolute; bottom:20px; left:20px; color:#1a1a1a; font-size:10px; font-weight:bold; letter-spacing: 2px;">
-                WEB-AIRMOUSE PRO</div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="btn-group">
-                <div class="icon-btn" onclick="socket.emit('click', {button:'middle'})"><span
-                        class="side-text">MID</span></div>
-                <div class="icon-btn" onclick="socket.emit('click', {button:'x1'})"><span class="side-text">Back</span>
-                </div>
-                <div class="icon-btn" onclick="socket.emit('click', {button:'x2'})"><span class="side-text">Fwd</span>
-                </div>
-
+            <div class="icon-btn" ontouchstart="startScroll(2)" ontouchend="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" />
+                </svg>
             </div>
 
+            <div class="icon-btn" ontouchstart="startScroll(-2)" ontouchend="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                </svg>
+            </div>
 
             <div class="sens-group">
-                <div class="sens-container"><span>PAD</span><input type="range" id="sens-slider" min="1" max="10"
-                        step="0.1"></div>
-                <div class="sens-container gyro-sens-row" style="color: #007AFF;"><span>GYRO</span><input type="range"
-                        id="gyro-slider" min="0.1" max="5" step="0.1"></div>
+                <div class="sens-container">
+                    <span>PAD</span>
+                    <input type="range" id="sens-slider" min="1" max="10" step="0.1">
+                </div>
+                <div class="sens-container gyro-sens-row" style="color: #007AFF;">
+                    <span>GYRO</span>
+                    <input type="range" id="gyro-slider" min="0.1" max="5" step="0.1">
+                </div>
             </div>
         </div>
     </div>
@@ -275,22 +216,34 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
+
         function resetHeight() {
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
-            if (window.innerWidth > window.innerHeight && isGyroActive) { toggleGyro(); }
+            if (window.innerWidth > window.innerHeight && isGyroActive) {
+                toggleGyro();
+            }
         }
         window.addEventListener('resize', resetHeight);
         resetHeight();
 
         const slider = document.getElementById('sens-slider');
         const gyroSlider = document.getElementById('gyro-slider');
+
         let sensitivity = parseFloat(localStorage.getItem('mouse_sense')) || 4.0;
         let gyroSensitivity = parseFloat(localStorage.getItem('gyro_sense')) || 0.6;
-        slider.value = sensitivity; gyroSlider.value = gyroSensitivity;
 
-        slider.oninput = (e) => { sensitivity = parseFloat(e.target.value); localStorage.setItem('mouse_sense', sensitivity); };
-        gyroSlider.oninput = (e) => { gyroSensitivity = parseFloat(e.target.value); localStorage.setItem('gyro_sense', gyroSensitivity); };
+        slider.value = sensitivity;
+        gyroSlider.value = gyroSensitivity;
+
+        slider.oninput = (e) => {
+            sensitivity = parseFloat(e.target.value);
+            localStorage.setItem('mouse_sense', sensitivity);
+        };
+        gyroSlider.oninput = (e) => {
+            gyroSensitivity = parseFloat(e.target.value);
+            localStorage.setItem('gyro_sense', gyroSensitivity);
+        };
 
         let isGyroActive = false;
         async function toggleGyro() {
@@ -300,24 +253,34 @@
                     const res = await DeviceMotionEvent.requestPermission();
                     if (res !== 'granted') return;
                 }
-                isGyroActive = true; btn.classList.add('active');
+                isGyroActive = true;
+                btn.classList.add('active');
                 window.addEventListener('devicemotion', handleGyro);
             } else {
-                isGyroActive = false; btn.classList.remove('active');
+                isGyroActive = false;
+                btn.classList.remove('active');
                 window.removeEventListener('devicemotion', handleGyro);
             }
         }
 
         function handleGyro(e) {
-            const rot = e.rotationRate; if (!rot) return;
-            let dx = -rot.gamma * gyroSensitivity; let dy = -rot.alpha * gyroSensitivity;
-            if (Math.abs(dx) < 0.1) dx = 0; if (Math.abs(dy) < 0.1) dy = 0;
-            if (dx !== 0 || dy !== 0) { socket.emit('move', { dx, dy }); }
+            const rot = e.rotationRate;
+            if (!rot) return;
+            let dx = -rot.gamma * gyroSensitivity;
+            let dy = -rot.alpha * gyroSensitivity;
+            if (Math.abs(dx) < 0.1) dx = 0;
+            if (Math.abs(dy) < 0.1) dy = 0;
+            if (dx !== 0 || dy !== 0) {
+                socket.emit('move', { dx, dy });
+            }
         }
 
         function toggleFullScreen() {
-            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
-            else { if (document.exitFullscreen) document.exitFullscreen(); }
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => alert(e.message));
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
         }
 
         let scrollTimer = null;
@@ -330,27 +293,43 @@
 
         const pad = document.getElementById('pad');
         let lx, ly, sx, sy, hMove, tCount, drag = false;
+
         pad.addEventListener('touchstart', e => {
-            tCount = e.touches.length; lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+            tCount = e.touches.length;
+            lx = e.touches[0].clientX; ly = e.touches[0].clientY;
             sx = lx; sy = ly; hMove = false;
-            if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
+            if (tCount === 3) {
+                drag = true;
+                socket.emit('drag_start');
+                pad.style.background = "#001a33";
+            }
         });
+
         pad.addEventListener('touchmove', e => {
             e.preventDefault();
             const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
             if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
             if (tCount === 1 || tCount === 3) {
-                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                socket.emit('move', {
+                    dx: (cx - lx) * sensitivity,
+                    dy: (cy - ly) * sensitivity
+                });
                 lx = cx; ly = cy;
             } else if (tCount === 2) {
                 const dy = cy - ly;
-                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+                if (Math.abs(dy) > 5) {
+                    socket.emit('scroll', { dy: dy > 0 ? 1 : -1 });
+                    ly = cy;
+                }
             }
         }, { passive: false });
 
         pad.addEventListener('touchend', () => {
-            if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a"; }
-            else if (!hMove) {
+            if (drag) {
+                socket.emit('drag_end');
+                drag = false;
+                pad.style.background = "#0a0a0a";
+            } else if (!hMove) {
                 if (tCount === 1) socket.emit('click', { button: 'left' });
                 else if (tCount === 2) socket.emit('click', { button: 'right' });
             }
