@@ -11,6 +11,9 @@
     <td style="border: none;">
       <img src="img/Screenshot_20260120-225705.jpg" width="400">
     </td>
+    <td style="border: none;">
+      <img src="img/Screenshot_20260121-210258.jpg" width="400">
+    </td>
   </tr>
 </table>
 
@@ -59,13 +62,6 @@ pip install -r requirements.txt
 python server.py
 ```
 
-如果你是macos，建议修改一下server.python，修改一下滚动方向，它和 Windows 是反过来的
-```bash
-@socketio.on('scroll')
-def handle_scroll(data):
-    # 处理双指滑动或按钮连发发来的滚动信号
-    mouse.scroll(0, -data['dy']) # 这里改成 -data['dy'] 就可以了
-```
 
  **连接**：
 确保手机与电脑在同一局域网，访问电脑 IP 的端口（默认 5888）。
@@ -81,19 +77,37 @@ def handle_scroll(data):
 * `server.py`: Python 后端逻辑，处理 Socket 信号并调用系统接口。
 * `templates/index.html`: 触控板页面（包含灵敏度持久化与横屏适配）。
 * `templates/keyboard.html`: 键盘输入页面（包含防挤压布局与全屏控制）。
+* `templates/voice.html`: 语音输入页面（包含横屏适配）。
 
 ---
 
 ## 🔧 调优说明
+- 建议使用安卓手机+chrome浏览器。
+- 经过我的测试，虽然 ios  safari 浏览器也可以正常使用，但是鼠标的移动会变得有些卡卡的。
+- 如果你是macos，建议修改一下server.python，修改一下滚动方向，它和 Windows 是反过来的
 
-如果你觉得按钮滚动的步长不够快，可以在 `index.html` 中找到以下部分进行修改：
-
-```javascript
-function startScroll(step) {
-    // step 为正数向上滚，负数向下滚
-    // 60ms 是触发频率，2 是单次滚动步长
-    scrollTimer = setInterval(() => socket.emit('scroll', { dy: step }), 60); 
-}
-
+```bash
+@socketio.on('scroll')
+def handle_scroll(data):
+    # 处理双指滑动或按钮连发发来的滚动信号
+    mouse.scroll(0, -data['dy']) # 这里改成 -data['dy'] 就可以了
 ```
 
+## 更新日志
+
+2026-01-21 Day2
+- [x]  点击返回时强制清除所有长按功能，以防止影响触控
+- [x]  飞鼠增加一些微小动作滤除，防手抖
+
+- [x]  键盘上下左右 无效 另外位置也不舒服
+- [x]  键盘del 按钮位置不对 应该在F12右边
+- [x]  缺少printscreen 按钮
+- [x]  缺少反斜杠按钮（在括号右边）
+
+- [x]  输入条太小并不能实时语音上屏（之前让他实时上屏存在一点问题）
+- [x]  或许我可以再搞个独立页面专门用来语音上屏,并且可以切换实时上屏和输入框模式
+
+2026-01-21 Day1
+- [x]  实现整体基础架构
+- [x]  实现飞鼠功能还有鼠标控制功能以及三指拖动功能等
+- [x]  实现键盘功能
