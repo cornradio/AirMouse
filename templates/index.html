@@ -253,19 +253,29 @@
 
         <div id="pad">
             <div
-                style="position:absolute; bottom:20px; left:20px; color:#1a1a1a; font-size:10px; font-weight:bold; letter-spacing: 2px;">
+                style="position:absolute; bottom:20px; left:20px; color:#1a1a1a; font-size:10px; font-weight:bold; letter-spacing: 2px; pointer-events: none;">
                 WEB-AIRMOUSE PRO</div>
         </div>
 
         <div class="bottom-nav">
             <div class="btn-group">
-                <div class="icon-btn" onclick="socket.emit('click', {button:'middle'})"><span
-                        class="side-text">MID</span></div>
-                <div class="icon-btn" onclick="socket.emit('click', {button:'x1'})"><span class="side-text">Back</span>
+                <div class="icon-btn" ontouchstart="socket.emit('mid_down')" ontouchend="socket.emit('mid_up')"
+                    ontouchcancel="socket.emit('mid_up')">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12,20A2,2 0 0,1 10,18V14.82C8.83,14.43 8,13.32 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12C16,13.32 15.17,14.43 14,14.82V18A2,2 0 0,1 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" />
+                    </svg>
                 </div>
-                <div class="icon-btn" onclick="socket.emit('click', {button:'x2'})"><span class="side-text">Fwd</span>
+                <div class="icon-btn" onclick="socket.emit('click', {button:'x1'})">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                    </svg>
                 </div>
-
+                <div class="icon-btn" onclick="socket.emit('click', {button:'x2'})">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </div>
             </div>
 
 
@@ -316,8 +326,16 @@
 
         function handleGyro(e) {
             const rot = e.rotationRate; if (!rot) return;
-            let dx = -rot.gamma * gyroSensitivity; let dy = -rot.alpha * gyroSensitivity;
-            if (Math.abs(dx) < 0.1) dx = 0; if (Math.abs(dy) < 0.1) dy = 0;
+            // 获取原始增量
+            let rx = -rot.gamma * gyroSensitivity;
+            let ry = -rot.alpha * gyroSensitivity;
+
+            // 微小动作滤除 (防手抖死区)
+            // 设定 0.25 的死区，低于此值的动作被视为抖动，高于此值则减去死区基数以保持平滑
+            const deadzone = 0.25;
+            let dx = Math.abs(rx) < deadzone ? 0 : (rx - Math.sign(rx) * deadzone);
+            let dy = Math.abs(ry) < deadzone ? 0 : (ry - Math.sign(ry) * deadzone);
+
             if (dx !== 0 || dy !== 0) { socket.emit('move', { dx, dy }); }
         }
 
@@ -337,14 +355,21 @@
         const pad = document.getElementById('pad');
         let lx, ly, sx, sy, hMove, tCount, drag = false;
         pad.addEventListener('touchstart', e => {
-            tCount = e.touches.length; lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+            // 使用 targetTouches 只计算落在触摸板上的手指
+            tCount = e.targetTouches.length;
+            const touch = e.targetTouches[0];
+            lx = touch.clientX; ly = touch.clientY;
             sx = lx; sy = ly; hMove = false;
             if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
         });
         pad.addEventListener('touchmove', e => {
             e.preventDefault();
-            const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
+            tCount = e.targetTouches.length;
+            const touch = e.targetTouches[0];
+            const cx = touch.clientX, cy = touch.clientY;
+
             if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
+
             if (tCount === 1 || tCount === 3) {
                 socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
                 lx = cx; ly = cy;
@@ -354,9 +379,10 @@
             }
         }, { passive: false });
 
-        pad.addEventListener('touchend', () => {
+        pad.addEventListener('touchend', (e) => {
             if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a"; }
             else if (!hMove) {
+                // 点击判断
                 if (tCount === 1) socket.emit('click', { button: 'left' });
                 else if (tCount === 2) socket.emit('click', { button: 'right' });
             }

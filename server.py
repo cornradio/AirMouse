@@ -76,6 +76,17 @@ def handle_drag_end():
     # 三指抬起：释放左键
     mouse.release(Button.left)
 
+@socketio.on('mid_down')
+def handle_mid_down():
+    # 按下中键
+    mouse.release(Button.middle)
+    mouse.press(Button.middle)
+
+@socketio.on('mid_up')
+def handle_mid_up():
+    # 释放中键
+    mouse.release(Button.middle)
+
 @socketio.on('scroll')
 def handle_scroll(data):
     # 处理双指滑动或按钮连发发来的滚动信号

@@ -370,8 +370,7 @@
                         d="M22,3H7C6.31,3 5.77,3.35 5.41,3.88L0,12L5.41,20.11C5.77,20.64 6.31,21 7,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12" />
                 </svg>
             </button>
-            <button class="h-btn h-btn-red" onclick="clearText()">
-                <svg viewBox="0 0 24 24">
+            <button class="h-btn h-btn-red" onclick="clearText()"> <svg viewBox="0 0 24 24">
                     <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19V4M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                 </svg>
             </button>
@@ -512,10 +511,10 @@
 
         function startBS() {
             sendBSOnce(); // 先删一个
-            if (bsTimer) clearInterval(bsTimer);
-            // 延时 500ms 后开始连发（模拟系统键盘逻辑）
+            if (bsTimer) { clearTimeout(bsTimer); clearInterval(bsTimer); }
+            // 延时 500ms 后开始连发，速度调慢到 100ms 一个字，更精准
             bsTimer = setTimeout(() => {
-                bsTimer = setInterval(sendBSOnce, 80);
+                bsTimer = setInterval(sendBSOnce, 100);
             }, 500);
         }
 
