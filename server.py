@@ -11,16 +11,24 @@ app = Flask(__name__)
 # 允许所有来源跨域，确保手机能连上
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+import platform
+
 # 实例化硬件控制器
 mouse = Controller()
 keyboard = KeyController()
+
+@socketio.on('connect')
+def handle_connect():
+    # 发送服务器操作系统信息给前端
+    os_type = platform.system() # 'Windows', 'Darwin' (Mac), 'Linux'
+    socketio.emit('os_info', {'os': os_type})
 
 # 特殊按键映射表
 SPECIAL_KEYS = {
     'ctrl': Key.ctrl, 'ctrl_r': Key.ctrl_r,
     'shift': Key.shift, 'shift_r': Key.shift_r,
     'alt': Key.alt, 'alt_r': Key.alt_r,
-    'win': Key.cmd,
+    'win': Key.cmd, 'command': Key.cmd, 'meta': Key.cmd,
     'enter': Key.enter, 'esc': Key.esc, 'tab': Key.tab, 'backspace': Key.backspace,
     'space': Key.space, 'delete': Key.delete, 'prtsc': Key.print_screen,
     'up': Key.up, 'down': Key.down, 'left': Key.left, 'right': Key.right,

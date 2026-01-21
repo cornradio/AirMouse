@@ -338,6 +338,9 @@
         </div>
         <div class="title"></div>
         <div class="header-actions">
+            <button id="modifier-btn" class="h-btn" onclick="v(); toggleModifier()">
+                Win
+            </button>
             <button class="h-btn" onclick="v(); ctrlZ()">
                 ^Z
             </button>
@@ -428,6 +431,27 @@
             delayValText.innerText = (syncDelay / 1000).toFixed(1) + 's';
             localStorage.setItem('voice_sync_delay', syncDelay);
         };
+
+        // 系统修饰键逻辑 (Win: ctrl, Mac: meta)
+        let modifierKey = localStorage.getItem('modifier_key');
+        if (!modifierKey) {
+            const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+            modifierKey = isMac ? 'meta' : 'ctrl';
+        }
+
+        function updateModifierUI() {
+            const btn = document.getElementById('modifier-btn');
+            if (btn) btn.innerText = modifierKey === 'ctrl' ? 'Win' : 'Mac';
+        }
+
+        function toggleModifier() {
+            modifierKey = modifierKey === 'ctrl' ? 'meta' : 'ctrl';
+            localStorage.setItem('modifier_key', modifierKey);
+            updateModifierUI();
+        }
+
+        // 初始化修饰键 UI
+        updateModifierUI();
 
         // 设置模式
         function setMode(mode) {
@@ -530,20 +554,13 @@
             }
         }
 
-        // 全选功能 (Ctrl + A)
+        // 全选功能 (根据系统自动或手动选择的修饰键)
         function ctrlA() {
-            socket.emit('key_combo', { keys: ['ctrl', 'a'] });
+            socket.emit('key_combo', { keys: [modifierKey, 'a'] });
         }
         function ctrlZ() {
-            socket.emit('key_combo', { keys: ['ctrl', 'z'] });
+            socket.emit('key_combo', { keys: [modifierKey, 'z'] });
         }
-        // if mac ,send meta
-        // function ctrlA() {
-        //     socket.emit('key_combo', { keys: ['meta', 'a'] });
-        // }
-        // function ctrlZ() {
-        //     socket.emit('key_combo', { keys: ['meta', 'z'] });
-        // }
         // 初始化
         setMode('realtime');
 
