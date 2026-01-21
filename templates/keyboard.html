@@ -227,18 +227,18 @@
 
     <div class="container">
         <div class="input-section">
-            <div class="fs-btn-kb" onclick="goBack()">
+            <div class="fs-btn-kb" onclick="v(); goBack()">
                 <svg viewBox="0 0 24 24">
                     <path d="M15 18l-6-6 6-6" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
                 </svg>
             </div>
-            <div class="fs-btn-kb" onclick="toggleFullScreen()">
+            <div class="fs-btn-kb" onclick="v(); toggleFullScreen()">
                 <svg id="fs-icon-kb" viewBox="0 0 24 24">
                     <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
                 </svg>
             </div>
-            <div class="fs-btn-kb" onclick="window.location.href='/v'">
+            <div class="fs-btn-kb" onclick="v(); window.location.href='/v'">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
@@ -248,139 +248,142 @@
 
 
 
-            <button class="send-btn" onclick="submitText()">SEND</button>
+            <button class="send-btn" onclick="v(); submitText()">SEND</button>
         </div>
         <div class="keyboard-grid">
             <div class="row">
-                <button class="k-f esc" ontouchstart="hP('esc')" ontouchend="hR()">ESC</button>
-                <button class="k-f" ontouchstart="hP('f1')" ontouchend="hR()">F1</button>
-                <button class="k-f" ontouchstart="hP('f2')" ontouchend="hR()">F2</button>
-                <button class="k-f" ontouchstart="hP('f3')" ontouchend="hR()">F3</button>
-                <button class="k-f" ontouchstart="hP('f4')" ontouchend="hR()">F4</button>
-                <button class="k-f" ontouchstart="hP('f5')" ontouchend="hR()">F5</button>
-                <button class="k-f" ontouchstart="hP('f6')" ontouchend="hR()">F6</button>
-                <button class="k-f" ontouchstart="hP('f7')" ontouchend="hR()">F7</button>
-                <button class="k-f" ontouchstart="hP('f8')" ontouchend="hR()">F8</button>
-                <button class="k-f" ontouchstart="hP('f9')" ontouchend="hR()">F9</button>
-                <button class="k-f" ontouchstart="hP('f10')" ontouchend="hR()">F10</button>
-                <button class="k-f" ontouchstart="hP('f11')" ontouchend="hR()">F11</button>
-                <button class="k-f" ontouchstart="hP('f12')" ontouchend="hR()">F12</button>
-                <button class="k-f" ontouchstart="hP('prtsc')" ontouchend="hR()">PRTSC</button>
-                <button class="k-f" ontouchstart="hP('delete')" ontouchend="hR()">DEL</button>
+                <button class="k-f esc" ontouchstart="v(); hP('esc')" ontouchend="hR()">ESC</button>
+                <button class="k-f" ontouchstart="v(); hP('f1')" ontouchend="hR()">F1</button>
+                <button class="k-f" ontouchstart="v(); hP('f2')" ontouchend="hR()">F2</button>
+                <button class="k-f" ontouchstart="v(); hP('f3')" ontouchend="hR()">F3</button>
+                <button class="k-f" ontouchstart="v(); hP('f4')" ontouchend="hR()">F4</button>
+                <button class="k-f" ontouchstart="v(); hP('f5')" ontouchend="hR()">F5</button>
+                <button class="k-f" ontouchstart="v(); hP('f6')" ontouchend="hR()">F6</button>
+                <button class="k-f" ontouchstart="v(); hP('f7')" ontouchend="hR()">F7</button>
+                <button class="k-f" ontouchstart="v(); hP('f8')" ontouchend="hR()">F8</button>
+                <button class="k-f" ontouchstart="v(); hP('f9')" ontouchend="hR()">F9</button>
+                <button class="k-f" ontouchstart="v(); hP('f10')" ontouchend="hR()">F10</button>
+                <button class="k-f" ontouchstart="v(); hP('f11')" ontouchend="hR()">F11</button>
+                <button class="k-f" ontouchstart="v(); hP('f12')" ontouchend="hR()">F12</button>
+                <button class="k-f" ontouchstart="v(); hP('prtsc')" ontouchend="hR()">PRTSC</button>
+                <button class="k-f" ontouchstart="v(); hP('delete')" ontouchend="hR()">DEL</button>
             </div>
 
             <div class="row">
-                <button class="k-esc" ontouchstart="hP('`')" ontouchend="hR()">`</button>
-                <button class="k-sym" data-norm="1" data-shft="!" ontouchstart="hPS('1','!')"
+                <button class="k-esc" ontouchstart="v(); hP('`')" ontouchend="hR()">`</button>
+                <button class="k-sym" data-norm="1" data-shft="!" ontouchstart="v(); hPS('1','!')"
                     ontouchend="hR()">1</button>
-                <button class="k-sym" data-norm="2" data-shft="@" ontouchstart="hPS('2','@')"
+                <button class="k-sym" data-norm="2" data-shft="@" ontouchstart="v(); hPS('2','@')"
                     ontouchend="hR()">2</button>
-                <button class="k-sym" data-norm="3" data-shft="#" ontouchstart="hPS('3','#')"
+                <button class="k-sym" data-norm="3" data-shft="#" ontouchstart="v(); hPS('3','#')"
                     ontouchend="hR()">3</button>
-                <button class="k-sym" data-norm="4" data-shft="$" ontouchstart="hPS('4','$')"
+                <button class="k-sym" data-norm="4" data-shft="$" ontouchstart="v(); hPS('4','$')"
                     ontouchend="hR()">4</button>
-                <button class="k-sym" data-norm="5" data-shft="%" ontouchstart="hPS('5','%')"
+                <button class="k-sym" data-norm="5" data-shft="%" ontouchstart="v(); hPS('5','%')"
                     ontouchend="hR()">5</button>
-                <button class="k-sym" data-norm="6" data-shft="^" ontouchstart="hPS('6','^')"
+                <button class="k-sym" data-norm="6" data-shft="^" ontouchstart="v(); hPS('6','^')"
                     ontouchend="hR()">6</button>
-                <button class="k-sym" data-norm="7" data-shft="&" ontouchstart="hPS('7','&')"
+                <button class="k-sym" data-norm="7" data-shft="&" ontouchstart="v(); hPS('7','&')"
                     ontouchend="hR()">7</button>
-                <button class="k-sym" data-norm="8" data-shft="*" ontouchstart="hPS('8','*')"
+                <button class="k-sym" data-norm="8" data-shft="*" ontouchstart="v(); hPS('8','*')"
                     ontouchend="hR()">8</button>
-                <button class="k-sym" data-norm="9" data-shft="(" ontouchstart="hPS('9','(')"
+                <button class="k-sym" data-norm="9" data-shft="(" ontouchstart="v(); hPS('9','(')"
                     ontouchend="hR()">9</button>
-                <button class="k-sym" data-norm="0" data-shft=")" ontouchstart="hPS('0',')')"
+                <button class="k-sym" data-norm="0" data-shft=")" ontouchstart="v(); hPS('0',')')"
                     ontouchend="hR()">0</button>
-                <button class="k-sym" data-norm="-" data-shft="_" ontouchstart="hPS('-','_')"
+                <button class="k-sym" data-norm="-" data-shft="_" ontouchstart="v(); hPS('-','_')"
                     ontouchend="hR()">-</button>
-                <button class="k-sym" data-norm="=" data-shft="+" ontouchstart="hPS('=','+')"
+                <button class="k-sym" data-norm="=" data-shft="+" ontouchstart="v(); hPS('=','+')"
                     ontouchend="hR()">=</button>
-                <button class="k-wide" ontouchstart="hP('backspace')" ontouchend="hR()">BackSpace</button>
+                <button class="k-wide" ontouchstart="v(); hP('backspace')" ontouchend="hR()">BackSpace</button>
             </div>
 
             <div class="row">
-                <button class="k-wide" ontouchstart="hP('tab')" ontouchend="hR()">TAB</button>
-                <button ontouchstart="hP('q')" ontouchend="hR()">Q</button>
-                <button ontouchstart="hP('w')" ontouchend="hR()">W</button>
-                <button ontouchstart="hP('e')" ontouchend="hR()">E</button>
-                <button ontouchstart="hP('r')" ontouchend="hR()">R</button>
-                <button ontouchstart="hP('t')" ontouchend="hR()">T</button>
-                <button ontouchstart="hP('y')" ontouchend="hR()">Y</button>
-                <button ontouchstart="hP('u')" ontouchend="hR()">U</button>
-                <button ontouchstart="hP('i')" ontouchend="hR()">I</button>
-                <button ontouchstart="hP('o')" ontouchend="hR()">O</button>
-                <button ontouchstart="hP('p')" ontouchend="hR()">P</button>
-                <button class="k-sym" data-norm="[" data-shft="{" ontouchstart="hPS('[','{')"
+                <button class="k-wide" ontouchstart="v(); hP('tab')" ontouchend="hR()">TAB</button>
+                <button ontouchstart="v(); hP('q')" ontouchend="hR()">Q</button>
+                <button ontouchstart="v(); hP('w')" ontouchend="hR()">W</button>
+                <button ontouchstart="v(); hP('e')" ontouchend="hR()">E</button>
+                <button ontouchstart="v(); hP('r')" ontouchend="hR()">R</button>
+                <button ontouchstart="v(); hP('t')" ontouchend="hR()">T</button>
+                <button ontouchstart="v(); hP('y')" ontouchend="hR()">Y</button>
+                <button ontouchstart="v(); hP('u')" ontouchend="hR()">U</button>
+                <button ontouchstart="v(); hP('i')" ontouchend="hR()">I</button>
+                <button ontouchstart="v(); hP('o')" ontouchend="hR()">O</button>
+                <button ontouchstart="v(); hP('p')" ontouchend="hR()">P</button>
+                <button class="k-sym" data-norm="[" data-shft="{" ontouchstart="v(); hPS('[','{')"
                     ontouchend="hR()">[</button>
-                <button class="k-sym" data-norm="]" data-shft="}" ontouchstart="hPS(']','}')"
+                <button class="k-sym" data-norm="]" data-shft="}" ontouchstart="v(); hPS(']','}')"
                     ontouchend="hR()">]</button>
-                <button class="k-sym" data-norm="\" data-shft="|" ontouchstart="hPS('\\','|')"
+                <button class="k-sym" data-norm="\" data-shft="|" ontouchstart="v(); hPS('\\','|')"
                     ontouchend="hR()">\</button>
             </div>
 
             <div class="row">
-                <button id="caps-key" class="k-caps" onclick="toggleLock('caps')">CAPS</button>
-                <button ontouchstart="hP('a')" ontouchend="hR()">A</button>
-                <button ontouchstart="hP('s')" ontouchend="hR()">S</button>
-                <button ontouchstart="hP('d')" ontouchend="hR()">D</button>
-                <button ontouchstart="hP('f')" ontouchend="hR()">F</button>
-                <button ontouchstart="hP('g')" ontouchend="hR()">G</button>
-                <button ontouchstart="hP('h')" ontouchend="hR()">H</button>
-                <button ontouchstart="hP('j')" ontouchend="hR()">J</button>
-                <button ontouchstart="hP('k')" ontouchend="hR()">K</button>
-                <button ontouchstart="hP('l')" ontouchend="hR()">L</button>
-                <button class="k-sym" data-norm=";" data-shft=":" ontouchstart="hPS(';',':')"
+                <button id="caps-key" class="k-caps" onclick="v(); toggleLock('caps')">CAPS</button>
+                <button ontouchstart="v(); hP('a')" ontouchend="hR()">A</button>
+                <button ontouchstart="v(); hP('s')" ontouchend="hR()">S</button>
+                <button ontouchstart="v(); hP('d')" ontouchend="hR()">D</button>
+                <button ontouchstart="v(); hP('f')" ontouchend="hR()">F</button>
+                <button ontouchstart="v(); hP('g')" ontouchend="hR()">G</button>
+                <button ontouchstart="v(); hP('h')" ontouchend="hR()">H</button>
+                <button ontouchstart="v(); hP('j')" ontouchend="hR()">J</button>
+                <button ontouchstart="v(); hP('k')" ontouchend="hR()">K</button>
+                <button ontouchstart="v(); hP('l')" ontouchend="hR()">L</button>
+                <button class="k-sym" data-norm=";" data-shft=":" ontouchstart="v(); hPS(';',':')"
                     ontouchend="hR()">;</button>
-                <button class="k-sym" data-norm="'" data-shft='"' ontouchstart="hPS('\'','\&quot;')" ontouchend="hR()">'
+                <button class="k-sym" data-norm="'" data-shft='"' ontouchstart="v(); hPS('\'','\&quot;')"
+                    ontouchend="hR()">'
                 </button>
-                <button class="k-enter" ontouchstart="hP('enter')" ontouchend="hR()">ENTER</button>
+                <button class="k-enter" ontouchstart="v(); hP('enter')" ontouchend="hR()">ENTER</button>
             </div>
 
             <div class="row">
-                <button id="shift-key" class="k-shift" ontouchstart="hFuncStart('shift')"
+                <button id="shift-key" class="k-shift" ontouchstart="v(); hFuncStart('shift')"
                     ontouchend="hFuncEnd('shift')">SHIFT</button>
-                <button ontouchstart="hP('z')" ontouchend="hR()">Z</button>
-                <button ontouchstart="hP('x')" ontouchend="hR()">X</button>
-                <button ontouchstart="hP('c')" ontouchend="hR()">C</button>
-                <button ontouchstart="hP('v')" ontouchend="hR()">V</button>
-                <button ontouchstart="hP('b')" ontouchend="hR()">B</button>
-                <button ontouchstart="hP('n')" ontouchend="hR()">N</button>
-                <button ontouchstart="hP('m')" ontouchend="hR()">M</button>
-                <button class="k-sym" data-norm="," data-shft="<" ontouchstart="hPS(',','<')"
+                <button ontouchstart="v(); hP('z')" ontouchend="hR()">Z</button>
+                <button ontouchstart="v(); hP('x')" ontouchend="hR()">X</button>
+                <button ontouchstart="v(); hP('c')" ontouchend="hR()">C</button>
+                <button ontouchstart="v(); hP('v')" ontouchend="hR()">V</button>
+                <button ontouchstart="v(); hP('b')" ontouchend="hR()">B</button>
+                <button ontouchstart="v(); hP('n')" ontouchend="hR()">N</button>
+                <button ontouchstart="v(); hP('m')" ontouchend="hR()">M</button>
+                <button class="k-sym" data-norm="," data-shft="<" ontouchstart="v(); hPS(',','<')"
                     ontouchend="hR()">,</button>
-                <button class="k-sym" data-norm="." data-shft=">" ontouchstart="hPS('.', '>')"
+                <button class="k-sym" data-norm="." data-shft=">" ontouchstart="v(); hPS('.', '>')"
                     ontouchend="hR()">.</button>
-                <button class="k-sym" data-norm="/" data-shft="?" ontouchstart="hPS('/', '?')"
+                <button class="k-sym" data-norm="/" data-shft="?" ontouchstart="v(); hPS('/', '?')"
                     ontouchend="hR()">/</button>
-                <button class="k-arrow" ontouchstart="hP('up')" ontouchend="hR()">↑</button>
-                <button id="shift_r-key" class="k-shift-r" ontouchstart="hFuncStart('shift_r')"
+                <button class="k-arrow" ontouchstart="v(); hP('up')" ontouchend="hR()">↑</button>
+                <button id="shift_r-key" class="k-shift-r" ontouchstart="v(); hFuncStart('shift_r')"
                     ontouchend="hFuncEnd('shift_r')">SHIFT</button>
             </div>
 
             <div class="row">
-                <button id="ctrl-key" ontouchstart="hFuncStart('ctrl')" ontouchend="hFuncEnd('ctrl')">CTRL</button>
-                <button id="win-key" ontouchstart="hFuncStart('win')" ontouchend="hFuncEnd('win')">WIN</button>
-                <button id="alt-key" ontouchstart="hFuncStart('alt')" ontouchend="hFuncEnd('alt')">ALT</button>
-                <button class="k-space" ontouchstart="hP('space')" ontouchend="hR()">SPACE</button>
-                <button id="alt_r-key" ontouchstart="hFuncStart('alt_r')" ontouchend="hFuncEnd('alt_r')">ALT</button>
-                <button id="ctrl_r-key" ontouchstart="hFuncStart('ctrl_r')"
+                <button id="ctrl-key" ontouchstart="v(); hFuncStart('ctrl')" ontouchend="hFuncEnd('ctrl')">CTRL</button>
+                <button id="win-key" ontouchstart="v(); hFuncStart('win')" ontouchend="hFuncEnd('win')">WIN</button>
+                <button id="alt-key" ontouchstart="v(); hFuncStart('alt')" ontouchend="hFuncEnd('alt')">ALT</button>
+                <button class="k-space" ontouchstart="v(); hP('space')" ontouchend="hR()">SPACE</button>
+                <button id="alt_r-key" ontouchstart="v(); hFuncStart('alt_r')"
+                    ontouchend="hFuncEnd('alt_r')">ALT</button>
+                <button id="ctrl_r-key" ontouchstart="v(); hFuncStart('ctrl_r')"
                     ontouchend="hFuncEnd('ctrl_r')">CTRL</button>
 
-                <button class="k-arrow" ontouchstart="hP('left')" ontouchend="hR()">←</button>
-                <button class="k-arrow" ontouchstart="hP('down')" ontouchend="hR()">↓</button>
-                <button class="k-arrow" ontouchstart="hP('right')" ontouchend="hR()">→</button>
+                <button class="k-arrow" ontouchstart="v(); hP('left')" ontouchend="hR()">←</button>
+                <button class="k-arrow" ontouchstart="v(); hP('down')" ontouchend="hR()">↓</button>
+                <button class="k-arrow" ontouchstart="v(); hP('right')" ontouchend="hR()">→</button>
 
             </div>
         </div>
 
         <div class="footer-nav">
-            <button onclick="goBack()" class="nav-btn">⇠ BACK TO MOUSE</button>
+            <button onclick="v(); v(); goBack()" class="nav-btn">横屏体验更好</button>
         </div>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
+        const v = () => navigator.vibrate && navigator.vibrate(30);
         let locks = {
             ctrl: false, ctrl_r: false,
             win: false,
@@ -394,6 +397,7 @@
         function hPS(norm, shft) { hP(locks.shift || locks.shift_r ? shft : norm); }
 
         function hP(key) {
+            v();
             if (event.cancelable) event.preventDefault();
             sendKey(key);
             rT = setTimeout(() => { rI = setInterval(() => sendKey(key), 80); }, 500);
@@ -403,6 +407,7 @@
 
         // --- 特殊功能键核心逻辑 ---
         function hFuncStart(key) {
+            v();
             if (event.cancelable) event.preventDefault();
             didLock = false;
 
@@ -444,6 +449,7 @@
         }
 
         function toggleLock(key) {
+            v();
             locks[key] = !locks[key];
             const btn = document.getElementById(key + '-key');
             if (btn) btn.classList.toggle('locked', locks[key]);

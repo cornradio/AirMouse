@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>震动强度测试</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            color: #888;
+            letter-spacing: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn {
+            height: 100px;
+            border: none;
+            border-radius: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background: #333;
+        }
+
+        .btn span {
+            font-size: 10px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .btn.primary {
+            background: #007AFF;
+        }
+
+        .btn.primary:active {
+            background: #0056b3;
+        }
+
+        .btn.warning {
+            background: #FF9500;
+        }
+
+        .btn.danger {
+            background: #FF3B30;
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: #111;
+            font-size: 12px;
+            color: #444;
+        }
+
+        .back-link {
+            margin-top: 40px;
+            color: #007AFF;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        #p-tip {
+            color: #ff9500;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>震动测试中心</h2>
+
+    <div id="p-tip">⚠️ 部分浏览器需要先点击此按钮激活震动：</div>
+    <button class="btn primary" style="width:100%; max-width:400px; height:60px; margin-bottom:30px;"
+        onclick="activateVibe()">
+        点击激活震动权限
+    </button>
+
+    <div class="grid">
+        <button class="btn" onclick="vb(10)">微弱<span>10ms</span></button>
+        <button class="btn" onclick="vb(30)">标准<span>30ms</span></button>
+        <button class="btn primary" onclick="vb(50)">显著<span>50ms</span></button>
+        <button class="btn primary" onclick="vb(100)">强烈<span>100ms</span></button>
+        <button class="btn warning" onclick="vb([50, 50, 50])">双击<span>50-50-50</span></button>
+        <button class="btn warning" onclick="vb([30, 100, 30])">三连破<span>30-100-30</span></button>
+        <button class="btn danger" onclick="vb(500)">超长轰鸣<span>500ms</span></button>
+        <button class="btn danger" onclick="vb([100, 50, 100, 50, 100, 50, 500])">急促SOS<span>SOS Pattern</span></button>
+    </div>
+
+    <div class="status" id="support">检测中...</div>
+
+    <a href="/" class="back-link">⇠ 返回主控页</a>
+
+    <script>
+        const supportDiv = document.getElementById('support');
+        let activated = false;
+
+        if ('vibrate' in navigator) {
+            supportDiv.innerText = "✅ 浏览器支持 API，等待点击激活...";
+            supportDiv.style.color = "#34C759";
+        } else {
+            supportDiv.innerText = "❌ 浏览器硬件/环境不支持震动";
+            supportDiv.style.color = "#FF3B30";
+        }
+
+        function activateVibe() {
+            activated = true;
+            navigator.vibrate(20);
+            supportDiv.innerText = "🚀 权限已请求，请测试下方按钮";
+            document.getElementById('p-tip').innerText = "✅ 权限已激活，若还不震动请检查系统设置";
+        }
+
+        function vb(pattern) {
+            console.log("Attempting to vibrate:", pattern);
+            if (navigator.vibrate) {
+                const success = navigator.vibrate(pattern);
+                console.log("Vibrate result:", success);
+                if (!success) {
+                    console.warn("震动调用指令已发出但被浏览器拦截");
+                }
+            } else {
+                alert("设备不支持震动接口");
+            }
+        }
+    </script>
+</body>
+
+</html>

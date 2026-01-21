@@ -351,30 +351,30 @@
 
 <body>
     <div class="header">
-        <div class="back-btn" onclick="window.location.href='/'">
+        <div class="back-btn" onclick="v(); window.location.href='/'">
             <svg viewBox="0 0 24 24">
                 <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
             </svg>
         </div>
         <div class="title">语音输入</div>
         <div class="header-actions">
-            <button class="h-btn" onclick="selectAll()">
+            <button class="h-btn" onclick="v(); selectAll()">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M9,7H7V9H9V7M13,7H11V9H13V7M17,7H15V9H17V7M9,11H7V13H9V11M13,11H11V13H13V11M17,11H15V13H17V11M9,15H7V17H9V15M13,15H11V17H13V15M17,15H15V17H17V15M20,2H4C2.89,2 2,2.89 2,4V20A2,2 0 0,0 4,22H20A2,2 0 0,0 22,20V4C22,2.89 21.1,2 20,2M20,20H4V4H20V20Z" />
                 </svg>
             </button>
-            <button class="h-btn" ontouchstart="startBS()" ontouchend="stopBS()" ontouchcancel="stopBS()">
+            <button class="h-btn" ontouchstart="v(); startBS()" ontouchend="stopBS()" ontouchcancel="stopBS()">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M22,3H7C6.31,3 5.77,3.35 5.41,3.88L0,12L5.41,20.11C5.77,20.64 6.31,21 7,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12" />
                 </svg>
             </button>
-            <button class="h-btn h-btn-red" onclick="clearText()"> <svg viewBox="0 0 24 24">
+            <button class="h-btn h-btn-red" onclick="v(); clearText()"> <svg viewBox="0 0 24 24">
                     <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19V4M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                 </svg>
             </button>
-            <button id="header-send-btn" class="h-btn h-btn-green" onclick="sendFullText()">
+            <button id="header-send-btn" class="h-btn h-btn-green" onclick="v(); sendFullText()">
                 <svg viewBox="0 0 24 24">
                     <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
                 </svg>
@@ -394,8 +394,8 @@
     </div>
 
     <div class="mode-selector">
-        <div id="mode-realtime" class="mode-option active" onclick="setMode('realtime')">实时模式</div>
-        <div id="mode-manual" class="mode-option" onclick="setMode('manual')">发送模式</div>
+        <div id="mode-realtime" class="mode-option active" onclick="v(); setMode('realtime')">实时模式</div>
+        <div id="mode-manual" class="mode-option" onclick="v(); setMode('manual')">发送模式</div>
     </div>
 
     <div class="hint">使用输入法语音按键配合输入</div>
@@ -403,6 +403,7 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
+        const v = () => navigator.vibrate && navigator.vibrate(30);
         let currentMode = 'realtime';
         const inputWindow = document.getElementById('input-window');
         const container = document.getElementById('container');

@@ -38,6 +38,9 @@ def keyboard_page():
 @app.route('/v')
 def voice_page():
     return render_template('voice.html')
+@app.route('/test')
+def vibe_test():
+    return render_template('vibe_test.html')
 @app.route('/t')
 def air_mouse_test():
     return render_template('t.html')

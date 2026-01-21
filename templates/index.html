@@ -70,7 +70,7 @@
             }
 
             .bottom-nav {
-                height: 100px;
+                height: 75px;
                 width: 100%;
                 border-top-width: 1px;
                 padding: 0 10px;
@@ -213,24 +213,24 @@
 <body>
     <div id="mouse-page">
         <div class="top-nav">
-            <div class="icon-btn" onclick="window.location.href = '/k';">
+            <div class="icon-btn" onclick="v(); window.location.href = '/k';">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
                 </svg>
             </div>
-            <div class="icon-btn" onclick="window.location.href = '/v';">
+            <div class="icon-btn" onclick="v(); window.location.href = '/v';">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
                 </svg>
             </div>
-            <div class="icon-btn" onclick="toggleFullScreen()">
+            <div class="icon-btn" onclick="v(); toggleFullScreen()">
                 <svg id="fs-icon" viewBox="0 0 24 24">
                     <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
                 </svg>
             </div>
-            <div class="icon-btn" id="gyro-btn" onclick="toggleGyro()">
+            <div class="icon-btn" id="gyro-btn" onclick="v(); toggleGyro()">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
@@ -238,12 +238,12 @@
             </div>
 
             <div class="btn-group">
-                <div class="icon-btn" ontouchstart="startScroll(2)" ontouchend="stopScroll()">
+                <div class="icon-btn" ontouchstart="v(); startScroll(2)" ontouchend="stopScroll()">
                     <svg viewBox="0 0 24 24">
                         <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" />
                     </svg>
                 </div>
-                <div class="icon-btn" ontouchstart="startScroll(-2)" ontouchend="stopScroll()">
+                <div class="icon-btn" ontouchstart="v(); startScroll(-2)" ontouchend="stopScroll()">
                     <svg viewBox="0 0 24 24">
                         <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
                     </svg>
@@ -259,19 +259,19 @@
 
         <div class="bottom-nav">
             <div class="btn-group">
-                <div class="icon-btn" ontouchstart="socket.emit('mid_down')" ontouchend="socket.emit('mid_up')"
+                <div class="icon-btn" ontouchstart="v(); socket.emit('mid_down')" ontouchend="socket.emit('mid_up')"
                     ontouchcancel="socket.emit('mid_up')">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M12,20A2,2 0 0,1 10,18V14.82C8.83,14.43 8,13.32 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12C16,13.32 15.17,14.43 14,14.82V18A2,2 0 0,1 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" />
                     </svg>
                 </div>
-                <div class="icon-btn" onclick="socket.emit('click', {button:'x1'})">
+                <div class="icon-btn" onclick="v(); socket.emit('click', {button:'x1'})">
                     <svg viewBox="0 0 24 24">
                         <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
                     </svg>
                 </div>
-                <div class="icon-btn" onclick="socket.emit('click', {button:'x2'})">
+                <div class="icon-btn" onclick="v(); socket.emit('click', {button:'x2'})">
                     <svg viewBox="0 0 24 24">
                         <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
                     </svg>
@@ -279,7 +279,7 @@
             </div>
 
 
-            <div class="sens-group">
+            <div class="sens-group" style="height: 100%; justify-content: space-around; padding: 5px 0;">
                 <div class="sens-container"><span>PAD</span><input type="range" id="sens-slider" min="1" max="10"
                         step="0.1"></div>
                 <div class="sens-container gyro-sens-row" style="color: #007AFF;"><span>GYRO</span><input type="range"
@@ -291,6 +291,13 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
+        // 震动时长增加到 30ms，提高感知度
+        const v = () => {
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+        };
+
         function resetHeight() {
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
