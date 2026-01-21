@@ -35,6 +35,9 @@ def index():
 @app.route('/k')
 def keyboard_page(): 
     return render_template('keyboard.html')
+@app.route('/v')
+def voice_page():
+    return render_template('voice.html')
 @app.route('/t')
 def air_mouse_test():
     return render_template('t.html')
