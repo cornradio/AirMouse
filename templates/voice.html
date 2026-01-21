@@ -87,14 +87,21 @@
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
         }
 
-        /* 布局调整：上半屏输入，下半屏鼠标 */
+        /* 主内容区域：支持横屏切换 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
         .input-container {
-            height: 40vh;
-            padding: 10px 20px 0;
+            flex: 1.2;
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: visible;
+            min-height: 0;
         }
 
         #input-window {
@@ -109,12 +116,14 @@
             resize: none;
             outline: none;
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* 迷你触摸板样式 */
         #pad {
             flex: 1;
-            margin: 15px 20px;
+            margin: 10px 20px;
             background: #080808;
             border: 1px dashed #222;
             border-radius: 20px;
@@ -126,129 +135,77 @@
             font-size: 12px;
             font-weight: bold;
             letter-spacing: 4px;
-        }
-
-        .realtime-active .status-dot {
-            opacity: 1;
-            animation: breathe 2s infinite;
-        }
-
-        @keyframes breathe {
-
-            0%,
-            100% {
-                opacity: 0.4;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.3);
-            }
-        }
-
-        /* 飞屏效果 */
-        .fly-text {
-            position: absolute;
-            left: 40px;
-            top: 20px;
-            font-size: 18px;
-            color: var(--primary);
-            pointer-events: none;
-            white-space: pre-wrap;
-            z-index: 100;
-            animation: flyUp 0.8s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes flyUp {
-            0% {
-                transform: translateY(0);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: translateY(-120px);
-                opacity: 0;
-            }
-        }
-
-        .input-container {
-            flex: 1;
-            padding: 0 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            position: relative;
-            overflow: visible;
+            min-height: 100px;
         }
 
         /* 底部操作栏（紧凑版） */
         .toolbar-area {
-            padding: 10px 20px 20px;
+            padding: 8px 15px;
             background: #000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .delay-ctrl {
-            margin: 0 0 10px 0;
-            background: var(--card-bg);
-            padding: 8px 12px;
-            border-radius: 12px;
+        .toolbar-top {
             display: flex;
             align-items: center;
             gap: 10px;
-            border: 1px solid #1a1a1a;
         }
 
-        .btn {
-            height: 56px;
-            border-radius: 28px;
+        .delay-ctrl {
+            flex: 1.2;
+            margin: 0;
+            /* 重置 margin */
+            background: var(--card-bg);
+            padding: 6px 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #1a1a1a;
+            max-height: 36px;
+        }
+
+        .delay-label {
+            font-size: 11px;
+            white-space: nowrap;
+            color: var(--text-secondary);
+        }
+
+        .delay-slider {
+            flex: 1;
+            height: 4px;
+        }
+
+        .delay-value {
+            font-size: 11px;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        .mode-selector {
+            flex: 1;
+            display: flex;
+            background: #1a1a1a;
+            padding: 3px;
+            border-radius: 10px;
+            gap: 4px;
+            height: 36px;
+            box-sizing: border-box;
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-clear {
-            width: 56px;
-            background: #1a1a1a;
-            color: #FF3B30;
-        }
-
-        .btn-clear:active {
-            background: #2a2a2a;
-            transform: scale(0.9);
-        }
-
-        .btn-send {
-            flex: 1;
-            margin-left: 15px;
-            background: var(--primary);
-            color: #fff;
-            gap: 8px;
-            box-shadow: 0 8px 16px rgba(0, 122, 255, 0.2);
-        }
-
-        .btn-send:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 8px rgba(0, 122, 255, 0.1);
-        }
-
-        .btn-send svg {
-            fill: #fff;
-            width: 18px;
-            height: 18px;
-        }
-
-        /* 提示文字 */
-        .hint {
-            text-align: center;
-            font-size: 11px;
             color: var(--text-secondary);
-            margin-bottom: 20px;
+            border-radius: 7px;
+            transition: all 0.3s;
         }
 
         .header-actions {
@@ -291,40 +248,81 @@
             background: var(--primary);
         }
 
-        /* 延迟调节滑块样式 */
-        .delay-ctrl {
-            margin: 10px 20px 5px;
-            background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid #1a1a1a;
+        /* 横屏适配 */
+        @media screen and (orientation: landscape) {
+            .main-content {
+                flex-direction: row;
+            }
+
+            .input-container {
+                flex: 1;
+            }
+
+            #pad {
+                flex: 1;
+                margin-left: 0;
+            }
+
+            .toolbar-area {
+                padding: 5px 15px 10px;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .toolbar-top {
+                width: 100%;
+            }
+
+            .hint {
+                display: none;
+            }
         }
 
-        .mode-selector {
-            display: flex;
-            background: #1a1a1a;
-            padding: 3px;
-            border-radius: 12px;
-            gap: 4px;
+        /* 呼吸灯 */
+        .realtime-active .status-dot {
+            opacity: 1;
+            animation: breathe 2s infinite;
         }
 
-        .mode-option {
-            flex: 1;
-            padding: 8px 0;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            border-radius: 9px;
-            transition: all 0.3s;
+        @keyframes breathe {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
         }
 
-        .mode-option.active {
-            background: var(--primary);
-            color: #fff;
+        /* 飞屏效果 */
+        .fly-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: var(--primary);
+            pointer-events: none;
+            white-space: pre-wrap;
+            z-index: 100;
+            animation: flyUp 0.8s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes flyUp {
+            0% {
+                transform: translate(-50%, -50%);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translate(-50%, -150px);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -365,24 +363,28 @@
         </div>
     </div>
 
-    <div class="input-container" id="container">
-        <div class="status-dot" style="top:10px; right:30px;"></div>
-        <textarea id="input-window" placeholder="点击这里开始说话(用你的语音输入法)..." spellcheck="false"></textarea>
-    </div>
-
-    <!-- 新增触摸板区域 -->
-    <div id="pad" ontouchstart="initAudio()">MOUSE CONTROL</div>
-
-    <div class="toolbar-area">
-        <div class="delay-ctrl" id="delay-box">
-            <span class="delay-label">上屏等待</span>
-            <input type="range" id="delay-slider" class="delay-slider" min="500" max="4000" step="100" value="1500">
-            <span class="delay-value" id="delay-val">1.5s</span>
+    <div class="main-content">
+        <div class="input-container" id="container">
+            <div class="status-dot" style="top:10px; right:30px;"></div>
+            <textarea id="input-window" placeholder="点击这里开始说话(用你的语音输入法)..." spellcheck="false"></textarea>
         </div>
 
-        <div class="mode-selector">
-            <div id="mode-realtime" class="mode-option active" onclick="v(); setMode('realtime')">实时模式</div>
-            <div id="mode-manual" class="mode-option" onclick="v(); setMode('manual')">发送模式</div>
+        <!-- 新增触摸板区域 -->
+        <div id="pad" ontouchstart="initAudio()">MOUSE CONTROL</div>
+    </div>
+
+    <div class="toolbar-area">
+        <div class="toolbar-top">
+            <div class="delay-ctrl" id="delay-box">
+                <span class="delay-label">上屏等待</span>
+                <input type="range" id="delay-slider" class="delay-slider" min="500" max="4000" step="100" value="1500">
+                <span class="delay-value" id="delay-val">1.5s</span>
+            </div>
+
+            <div class="mode-selector">
+                <div id="mode-realtime" class="mode-option active" onclick="v(); setMode('realtime')">实时</div>
+                <div id="mode-manual" class="mode-option" onclick="v(); setMode('manual')">分次</div>
+            </div>
         </div>
     </div>
 
