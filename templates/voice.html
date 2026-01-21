@@ -87,51 +87,45 @@
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
         }
 
-        /* 输入区域 */
+        /* 布局调整：上半屏输入，下半屏鼠标 */
         .input-container {
-            flex: 1;
-            padding: 0 20px;
+            height: 40vh;
+            padding: 10px 20px 0;
             display: flex;
             flex-direction: column;
-            gap: 15px;
             position: relative;
+            overflow: visible;
         }
 
         #input-window {
             flex: 1;
             background: var(--card-bg);
             border: 1px solid #222;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 15px;
+            padding: 15px;
             color: var(--text);
-            font-size: 18px;
-            line-height: 1.5;
+            font-size: 16px;
+            line-height: 1.4;
             resize: none;
             outline: none;
-            transition: border-color 0.3s;
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        #input-window:focus {
-            border-color: var(--primary);
-        }
-
-        #input-window::placeholder {
-            color: #444;
-        }
-
-        /* 状态提示 */
-        .status-dot {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            width: 8px;
-            height: 8px;
-            background: #34C759;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #34C759;
-            opacity: 0;
-            transition: opacity 0.3s;
+        /* 迷你触摸板样式 */
+        #pad {
+            flex: 1;
+            margin: 15px 20px;
+            background: #080808;
+            border: 1px dashed #222;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 4px;
         }
 
         .realtime-active .status-dot {
@@ -188,13 +182,21 @@
             overflow: visible;
         }
 
-        /* 底部操作栏 */
-        .toolbar {
-            padding: 20px 20px 40px;
+        /* 底部操作栏（紧凑版） */
+        .toolbar-area {
+            padding: 10px 20px 20px;
+            background: #000;
+        }
+
+        .delay-ctrl {
+            margin: 0 0 10px 0;
+            background: var(--card-bg);
+            padding: 8px 12px;
+            border-radius: 12px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to top, #000, transparent);
+            gap: 10px;
+            border: 1px solid #1a1a1a;
         }
 
         .btn {
@@ -301,50 +303,28 @@
             border: 1px solid #1a1a1a;
         }
 
-        /* 延迟调节滑块样式 */
-        .delay-ctrl {
-            margin: 0 20px 15px;
-            background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 14px;
+        .mode-selector {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid #1a1a1a;
+            background: #1a1a1a;
+            padding: 3px;
+            border-radius: 12px;
+            gap: 4px;
         }
 
-        .delay-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            width: 75px;
-        }
-
-        .delay-slider {
+        .mode-option {
             flex: 1;
-            -webkit-appearance: none;
-            background: #222;
-            height: 4px;
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .delay-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--primary);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-        }
-
-        .delay-value {
+            padding: 8px 0;
+            text-align: center;
             font-size: 12px;
-            color: var(--primary);
-            font-weight: bold;
-            width: 50px;
-            text-align: right;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: 9px;
+            transition: all 0.3s;
+        }
+
+        .mode-option.active {
+            background: var(--primary);
+            color: #fff;
         }
     </style>
 </head>
@@ -356,13 +336,13 @@
                 <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
             </svg>
         </div>
-        <div class="title">语音输入</div>
+        <div class="title"></div>
         <div class="header-actions">
-            <button class="h-btn" onclick="v(); selectAll()">
-                <svg viewBox="0 0 24 24">
-                    <path
-                        d="M9,7H7V9H9V7M13,7H11V9H13V7M17,7H15V9H17V7M9,11H7V13H9V11M13,11H11V13H13V11M17,11H15V13H17V11M9,15H7V17H9V15M13,15H11V17H13V15M17,15H15V17H17V15M20,2H4C2.89,2 2,2.89 2,4V20A2,2 0 0,0 4,22H20A2,2 0 0,0 22,20V4C22,2.89 21.1,2 20,2M20,20H4V4H20V20Z" />
-                </svg>
+            <button class="h-btn" onclick="v(); ctrlZ()">
+                ^Z
+            </button>
+            <button class="h-btn" onclick="v(); ctrlA()">
+                ^A
             </button>
             <button class="h-btn" ontouchstart="v(); startBS()" ontouchend="stopBS()" ontouchcancel="stopBS()">
                 <svg viewBox="0 0 24 24">
@@ -383,22 +363,27 @@
     </div>
 
     <div class="input-container" id="container">
-        <div class="status-dot"></div>
-        <textarea id="input-window" placeholder="点击这里开始说话..." spellcheck="false"></textarea>
+        <div class="status-dot" style="top:10px; right:30px;"></div>
+        <textarea id="input-window" placeholder="点击这里开始说话(用你的语音输入法)..." spellcheck="false"></textarea>
     </div>
 
-    <div class="delay-ctrl" id="delay-box">
-        <span class="delay-label">上屏等待</span>
-        <input type="range" id="delay-slider" class="delay-slider" min="500" max="4000" step="100" value="1500">
-        <span class="delay-value" id="delay-val">1.5s</span>
+    <!-- 新增触摸板区域 -->
+    <div id="pad" ontouchstart="initAudio()">MOUSE CONTROL</div>
+
+    <div class="toolbar-area">
+        <div class="delay-ctrl" id="delay-box">
+            <span class="delay-label">上屏等待</span>
+            <input type="range" id="delay-slider" class="delay-slider" min="500" max="4000" step="100" value="1500">
+            <span class="delay-value" id="delay-val">1.5s</span>
+        </div>
+
+        <div class="mode-selector">
+            <div id="mode-realtime" class="mode-option active" onclick="v(); setMode('realtime')">实时模式</div>
+            <div id="mode-manual" class="mode-option" onclick="v(); setMode('manual')">发送模式</div>
+        </div>
     </div>
 
-    <div class="mode-selector">
-        <div id="mode-realtime" class="mode-option active" onclick="v(); setMode('realtime')">实时模式</div>
-        <div id="mode-manual" class="mode-option" onclick="v(); setMode('manual')">发送模式</div>
-    </div>
-
-    <div class="hint">使用输入法语音按键配合输入</div>
+    <div class="hint" style="margin-bottom: 5px;">混合模式：语音输入 + 鼠标控制</div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
@@ -432,6 +417,7 @@
         let lastSentValue = "";
         let inputTimer = null;
         let bsTimer = null;
+        let sensitivity = parseFloat(localStorage.getItem('mouse_sense')) || 4.0;
         let syncDelay = parseInt(localStorage.getItem('voice_sync_delay')) || 1500;
 
         // 初始化滑块
@@ -545,12 +531,60 @@
         }
 
         // 全选功能 (Ctrl + A)
-        function selectAll() {
+        function ctrlA() {
             socket.emit('key_combo', { keys: ['ctrl', 'a'] });
         }
-
+        function ctrlZ() {
+            socket.emit('key_combo', { keys: ['ctrl', 'z'] });
+        }
+        // if mac ,send meta
+        // function ctrlA() {
+        //     socket.emit('key_combo', { keys: ['meta', 'a'] });
+        // }
+        // function ctrlZ() {
+        //     socket.emit('key_combo', { keys: ['meta', 'z'] });
+        // }
         // 初始化
         setMode('realtime');
+
+        // --- 触目板逻辑迁移 ---
+        const pad = document.getElementById('pad');
+        let lx, ly, sx, sy, hMove, tCount, drag = false;
+
+        pad.addEventListener('touchstart', e => {
+            tCount = e.targetTouches.length;
+            const touch = e.targetTouches[0];
+            lx = touch.clientX; ly = touch.clientY;
+            sx = lx; sy = ly; hMove = false;
+            // 三指拖拽识别
+            if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
+        });
+
+        pad.addEventListener('touchmove', e => {
+            e.preventDefault();
+            tCount = e.targetTouches.length;
+            const touch = e.targetTouches[0];
+            const cx = touch.clientX, cy = touch.clientY;
+
+            if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
+
+            if (tCount === 1 || tCount === 3) {
+                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                lx = cx; ly = cy;
+            } else if (tCount === 2) {
+                const dy = cy - ly;
+                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+            }
+        }, { passive: false });
+
+        pad.addEventListener('touchend', (e) => {
+            if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#080808"; }
+            else if (!hMove) {
+                // 点击判断
+                if (tCount === 1) { socket.emit('click', { button: 'left' }); feedback(); }
+                else if (tCount === 2) { socket.emit('click', { button: 'right' }); feedback(); }
+            }
+        });
     </script>
 </body>
 
