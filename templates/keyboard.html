@@ -220,6 +220,39 @@
             font-size: 12px;
             font-weight: bold;
         }
+
+        /* 强制横屏逻辑 (针对手机) */
+        @media screen and (orientation: portrait) and (max-width: 1000px) {
+            body {
+                transform-origin: center center;
+                width: 100vh !important;
+                height: 100vw !important;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg);
+                padding: 10px;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            body.not-fs {
+                transform: translate(-50%, -50%) rotate(90deg);
+            }
+
+            .container {
+                max-width: none;
+            }
+        }
+
+        /* 非全屏下的缩放 */
+        body.not-fs .container {
+            transform: scale(0.9);
+            transform-origin: top center;
+        }
     </style>
 </head>
 
@@ -244,11 +277,6 @@
                         d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
                 </svg>
             </div>
-            <input type="text" id="text-input" placeholder="Type..." autocomplete="off">
-
-
-
-            <button class="send-btn" onclick="v(); submitText()">SEND</button>
         </div>
         <div class="keyboard-grid">
             <div class="row">
@@ -376,7 +404,7 @@
         </div>
 
         <div class="footer-nav">
-            <button onclick="v(); v(); goBack()" class="nav-btn">横屏体验更好</button>
+            <button onclick="v(); v(); goBack()" class="nav-btn">键盘已强制横置</button>
         </div>
     </div>
 
@@ -530,17 +558,19 @@
             }
         }
 
-        // 3. 监听全屏状态改变图标
-        document.addEventListener('fullscreenchange', () => {
+        // 3. 监听全屏状态改变图标和缩放类
+        function updateFullscreenUI() {
             const iconPath = document.querySelector('#fs-icon-kb path');
             if (document.fullscreenElement) {
-                // 变成缩小图标
-                iconPath.setAttribute('d', 'M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z');
+                document.body.classList.remove('not-fs');
+                if (iconPath) iconPath.setAttribute('d', 'M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z');
             } else {
-                // 变成放大图标
-                iconPath.setAttribute('d', 'M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z');
+                document.body.classList.add('not-fs');
+                if (iconPath) iconPath.setAttribute('d', 'M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z');
             }
-        });
+        }
+        document.addEventListener('fullscreenchange', updateFullscreenUI);
+        updateFullscreenUI(); // 初始化
     </script>
 </body>
 

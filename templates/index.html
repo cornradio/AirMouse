@@ -191,6 +191,7 @@
         input[type=range] {
             flex: 1;
             -webkit-appearance: none;
+            appearance: none;
             background: #222;
             height: 2px;
         }
@@ -211,7 +212,7 @@
 </head>
 
 <body>
-    <div id="mouse-page" onclick="initAudio()">
+    <div id="mouse-page" onclick="handleFirstInteraction()">
         <div class="top-nav">
             <div class="icon-btn" onclick="feedback(); window.location.href = '/k';">
                 <svg viewBox="0 0 24 24">
@@ -321,6 +322,8 @@
 
         const v = feedback; // 兼容旧代码引用
 
+        let isGyroIntent = localStorage.getItem('gyro_active') === 'true';
+
         function resetHeight() {
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -328,6 +331,14 @@
         }
         window.addEventListener('resize', resetHeight);
         resetHeight();
+
+        // 统一初始化 (点击页面任一处触发)
+        function handleFirstInteraction() {
+            initAudio();
+            if (isGyroIntent && !isGyroActive) {
+                toggleGyro();
+            }
+        }
 
         const slider = document.getElementById('sens-slider');
         const gyroSlider = document.getElementById('gyro-slider');
@@ -346,10 +357,16 @@
                     const res = await DeviceMotionEvent.requestPermission();
                     if (res !== 'granted') return;
                 }
-                isGyroActive = true; btn.classList.add('active');
+                isGyroActive = true;
+                isGyroIntent = true;
+                localStorage.setItem('gyro_active', 'true');
+                btn.classList.add('active');
                 window.addEventListener('devicemotion', handleGyro);
             } else {
-                isGyroActive = false; btn.classList.remove('active');
+                isGyroActive = false;
+                isGyroIntent = false;
+                localStorage.setItem('gyro_active', 'false');
+                btn.classList.remove('active');
                 window.removeEventListener('devicemotion', handleGyro);
             }
         }
