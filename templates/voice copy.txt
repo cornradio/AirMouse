@@ -336,17 +336,14 @@
         </div>
         <div class="title"></div>
         <div class="header-actions">
-            <!-- <button id="modifier-btn" class="h-btn" onclick="v(); toggleModifier()">
+            <button id="modifier-btn" class="h-btn" onclick="v(); toggleModifier()">
                 Win
-            </button> -->
+            </button>
             <button class="h-btn" onclick="v(); ctrlZ()">
                 ^Z
             </button>
             <button class="h-btn" onclick="v(); ctrlA()">
                 ^A
-            </button>
-            <button class="h-btn" onclick="v(); sendShift()">
-                Shift
             </button>
             <button class="h-btn" ontouchstart="v(); startBS()" ontouchend="stopBS()" ontouchcancel="stopBS()">
                 <svg viewBox="0 0 24 24">
@@ -354,33 +351,22 @@
                         d="M22,3H7C6.31,3 5.77,3.35 5.41,3.88L0,12L5.41,20.11C5.77,20.64 6.31,21 7,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12" />
                 </svg>
             </button>
-            <button class="h-btn" onclick="v(); sendEnter()">
-                <svg viewBox="0 0 24 24">
-                    <path d="M19,7V11H5.83L9.41,7.41L8,6L2,12L8,18L9.41,16.59L5.83,13H21V7H19Z" />
+            <button class="h-btn h-btn-red" onclick="v(); clearText()"> <svg viewBox="0 0 24 24">
+                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19V4M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                 </svg>
             </button>
-
-
+            <button id="header-send-btn" class="h-btn h-btn-green" onclick="v(); sendFullText()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                </svg>
+            </button>
         </div>
     </div>
 
     <div class="main-content">
         <div class="input-container" id="container">
-            <textarea id="input-window" ...></textarea>
-            <div class="box-actions" style="position: absolute; right: 35px; bottom: 25px; display: flex; gap: 12px;">
-                <button class="box-btn btn-clear" onclick="v(); clearText()"
-                    style="background:#2a2a2a; border:none; border-radius:10px; width:42px; height:42px;">
-                    <svg viewBox="0 0 24 24" style="fill:#FF3B30; width:20px;">
-                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19V4M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                    </svg>
-                </button>
-                <button id="header-send-btn" class="box-btn btn-send" onclick="v(); sendFullText()"
-                    style="background:var(--primary); border:none; border-radius:10px; width:42px; height:42px;">
-                    <svg viewBox="0 0 24 24" style="fill:#fff; width:20px;">
-                        <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
-                    </svg>
-                </button>
-            </div>
+            <div class="status-dot" style="top:10px; right:30px;"></div>
+            <textarea id="input-window" placeholder="点击这里开始说话(用你的语音输入法)..." spellcheck="false"></textarea>
         </div>
 
         <!-- 新增触摸板区域 -->
@@ -464,12 +450,6 @@
             modifierKey = modifierKey === 'ctrl' ? 'meta' : 'ctrl';
             localStorage.setItem('modifier_key', modifierKey);
             updateModifierUI();
-        }
-        function sendEnter() {
-            socket.emit('key_action', { key: 'enter', action: 'down' });
-            setTimeout(() => {
-                socket.emit('key_action', { key: 'enter', action: 'up' });
-            }, 30);
         }
 
         // 初始化修饰键 UI
@@ -582,11 +562,6 @@
         }
         function ctrlZ() {
             socket.emit('key_combo', { keys: [modifierKey, 'z'] });
-        }
-        // sendShift
-        function sendShift() {
-            socket.emit('key_action', { key: 'shift', action: 'down' });
-            setTimeout(() => { socket.emit('key_action', { key: 'shift', action: 'up' }); }, 30);
         }
         // 初始化
         setMode('realtime');
