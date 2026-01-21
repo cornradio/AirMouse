@@ -211,9 +211,9 @@
 </head>
 
 <body>
-    <div id="mouse-page">
+    <div id="mouse-page" onclick="initAudio()">
         <div class="top-nav">
-            <div class="icon-btn" onclick="v(); window.location.href = '/k';">
+            <div class="icon-btn" onclick="feedback(); window.location.href = '/k';">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
@@ -291,12 +291,35 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
-        // 震动时长增加到 30ms，提高感知度
-        const v = () => {
-            if (navigator.vibrate) {
-                navigator.vibrate(30);
+
+        // 统一反馈系统：震动 + 音效
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        const feedback = () => {
+            // 1. 震动
+            if (navigator.vibrate) navigator.vibrate(30);
+
+            // 2. 音效 (Web Audio API)
+            if (audioCtx) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine'; // 纯净的正弦波
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime); // 频率 800Hz
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); // 音量 10%
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05); // 快速淡出
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
             }
         };
+
+        const v = feedback; // 兼容旧代码引用
 
         function resetHeight() {
             let vh = window.innerHeight * 0.01;
