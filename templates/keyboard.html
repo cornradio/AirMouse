@@ -156,13 +156,13 @@
 
         /* 键宽比例 */
         .k-f {
-            height: 26px;
+            height: 36px;
             font-size: 9px;
             color: #666;
             background: #0d0d0d;
         }
 
-        .k-esc {
+        .esc {
             flex: 0.8;
             color: #ff3b30;
         }
@@ -170,6 +170,11 @@
         .k-wide {
             flex: 1.5;
             background: #222;
+        }
+
+        .k-arrow {
+            flex: 0.8;
+            background: #4f4f4f;
         }
 
         .k-caps {
@@ -184,40 +189,19 @@
         }
 
         .k-shift {
-            flex: 2.2;
+            flex: 2;
+        }
+
+        .k-shift-r {
+            flex: 0.85;
         }
 
         .k-space {
-            flex: 4;
+            flex: 7;
             background: #222;
         }
 
-        .arrow-cluster {
-            display: grid;
-            grid-template-areas: ". up ." "left down right";
-            gap: 2px;
-            flex: 1.4;
-        }
 
-        .up {
-            grid-area: up;
-        }
-
-        .left {
-            grid-area: left;
-        }
-
-        .down {
-            grid-area: down;
-        }
-
-        .right {
-            grid-area: right;
-        }
-
-        .arrow-cluster button {
-            height: 38px;
-        }
 
         /* 底部导航按钮 */
         .footer-nav {
@@ -243,7 +227,7 @@
 
     <div class="container">
         <div class="input-section">
-            <div class="fs-btn-kb" onclick="window.location.href = '/';">
+            <div class="fs-btn-kb" onclick="goBack()">
                 <svg viewBox="0 0 24 24">
                     <path d="M15 18l-6-6 6-6" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -262,6 +246,7 @@
         </div>
         <div class="keyboard-grid">
             <div class="row">
+                <button class="k-f esc" ontouchstart="hP('esc')" ontouchend="hR()">ESC</button>
                 <button class="k-f" ontouchstart="hP('f1')" ontouchend="hR()">F1</button>
                 <button class="k-f" ontouchstart="hP('f2')" ontouchend="hR()">F2</button>
                 <button class="k-f" ontouchstart="hP('f3')" ontouchend="hR()">F3</button>
@@ -274,10 +259,12 @@
                 <button class="k-f" ontouchstart="hP('f10')" ontouchend="hR()">F10</button>
                 <button class="k-f" ontouchstart="hP('f11')" ontouchend="hR()">F11</button>
                 <button class="k-f" ontouchstart="hP('f12')" ontouchend="hR()">F12</button>
+                <button class="k-f" ontouchstart="hP('prtsc')" ontouchend="hR()">PRTSC</button>
+                <button class="k-f" ontouchstart="hP('delete')" ontouchend="hR()">DEL</button>
             </div>
 
             <div class="row">
-                <button class="k-esc" ontouchstart="hP('esc')" ontouchend="hR()">ESC</button>
+                <button class="k-esc" ontouchstart="hP('`')" ontouchend="hR()">`</button>
                 <button class="k-sym" data-norm="1" data-shft="!" ontouchstart="hPS('1','!')"
                     ontouchend="hR()">1</button>
                 <button class="k-sym" data-norm="2" data-shft="@" ontouchstart="hPS('2','@')"
@@ -302,7 +289,7 @@
                     ontouchend="hR()">-</button>
                 <button class="k-sym" data-norm="=" data-shft="+" ontouchstart="hPS('=','+')"
                     ontouchend="hR()">=</button>
-                <button class="k-wide" ontouchstart="hP('backspace')" ontouchend="hR()">BS</button>
+                <button class="k-wide" ontouchstart="hP('backspace')" ontouchend="hR()">BackSpace</button>
             </div>
 
             <div class="row">
@@ -321,6 +308,8 @@
                     ontouchend="hR()">[</button>
                 <button class="k-sym" data-norm="]" data-shft="}" ontouchstart="hPS(']','}')"
                     ontouchend="hR()">]</button>
+                <button class="k-sym" data-norm="\" data-shft="|" ontouchstart="hPS('\\','|')"
+                    ontouchend="hR()">\</button>
             </div>
 
             <div class="row">
@@ -336,9 +325,9 @@
                 <button ontouchstart="hP('l')" ontouchend="hR()">L</button>
                 <button class="k-sym" data-norm=";" data-shft=":" ontouchstart="hPS(';',':')"
                     ontouchend="hR()">;</button>
-                <button class="k-sym" data-norm="'" data-shft='"' ontouchstart="hPS('\'','\"')" ontouchend="hR()">'
-                    </button>
-                    <button class="k-enter" ontouchstart="hP('enter')" ontouchend="hR()">ENTER</button>
+                <button class="k-sym" data-norm="'" data-shft='"' ontouchstart="hPS('\'','\&quot;')" ontouchend="hR()">'
+                </button>
+                <button class="k-enter" ontouchstart="hP('enter')" ontouchend="hR()">ENTER</button>
             </div>
 
             <div class="row">
@@ -357,7 +346,9 @@
                     ontouchend="hR()">.</button>
                 <button class="k-sym" data-norm="/" data-shft="?" ontouchstart="hPS('/', '?')"
                     ontouchend="hR()">/</button>
-                <button class="k-wide" ontouchstart="hP('delete')" ontouchend="hR()">DEL</button>
+                <button class="k-arrow" ontouchstart="hP('up')" ontouchend="hR()">↑</button>
+                <button id="shift_r-key" class="k-shift-r" ontouchstart="hFuncStart('shift_r')"
+                    ontouchend="hFuncEnd('shift_r')">SHIFT</button>
             </div>
 
             <div class="row">
@@ -365,29 +356,36 @@
                 <button id="win-key" ontouchstart="hFuncStart('win')" ontouchend="hFuncEnd('win')">WIN</button>
                 <button id="alt-key" ontouchstart="hFuncStart('alt')" ontouchend="hFuncEnd('alt')">ALT</button>
                 <button class="k-space" ontouchstart="hP('space')" ontouchend="hR()">SPACE</button>
+                <button id="alt_r-key" ontouchstart="hFuncStart('alt_r')" ontouchend="hFuncEnd('alt_r')">ALT</button>
+                <button id="ctrl_r-key" ontouchstart="hFuncStart('ctrl_r')"
+                    ontouchend="hFuncEnd('ctrl_r')">CTRL</button>
 
-                <div class="arrow-cluster">
-                    <button class="up" ontouchstart="hP('up')" ontouchend="hR()">↑</button>
-                    <button class="left" ontouchstart="hP('left')" ontouchend="hR()">←</button>
-                    <button class="down" ontouchstart="hP('down')" ontouchend="hR()">↓</button>
-                    <button class="right" ontouchstart="hP('right')" ontouchend="hR()">→</button>
-                </div>
+                <button class="k-arrow" ontouchstart="hP('left')" ontouchend="hR()">←</button>
+                <button class="k-arrow" ontouchstart="hP('down')" ontouchend="hR()">↓</button>
+                <button class="k-arrow" ontouchstart="hP('right')" ontouchend="hR()">→</button>
+
             </div>
         </div>
 
         <div class="footer-nav">
-            <button onclick="window.location.href = '/';" class="nav-btn">⇠ BACK TO MOUSE</button>
+            <button onclick="goBack()" class="nav-btn">⇠ BACK TO MOUSE</button>
         </div>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
-        let locks = { ctrl: false, win: false, alt: false, shift: false, caps: false };
+        let locks = {
+            ctrl: false, ctrl_r: false,
+            win: false,
+            alt: false, alt_r: false,
+            shift: false, shift_r: false,
+            caps: false
+        };
         let rT, rI, lockTimer;
         let didLock = false;
 
-        function hPS(norm, shft) { hP(locks.shift ? shft : norm); }
+        function hPS(norm, shft) { hP(locks.shift || locks.shift_r ? shft : norm); }
 
         function hP(key) {
             if (event.cancelable) event.preventDefault();
@@ -414,8 +412,9 @@
             lockTimer = setTimeout(() => {
                 locks[key] = true;
                 didLock = true;
-                document.getElementById(key + '-key').classList.add('locked');
-                if (key === 'shift') updateSymbols();
+                const btn = document.getElementById(key + '-key');
+                if (btn) btn.classList.add('locked');
+                if (key.includes('shift')) updateSymbols();
             }, 600);
         }
 
@@ -425,9 +424,10 @@
             // 场景 A: 如果已经是锁定状态，这次是“轻点一下”来恢复
             if (locks[key] && !didLock) {
                 locks[key] = false;
-                document.getElementById(key + '-key').classList.remove('locked');
+                const btn = document.getElementById(key + '-key');
+                if (btn) btn.classList.remove('locked');
                 socket.emit('key_action', { key: key, action: 'up' });
-                if (key === 'shift') updateSymbols();
+                if (key.includes('shift')) updateSymbols();
                 return;
             }
 
@@ -439,13 +439,15 @@
 
         function toggleLock(key) {
             locks[key] = !locks[key];
-            document.getElementById(key + '-key').classList.toggle('locked', locks[key]);
+            const btn = document.getElementById(key + '-key');
+            if (btn) btn.classList.toggle('locked', locks[key]);
             socket.emit('key_action', { key: key, action: locks[key] ? 'down' : 'up' });
         }
 
         function updateSymbols() {
+            const isShift = locks.shift || locks.shift_r;
             document.querySelectorAll('.k-sym').forEach(btn => {
-                btn.innerText = locks.shift ? btn.dataset.shft : btn.dataset.norm;
+                btn.innerText = isShift ? btn.dataset.shft : btn.dataset.norm;
             });
         }
 
@@ -460,6 +462,25 @@
                 socket.emit('type_text', { text: input.value });
                 input.value = '';
             }
+        }
+
+        function goBack() {
+            // 强制清除所有锁定状态
+            for (let key in locks) {
+                if (locks[key]) {
+                    locks[key] = false;
+                    const btn = document.getElementById(key + '-key');
+                    if (btn) btn.classList.remove('locked');
+                    socket.emit('key_action', { key: key, action: 'up' });
+                }
+            }
+            updateSymbols(); // 恢复符号显示（如果 shift 被清除了）
+            hR(); // 停止可能的重复按键
+
+            // 稍微延时确保 socket 消息发出后再跳转
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 50);
         }
         // 1. 动态高度补丁 (防止键盘弹出时遮挡或布局跳动)
         function resetHeight() {

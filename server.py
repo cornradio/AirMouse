@@ -17,9 +17,13 @@ keyboard = KeyController()
 
 # 特殊按键映射表
 SPECIAL_KEYS = {
-    'ctrl': Key.ctrl, 'shift': Key.shift, 'alt': Key.alt, 'win': Key.cmd,
+    'ctrl': Key.ctrl, 'ctrl_r': Key.ctrl_r,
+    'shift': Key.shift, 'shift_r': Key.shift_r,
+    'alt': Key.alt, 'alt_r': Key.alt_r,
+    'win': Key.cmd,
     'enter': Key.enter, 'esc': Key.esc, 'tab': Key.tab, 'backspace': Key.backspace,
-    'space': Key.space,
+    'space': Key.space, 'delete': Key.delete, 'prtsc': Key.print_screen,
+    'up': Key.up, 'down': Key.down, 'left': Key.left, 'right': Key.right,
     'f1': Key.f1, 'f2': Key.f2, 'f3': Key.f3, 'f4': Key.f4, 'f5': Key.f5, 'f6': Key.f6,
     'f7': Key.f7, 'f8': Key.f8, 'f9': Key.f9, 'f10': Key.f10, 'f11': Key.f11, 'f12': Key.f12
 }
