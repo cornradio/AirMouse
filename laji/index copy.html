@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Remote Pro v8</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Remote Pro v8.5 + Hybrid AirMouse</title>
     <style>
         * {
             -webkit-touch-callout: none;
@@ -21,24 +22,22 @@
             color: #fff;
             font-family: sans-serif;
             overflow: hidden;
-            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
             display: flex;
         }
 
         #mouse-page {
             display: flex;
             width: 100vw;
-            height: 100vh;
+            height: 100%;
         }
 
-        /* 触控板区域 [cite: 7, 63] */
         #pad {
             flex: 1;
             background: #0a0a0a;
             position: relative;
         }
 
-        /* 导航条容器 [cite: 64] */
         .nav-container {
             background: #0f0f0f;
             display: flex;
@@ -48,92 +47,113 @@
             border-style: solid;
         }
 
-        /* 竖屏布局：底部横条 [cite: 65, 66, 67, 68] */
         @media (orientation: portrait) {
             #mouse-page {
                 flex-direction: column;
             }
 
             .nav-container {
-                height: 60px;
+                height: 85px;
                 width: 100%;
                 border-top-width: 1px;
-                padding: 0 20px;
+                padding: 0 10px;
             }
 
-            .sens-container {
-                width: 65%;
+            .sens-group {
+                width: 35%;
             }
         }
 
-        /* 横屏布局：右侧/侧边竖条 [cite: 69, 70, 71] */
         @media (orientation: landscape) {
             #mouse-page {
                 flex-direction: row;
             }
 
             .nav-container {
-                width: 60px;
-                height: 100vh;
+                width: 65px;
+                height: 100%;
                 flex-direction: column-reverse;
                 border-left-width: 1px;
-                padding: 25px 0;
+                padding: 10px 0;
             }
 
-            .sens-container {
-                height: 200px;
+            .sens-group {
+                height: 80px;
+                margin: 10px 0;
                 writing-mode: vertical-lr;
                 transform: rotate(180deg);
-                margin-bottom: 30px;
             }
+
+            /* 横屏自动隐藏飞鼠 UI */
+            #gyro-btn,
+            .gyro-sens-row {
+                display: none !important;
+            }
+        }
+
+        .icon-btn {
+            background: transparent;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .icon-btn:active {
+            background: #1a1a1a;
+        }
+
+        .icon-btn svg {
+            fill: #444;
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-btn.active svg {
+            fill: #007AFF;
+            filter: drop-shadow(0 0 5px #007AFF);
+        }
+
+        .sens-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
         }
 
         .sens-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
             color: #444;
-            font-size: 10px;
+            font-size: 8px;
             font-weight: bold;
         }
 
-        /* 滑块样式：确保好点 [cite: 74, 75, 76] */
+        .sens-container span {
+            width: 32px;
+        }
+
         input[type=range] {
             flex: 1;
             -webkit-appearance: none;
             background: #222;
             height: 2px;
-            border-radius: 1px;
         }
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 22px;
-            width: 22px;
+            height: 16px;
+            width: 16px;
             border-radius: 50%;
             background: #555;
-            border: 2px solid #000;
+            border: 1px solid #000;
         }
 
-        /* 键盘 Logo 图标按钮 [cite: 79, 82, 83] */
-        .kb-icon-btn {
-            background: transparent;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .kb-icon-btn svg {
-            fill: #444;
-            width: 28px;
-            height: 28px;
-            transition: fill 0.2s;
-        }
-
-        .kb-icon-btn:active svg {
-            fill: #007AFF;
+        #gyro-slider::-webkit-slider-thumb {
+            background: #007AFF;
         }
     </style>
 </head>
@@ -144,20 +164,51 @@
         <div id="pad">
             <div
                 style="position:absolute; top:20px; left:20px; color:#1a1a1a; font-size:11px; font-weight:bold; letter-spacing: 3px;">
-                TOUCHPAD</div>
+                HYBRID PAD</div>
         </div>
 
         <div class="nav-container">
-            <div class="kb-icon-btn" onclick="window.location.href = '/k';">
+            <div class="icon-btn" onclick="window.location.href = '/k';">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M20,5H4C2.89,5 2,5.89 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V7A2,2 0 0,0 20,5M5,7H7V9H5V7M5,11H7V13H5V11M5,15H7V17H5V15M19,17H9V15H19V17M19,13H17V11H19V13M19,9H17V7H19V9M15,13H13V11H15V13M15,9H13V7H15V9M11,13H9V11H11V13M11,9H9V7H11V9Z" />
                 </svg>
             </div>
 
-            <div class="sens-container">
-                <span>SENSE</span>
-                <input type="range" id="sens-slider" min="1" max="10" step="0.1">
+            <div class="icon-btn" onclick="toggleFullScreen()">
+                <svg id="fs-icon" viewBox="0 0 24 24">
+                    <path d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" id="gyro-btn" onclick="toggleGyro()">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" ontouchstart="startScroll(2)" ontouchend="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" />
+                </svg>
+            </div>
+
+            <div class="icon-btn" ontouchstart="startScroll(-2)" ontouchend="stopScroll()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                </svg>
+            </div>
+
+            <div class="sens-group">
+                <div class="sens-container">
+                    <span>PAD</span>
+                    <input type="range" id="sens-slider" min="1" max="10" step="0.1">
+                </div>
+                <div class="sens-container gyro-sens-row" style="color: #007AFF;">
+                    <span>GYRO</span>
+                    <input type="range" id="gyro-slider" min="0.1" max="5" step="0.1">
+                </div>
             </div>
         </div>
     </div>
@@ -165,18 +216,81 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const socket = io();
-        const slider = document.getElementById('sens-slider');
 
-        // --- LocalStorage 记忆功能 [cite: 86, 87, 88] ---
+        function resetHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            if (window.innerWidth > window.innerHeight && isGyroActive) {
+                toggleGyro();
+            }
+        }
+        window.addEventListener('resize', resetHeight);
+        resetHeight();
+
+        const slider = document.getElementById('sens-slider');
+        const gyroSlider = document.getElementById('gyro-slider');
+
         let sensitivity = parseFloat(localStorage.getItem('mouse_sense')) || 4.0;
+        let gyroSensitivity = parseFloat(localStorage.getItem('gyro_sense')) || 0.6;
+
         slider.value = sensitivity;
+        gyroSlider.value = gyroSensitivity;
 
         slider.oninput = (e) => {
             sensitivity = parseFloat(e.target.value);
             localStorage.setItem('mouse_sense', sensitivity);
         };
+        gyroSlider.oninput = (e) => {
+            gyroSensitivity = parseFloat(e.target.value);
+            localStorage.setItem('gyro_sense', gyroSensitivity);
+        };
 
-        // --- 完全还原第一版的核心鼠标逻辑 [cite: 46, 47, 48, 49, 50, 51] ---
+        let isGyroActive = false;
+        async function toggleGyro() {
+            const btn = document.getElementById('gyro-btn');
+            if (!isGyroActive) {
+                if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                    const res = await DeviceMotionEvent.requestPermission();
+                    if (res !== 'granted') return;
+                }
+                isGyroActive = true;
+                btn.classList.add('active');
+                window.addEventListener('devicemotion', handleGyro);
+            } else {
+                isGyroActive = false;
+                btn.classList.remove('active');
+                window.removeEventListener('devicemotion', handleGyro);
+            }
+        }
+
+        function handleGyro(e) {
+            const rot = e.rotationRate;
+            if (!rot) return;
+            let dx = -rot.gamma * gyroSensitivity;
+            let dy = -rot.alpha * gyroSensitivity;
+            if (Math.abs(dx) < 0.1) dx = 0;
+            if (Math.abs(dy) < 0.1) dy = 0;
+            if (dx !== 0 || dy !== 0) {
+                socket.emit('move', { dx, dy });
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => alert(e.message));
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        let scrollTimer = null;
+        function startScroll(step) {
+            if (scrollTimer) clearInterval(scrollTimer);
+            socket.emit('scroll', { dy: step });
+            scrollTimer = setInterval(() => socket.emit('scroll', { dy: step }), 60);
+        }
+        function stopScroll() { if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; } }
+
         const pad = document.getElementById('pad');
         let lx, ly, sx, sy, hMove, tCount, drag = false;
 
@@ -184,35 +298,42 @@
             tCount = e.touches.length;
             lx = e.touches[0].clientX; ly = e.touches[0].clientY;
             sx = lx; sy = ly; hMove = false;
-            // 三指拖拽逻辑 [cite: 47]
-            if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
+            if (tCount === 3) {
+                drag = true;
+                socket.emit('drag_start');
+                pad.style.background = "#001a33";
+            }
         });
 
         pad.addEventListener('touchmove', e => {
             e.preventDefault();
             const cx = e.touches[0].clientX, cy = e.touches[0].clientY;
-            // 移动阈值判断 [cite: 48]
             if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
-
             if (tCount === 1 || tCount === 3) {
-                // 移动发送 [cite: 49]
-                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                socket.emit('move', {
+                    dx: (cx - lx) * sensitivity,
+                    dy: (cy - ly) * sensitivity
+                });
                 lx = cx; ly = cy;
             } else if (tCount === 2) {
-                // 滚轮逻辑 [cite: 50]
                 const dy = cy - ly;
-                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+                if (Math.abs(dy) > 5) {
+                    socket.emit('scroll', { dy: dy > 0 ? 1 : -1 });
+                    ly = cy;
+                }
             }
         }, { passive: false });
 
         pad.addEventListener('touchend', () => {
             if (drag) {
-                socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a";
+                socket.emit('drag_end');
+                drag = false;
+                pad.style.background = "#0a0a0a";
             } else if (!hMove) {
-                // 点击判断 [cite: 51]
                 if (tCount === 1) socket.emit('click', { button: 'left' });
                 else if (tCount === 2) socket.emit('click', { button: 'right' });
             }
+            stopScroll();
         });
     </script>
 </body>
