@@ -383,7 +383,9 @@
             let dx = Math.abs(rx) < deadzone ? 0 : (rx - Math.sign(rx) * deadzone);
             let dy = Math.abs(ry) < deadzone ? 0 : (ry - Math.sign(ry) * deadzone);
 
-            if (dx !== 0 || dy !== 0) { socket.emit('move', { dx, dy }); }
+            if ((dx !== 0 || dy !== 0) && (Date.now() - lastMultiTouchTime > 300)) {
+                socket.emit('move', { dx, dy });
+            }
         }
 
         function toggleFullScreen() {
@@ -400,9 +402,10 @@
         function stopScroll() { if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; } }
 
         const pad = document.getElementById('pad');
-        let lx, ly, sx, sy, hMove, tCount, drag = false;
+        let lx, ly, sx, sy, hMove, tCount, lastMultiTouchTime = 0, drag = false;
         pad.addEventListener('touchstart', e => {
             // 使用 targetTouches 只计算落在触摸板上的手指
+            const prevTCount = tCount;
             tCount = e.targetTouches.length;
             const touch = e.targetTouches[0];
             lx = touch.clientX; ly = touch.clientY;
@@ -411,27 +414,46 @@
         });
         pad.addEventListener('touchmove', e => {
             e.preventDefault();
+            const prevTCount = tCount;
             tCount = e.targetTouches.length;
             const touch = e.targetTouches[0];
             const cx = touch.clientX, cy = touch.clientY;
 
+            // 如果指头数量从多指(>=2)变为单指(1)，记录时间并在300ms内锁定移动
+            if (prevTCount >= 2 && tCount === 1) {
+                lastMultiTouchTime = Date.now();
+            }
+
             if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
 
             if (tCount === 1 || tCount === 3) {
-                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                if (Date.now() - lastMultiTouchTime > 300) {
+                    socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
+                }
                 lx = cx; ly = cy;
             } else if (tCount === 2) {
                 const dy = cy - ly;
-                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
+                if (Math.abs(dy) > 5) {
+                    socket.emit('scroll', { dy: dy > 0 ? 1 : -1 });
+                    ly = cy;
+                }
             }
         }, { passive: false });
 
         pad.addEventListener('touchend', (e) => {
+            const prevTCount = tCount;
+            tCount = e.targetTouches.length;
+
+            // 同样在抬起手指导致指头数量变为1时触发锁定
+            if (prevTCount >= 2 && tCount === 1) {
+                lastMultiTouchTime = Date.now();
+            }
+
             if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a"; }
             else if (!hMove) {
                 // 点击判断
-                if (tCount === 1) socket.emit('click', { button: 'left' });
-                else if (tCount === 2) socket.emit('click', { button: 'right' });
+                if (prevTCount === 1) socket.emit('click', { button: 'left' });
+                else if (prevTCount === 2) socket.emit('click', { button: 'right' });
             }
             stopScroll();
         });
