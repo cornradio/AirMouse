@@ -1,0 +1,140 @@
+{
+    "current": "douyin",
+    "profiles": {
+        "Default": {
+            "cols": 4,
+            "buttons": [
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                }
+            ]
+        },
+        "douyin": {
+            "cols": 3,
+            "buttons": [
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "pause",
+                    "emoji": "❚❚",
+                    "keys": "space"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "down",
+                    "emoji": "⬇️",
+                    "keys": "down"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                }
+            ]
+        }
+    }
+}

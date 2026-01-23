@@ -384,7 +384,7 @@
         </div>
 
         <!-- 新增触摸板区域 -->
-        <div id="pad" ontouchstart="initAudio()">MOUSE CONTROL</div>
+        <div id="pad" ontouchstart="initAudio()"></div>
     </div>
 
     <div class="toolbar-area">
@@ -405,6 +405,7 @@
     <div class="hint" style="margin-bottom: 5px;">混合模式：语音输入 + 鼠标控制</div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="/static/js/touchpad.js"></script>
     <script>
         const socket = io();
         let audioCtx = null;
@@ -591,44 +592,12 @@
         // 初始化
         setMode('realtime');
 
-        // --- 触目板逻辑迁移 ---
-        const pad = document.getElementById('pad');
-        let lx, ly, sx, sy, hMove, tCount, drag = false;
-
-        pad.addEventListener('touchstart', e => {
-            tCount = e.targetTouches.length;
-            const touch = e.targetTouches[0];
-            lx = touch.clientX; ly = touch.clientY;
-            sx = lx; sy = ly; hMove = false;
-            // 三指拖拽识别
-            if (tCount === 3) { drag = true; socket.emit('drag_start'); pad.style.background = "#001a33"; }
+        // --- 触目板模块化加载 ---
+        const touchpad = new TouchpadModule('pad', socket, {
+            getSensitivity: () => sensitivity,
+            feedback: feedback
         });
 
-        pad.addEventListener('touchmove', e => {
-            e.preventDefault();
-            tCount = e.targetTouches.length;
-            const touch = e.targetTouches[0];
-            const cx = touch.clientX, cy = touch.clientY;
-
-            if (Math.hypot(cx - sx, cy - sy) > 5) hMove = true;
-
-            if (tCount === 1 || tCount === 3) {
-                socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
-                lx = cx; ly = cy;
-            } else if (tCount === 2) {
-                const dy = cy - ly;
-                if (Math.abs(dy) > 5) { socket.emit('scroll', { dy: dy > 0 ? 1 : -1 }); ly = cy; }
-            }
-        }, { passive: false });
-
-        pad.addEventListener('touchend', (e) => {
-            if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#080808"; }
-            else if (!hMove) {
-                // 点击判断
-                if (tCount === 1) { socket.emit('click', { button: 'left' }); feedback(); }
-                else if (tCount === 2) { socket.emit('click', { button: 'right' }); feedback(); }
-            }
-        });
     </script>
 </body>
 

@@ -294,6 +294,7 @@
                 </div>
                 <div id="more-menu" class="menu-dropdown">
                     <div class="menu-item" onclick="v(); window.location.href='/r'">RealMouse (摇杆)</div>
+                    <div class="menu-item" onclick="v(); window.location.href='/b'">Macro Deck (快捷键)</div>
                     <!-- 以后可以在这里添加更多趣玩页面 -->
                 </div>
             </div>
@@ -348,6 +349,7 @@
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="/static/js/touchpad.js"></script>
     <script>
         const socket = io();
 
@@ -441,7 +443,7 @@
             let dx = Math.abs(rx) < deadzone ? 0 : (rx - Math.sign(rx) * deadzone);
             let dy = Math.abs(ry) < deadzone ? 0 : (ry - Math.sign(ry) * deadzone);
 
-            if ((dx !== 0 || dy !== 0) && (Date.now() - lastMultiTouchTime > 300)) {
+            if ((dx !== 0 || dy !== 0) && !touchpad.isLocked()) {
                 socket.emit('move', { dx, dy });
             }
         }
@@ -469,120 +471,11 @@
         }
         function stopScroll() { if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; } }
 
-        const pad = document.getElementById('pad');
-        let lx, ly, sx, sy, hMove, tCount, lastMultiTouchTime = 0, drag = false, longPressTimer = null, maxTCount = 0;
-        pad.oncontextmenu = (e) => e.preventDefault();
-
-        pad.addEventListener('touchstart', e => {
-            // 使用 targetTouches 只计算落在触摸板上的手指
-            const prevTCount = tCount;
-            tCount = e.targetTouches.length;
-            if (tCount === 1 && prevTCount === 0) {
-                maxTCount = 1;
-            } else {
-                maxTCount = Math.max(maxTCount, tCount);
-            }
-            const touch = e.targetTouches[0];
-            lx = touch.clientX; ly = touch.clientY;
-            sx = lx; sy = ly; hMove = false;
-            if (tCount === 1) {
-                longPressTimer = setTimeout(() => {
-                    drag = true;
-                    socket.emit('drag_start');
-                    pad.style.background = "#001a33";
-                    v(); // 给出反馈，提示已进入拖拽模式
-                }, 500);
-            }
-            if (tCount === 3) {
-                // 三指按下时不立即启动拖拽，等待移动判断是点击还是拖拽
-                pad.style.background = "#001a33";
-            }
-        });
-        pad.addEventListener('touchmove', e => {
-            e.preventDefault();
-            const prevTCount = tCount;
-            tCount = e.targetTouches.length;
-            maxTCount = Math.max(maxTCount, tCount);
-            const touch = e.targetTouches[0];
-            const cx = touch.clientX, cy = touch.clientY;
-
-            // 如果指头数量从多指(>=2)变为单指(1)，记录时间并在300ms内锁定移动
-            if (prevTCount >= 2 && tCount === 1) {
-                lastMultiTouchTime = Date.now();
-            }
-
-            if (Math.hypot(cx - sx, cy - sy) > 5) {
-                hMove = true;
-                if (longPressTimer) {
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
-                }
-                // 三指移动时启动拖拽
-                if (tCount === 3 && !drag) {
-                    drag = true;
-                    socket.emit('drag_start');
-                }
-            }
-
-
-            if (tCount === 1 || tCount === 3) {
-                if (Date.now() - lastMultiTouchTime > 300) {
-                    socket.emit('move', { dx: (cx - lx) * sensitivity, dy: (cy - ly) * sensitivity });
-                }
-                lx = cx; ly = cy;
-            } else if (tCount === 2) {
-                // 滚动时持续更新lastMultiTouchTime, 确保松手后300ms内不移动鼠标
-                lastMultiTouchTime = Date.now();
-                const dy = cy - ly;
-                if (Math.abs(dy) > 5) {
-                    socket.emit('scroll', { dy: dy > 0 ? 1 : -1 });
-                    ly = cy;
-                }
-            }
-        }, { passive: false });
-
-        pad.addEventListener('touchend', (e) => {
-            const prevTCount = tCount;
-            tCount = e.targetTouches.length;
-
-            // 如果指头数量从多指(>=2)变为单指(1)，记录时间并在300ms内锁定移动
-            if (prevTCount >= 2 && tCount === 1) {
-                lastMultiTouchTime = Date.now();
-            }
-
-            if (longPressTimer) {
-                clearTimeout(longPressTimer);
-                longPressTimer = null;
-            }
-
-            if (drag) {
-                if (tCount === 0) {
-                    socket.emit('drag_end');
-                    drag = false;
-                    pad.style.background = "#0a0a0a";
-                }
-            } else if (tCount === 0) {
-                if (!hMove) {
-                    // 仅在所有手指抬起时，根据本次触摸序列中达到的最大手指数量判断点击
-                    if (maxTCount === 1) socket.emit('click', { button: 'left' });
-                    else if (maxTCount === 2) socket.emit('click', { button: 'right' });
-                    else if (maxTCount === 3) socket.emit('click', { button: 'middle' });
-                }
-            }
-
-            if (tCount === 0) {
-                maxTCount = 0;
-                stopScroll();
-            }
+        const touchpad = new TouchpadModule('pad', socket, {
+            getSensitivity: () => sensitivity,
+            feedback: feedback
         });
 
-        pad.addEventListener('touchcancel', () => {
-            tCount = 0;
-            maxTCount = 0;
-            if (drag) { socket.emit('drag_end'); drag = false; pad.style.background = "#0a0a0a"; }
-            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-            stopScroll();
-        });
     </script>
 </body>
 

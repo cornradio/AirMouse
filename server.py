@@ -2,6 +2,7 @@ import os
 from OpenSSL import crypto
 import socket
 import psutil
+import json
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pynput.mouse import Controller, Button
@@ -55,6 +56,27 @@ def air_mouse_test():
 @app.route('/r')
 def real_mouse_page():
     return render_template('realmouse.html')
+@app.route('/b')
+def buttons_page():
+    return render_template('buttons.html')
+
+# --- 宏按键配置存储逻辑 ---
+CONFIG_FILE = "macro_configs.json"
+
+@socketio.on('load_macros')
+def handle_load_macros():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+            configs = json.load(f)
+            socketio.emit('macros_loaded', configs)
+    else:
+        socketio.emit('macros_loaded', None)
+
+@socketio.on('save_macros')
+def handle_save_macros(data):
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    print("宏按键配置已保存到服务端")
 
 # --- 鼠标控制逻辑 ---
 @socketio.on('move')

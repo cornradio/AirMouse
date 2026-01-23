@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Macro Deck | 快捷按键面板</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            background: #111;
+            border-bottom: 1px solid #222;
+        }
+
+        .back-btn {
+            font-size: 14px;
+            color: #888;
+            padding: 5px 10px;
+        }
+
+        .profile-selector {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #profile-select {
+            background: #111;
+            border: 1px solid #333;
+            color: #007AFF;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+            max-width: 130px;
+            font-size: 14px;
+        }
+
+        .profile-ops {
+            color: #555;
+            font-size: 22px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fs-btn,
+        .edit-toggle {
+            font-size: 13px;
+            color: #888;
+            padding: 5px 8px;
+        }
+
+        .edit-toggle {
+            color: #007AFF;
+        }
+
+        /* 按钮网格 */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--cols, 4), 1fr);
+            gap: 10px;
+            padding: 15px;
+            flex: 1.2;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .macro-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .macro-btn:active {
+            transform: scale(0.95);
+            background: #333;
+        }
+
+        .macro-btn.editing::after {
+            content: "⚙️";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            padding: 2px;
+        }
+
+        .macro-btn .emoji {
+            font-size: 32px;
+            margin-bottom: 2px;
+            pointer-events: none;
+        }
+
+        .macro-btn .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            padding: 0 4px;
+            pointer-events: none;
+        }
+
+        /* 拖拽占位符 */
+        .sortable-ghost {
+            opacity: 0.3;
+            background: #007AFF !important;
+        }
+
+        /* 触摸板 */
+        #pad-area {
+            flex: 1;
+            margin: 10px 15px 20px;
+            background: #080808;
+            border: 2px dashed #1a1a1a;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+            font-weight: bold;
+            letter-spacing: 5px;
+            font-size: 12px;
+        }
+
+        /* 弹窗通用样式 */
+        .modal-outer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            width: 85%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #333;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #007AFF;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn-save {
+            background: #007AFF;
+            color: #fff;
+        }
+
+        .btn-cancel {
+            background: #333;
+            color: #eee;
+        }
+
+        .btn-delete {
+            background: #FF3B30;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body onclick="initAudio()">
+    <div class="header">
+        <div class="back-btn" onclick="v(); window.location.href='/'">BACK</div>
+        <div class="profile-selector">
+            <select id="profile-select" onchange="v(); switchProfile(this.value)"></select>
+            <div class="profile-ops" onclick="v(); addProfile()">+</div>
+            <div class="profile-ops" style="font-size: 16px; margin-left: -5px;" onclick="v(); showProfileConfig()">⚙️
+            </div>
+        </div>
+        <div class="fs-btn" onclick="v(); toggleFullScreen()">FULL</div>
+        <div class="edit-toggle" onclick="toggleEditMode()">EDIT</div>
+    </div>
+
+    <!-- 按钮区 -->
+    <div id="btn-grid" class="btn-grid"></div>
+
+    <!-- 触控板区 -->
+    <div id="pad-area">TOUCHPAD</div>
+
+    <!-- 1. 配置模态框 (Profile Settings) -->
+    <div id="profile-modal" class="modal-outer">
+        <div class="modal-content">
+            <h3>Profile Config</h3>
+            <div class="input-group">
+                <label>Grid Columns (3, 4, 5)</label>
+                <select id="cfg-grid-size">
+                    <option value="3">3 x 3</option>
+                    <option value="4">4 x 4</option>
+                    <option value="5">5 x 5</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeProfileConfig()">Cancel</button>
+                <button class="modal-btn btn-delete" onclick="deleteCurrentProfile()">Delete</button>
+                <button class="modal-btn btn-save" onclick="saveProfileConfig()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 按键配置弹窗 (Button Settings) -->
+    <div id="btn-modal" class="modal-outer">
+        <div class="modal-content">
+            <h3>Button Config</h3>
+            <div class="input-group">
+                <label>Label / Name</label>
+                <input type="text" id="cfg-label" placeholder="e.g. Copy">
+            </div>
+            <div class="input-group">
+                <label>
+                    Emoji Icon
+                    <a href="https://emojidb.org/" target="_blank" style="color: #007AFF; text-decoration: none;">Emoji
+                        DB ↗</a>
+                </label>
+                <input type="text" id="cfg-emoji" placeholder="e.g. 🚀">
+            </div>
+            <div class="input-group">
+                <label>
+                    Keys (comma separated)
+                    <a href="https://pynput.readthedocs.io/en/latest/keyboard.html#pynput.keyboard.Key" target="_blank"
+                        style="color: #007AFF; text-decoration: none;">Doc ↗</a>
+                </label>
+                <input type="text" id="cfg-keys" placeholder="ctrl,c">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeBtnConfig()">Cancel</button>
+                <button class="modal-btn btn-save" onclick="saveBtnConfig()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="/static/js/touchpad.js"></script>
+    <script>
+        const socket = io();
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const v = () => { if (navigator.vibrate) navigator.vibrate(25); };
+
+        let editMode = false;
+        let currentEditIndex = -1;
+        let currentProfile = "Default";
+        let sortable = null;
+
+        let macroData = {
+            current: "Default",
+            profiles: {
+                "Default": {
+                    cols: 4,
+                    buttons: Array(16).fill(null).map(() => ({ label: "", emoji: "", keys: "" }))
+                }
+            }
+        };
+
+        // --- 数据加载与同步 ---
+        socket.emit('load_macros');
+        socket.on('macros_loaded', (data) => {
+            if (data && data.profiles) {
+                macroData = data;
+                // 数据结构迁移/补全
+                Object.keys(macroData.profiles).forEach(name => {
+                    if (Array.isArray(macroData.profiles[name])) {
+                        const btns = macroData.profiles[name];
+                        macroData.profiles[name] = { cols: 4, buttons: btns };
+                    }
+                });
+                currentProfile = macroData.current || Object.keys(macroData.profiles)[0] || "Default";
+            }
+            updateProfileUI();
+            renderButtons();
+        });
+
+        function saveToServer() {
+            socket.emit('save_macros', macroData);
+        }
+
+        // --- 配置管理 ---
+        function updateProfileUI() {
+            const select = document.getElementById('profile-select');
+            select.innerHTML = '';
+            Object.keys(macroData.profiles).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.innerText = name;
+                if (name === currentProfile) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function switchProfile(name) {
+            currentProfile = name;
+            macroData.current = name;
+            saveToServer();
+            renderButtons();
+        }
+
+        function addProfile() {
+            const name = prompt("Enter Profile Name:");
+            if (name && !macroData.profiles[name]) {
+                macroData.profiles[name] = {
+                    cols: 4,
+                    buttons: Array(16).fill(null).map(() => ({ label: "", emoji: "", keys: "" }))
+                };
+                currentProfile = name;
+                macroData.current = name;
+                updateProfileUI();
+                saveToServer();
+                renderButtons();
+            }
+        }
+
+        function showProfileConfig() {
+            const profile = macroData.profiles[currentProfile];
+            document.getElementById('cfg-grid-size').value = profile.cols || 4;
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        function closeProfileConfig() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function deleteCurrentProfile() {
+            if (Object.keys(macroData.profiles).length <= 1) {
+                alert("Cannot delete last profile.");
+                return;
+            }
+            if (confirm(`Delete profile "${currentProfile}"?`)) {
+                delete macroData.profiles[currentProfile];
+                currentProfile = Object.keys(macroData.profiles)[0];
+                macroData.current = currentProfile;
+                updateProfileUI();
+                saveToServer();
+                closeProfileConfig();
+                renderButtons();
+            }
+        }
+
+        function saveProfileConfig() {
+            const newCols = parseInt(document.getElementById('cfg-grid-size').value);
+            const profile = macroData.profiles[currentProfile];
+            const target = newCols * newCols;
+
+            // 如果新格子更少，提示用户
+            if (profile.buttons.length > target) {
+                if (!confirm(`Switching to ${newCols}x${newCols} will remove ${profile.buttons.length - target} extra buttons. Continue?`)) {
+                    return;
+                }
+            }
+
+            profile.cols = newCols;
+
+            // 补全或截断格子
+            if (profile.buttons.length < target) {
+                while (profile.buttons.length < target) {
+                    profile.buttons.push({ label: "", emoji: "", keys: "" });
+                }
+            } else if (profile.buttons.length > target) {
+                profile.buttons = profile.buttons.slice(0, target);
+            }
+
+            saveToServer();
+            closeProfileConfig();
+            renderButtons();
+        }
+
+        // --- 按钮渲染与排序 ---
+        function renderButtons() {
+            const grid = document.getElementById('btn-grid');
+            grid.innerHTML = '';
+            const profile = macroData.profiles[currentProfile];
+            grid.style.setProperty('--cols', profile.cols);
+
+            profile.buttons.forEach((cfg, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'macro-btn' + (editMode ? ' editing' : '');
+
+                if (cfg.emoji) {
+                    const em = document.createElement('div');
+                    em.className = 'emoji';
+                    em.innerText = cfg.emoji;
+                    btn.appendChild(em);
+                }
+
+                if (cfg.label) {
+                    const label = document.createElement('div');
+                    label.className = 'label';
+                    label.innerText = cfg.label;
+                    btn.appendChild(label);
+                }
+
+                btn.onclick = (e) => handleBtnClick(i, e);
+                grid.appendChild(btn);
+            });
+
+            initSortable();
+        }
+
+        function initSortable() {
+            if (sortable) sortable.destroy();
+            const grid = document.getElementById('btn-grid');
+            sortable = Sortable.create(grid, {
+                disabled: !editMode,
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                delay: 50,
+                delayOnTouchOnly: true,
+                onEnd: (evt) => {
+                    const buttons = macroData.profiles[currentProfile].buttons;
+                    const item = buttons.splice(evt.oldIndex, 1)[0];
+                    buttons.splice(evt.newIndex, 0, item);
+                    saveToServer();
+                    renderButtons(); // 重新渲染以刷新索引
+                }
+            });
+        }
+
+        function toggleEditMode() {
+            v();
+            editMode = !editMode;
+            document.querySelector('.edit-toggle').innerText = editMode ? 'DONE' : 'EDIT';
+            renderButtons();
+        }
+
+        // --- 按键执行与设置 ---
+        function handleBtnClick(i, e) {
+            v();
+            if (editMode) {
+                openBtnConfig(i);
+            } else {
+                const cfg = macroData.profiles[currentProfile].buttons[i];
+                if (cfg && cfg.keys) {
+                    const keys = cfg.keys.split(',').map(k => k.trim().toLowerCase());
+                    if (keys.length === 1) {
+                        socket.emit('key_action', { key: keys[0], action: 'down' });
+                        setTimeout(() => socket.emit('key_action', { key: keys[0], action: 'up' }), 50);
+                    } else if (keys.length > 1) {
+                        socket.emit('key_combo', { keys: keys });
+                    }
+                }
+            }
+        }
+
+        function openBtnConfig(i) {
+            currentEditIndex = i;
+            const cfg = macroData.profiles[currentProfile].buttons[i];
+            document.getElementById('cfg-label').value = cfg.label || '';
+            document.getElementById('cfg-emoji').value = cfg.emoji || '';
+            document.getElementById('cfg-keys').value = cfg.keys || '';
+            document.getElementById('btn-modal').style.display = 'flex';
+        }
+
+        function closeBtnConfig() {
+            document.getElementById('btn-modal').style.display = 'none';
+        }
+
+        function saveBtnConfig() {
+            macroData.profiles[currentProfile].buttons[currentEditIndex] = {
+                label: document.getElementById('cfg-label').value.trim(),
+                emoji: document.getElementById('cfg-emoji').value.trim(),
+                keys: document.getElementById('cfg-keys').value.trim()
+            };
+            saveToServer();
+            closeBtnConfig();
+            renderButtons();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else if (document.exitFullscreen) document.exitFullscreen();
+        }
+
+        // 触目板
+        const touchpad = new TouchpadModule('pad-area', socket, {
+            getSensitivity: () => parseFloat(localStorage.getItem('mouse_sense')) || 4.0,
+            feedback: v
+        });
+
+    </script>
+</body>
+
+</html>
