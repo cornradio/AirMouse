@@ -5,14 +5,14 @@
             "cols": 4,
             "buttons": [
                 {
-                    "label": "",
+                    "label": "bbb aass",
                     "emoji": "",
                     "keys": ""
                 },
                 {
-                    "label": "",
+                    "label": "aaa",
                     "emoji": "",
-                    "keys": ""
+                    "keys": "a"
                 },
                 {
                     "label": "",
@@ -90,9 +90,9 @@
             "cols": 3,
             "buttons": [
                 {
-                    "label": "like",
-                    "emoji": "❤️",
-                    "keys": "z"
+                    "label": "dislike",
+                    "emoji": "👿",
+                    "keys": "r"
                 },
                 {
                     "label": "up",
@@ -100,9 +100,9 @@
                     "keys": "up"
                 },
                 {
-                    "label": "comment",
-                    "emoji": "💬",
-                    "keys": "x"
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
                 },
                 {
                     "label": "left",
@@ -110,9 +110,9 @@
                     "keys": "left"
                 },
                 {
-                    "label": "pause",
-                    "emoji": "❚❚",
-                    "keys": "space"
+                    "label": "like",
+                    "emoji": "❤️",
+                    "keys": "z"
                 },
                 {
                     "label": "right",
@@ -120,9 +120,9 @@
                     "keys": "right"
                 },
                 {
-                    "label": "page",
-                    "emoji": "📄",
-                    "keys": "f"
+                    "label": "comment",
+                    "emoji": "💬",
+                    "keys": "x"
                 },
                 {
                     "label": "down",
@@ -130,9 +130,9 @@
                     "keys": "down"
                 },
                 {
-                    "label": "f11",
-                    "emoji": "F11",
-                    "keys": "f11"
+                    "label": "page",
+                    "emoji": "📄",
+                    "keys": "f"
                 }
             ]
         }

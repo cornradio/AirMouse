@@ -11,7 +11,6 @@
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
-            touch-action: none;
             outline: none;
             box-sizing: border-box;
         }
@@ -32,15 +31,23 @@
             height: 50px;
             display: flex;
             align-items: center;
-            padding: 0 15px;
+            padding: 0 10px;
             background: #111;
             border-bottom: 1px solid #222;
+            gap: 5px;
         }
 
-        .back-btn {
-            font-size: 14px;
+        .header-btn {
+            font-size: 13px;
             color: #888;
-            padding: 5px 10px;
+            padding: 8px 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .header-btn.active {
+            color: #007AFF !important;
         }
 
         .profile-selector {
@@ -48,7 +55,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 5px;
         }
 
         #profile-select {
@@ -56,31 +63,10 @@
             border: 1px solid #333;
             color: #007AFF;
             font-weight: bold;
-            padding: 4px 8px;
+            padding: 4px 6px;
             border-radius: 6px;
-            max-width: 130px;
-            font-size: 14px;
-        }
-
-        .profile-ops {
-            color: #555;
-            font-size: 22px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .fs-btn,
-        .edit-toggle {
-            font-size: 13px;
-            color: #888;
-            padding: 5px 8px;
-        }
-
-        .edit-toggle {
-            color: #007AFF;
+            max-width: 90px;
+            font-size: 12px;
         }
 
         /* 按钮网格 */
@@ -92,6 +78,9 @@
             flex: 1.2;
             min-height: 0;
             overflow-y: auto;
+            /* 保证宽屏体验 */
+            max-width: 540px;
+            margin: auto;
         }
 
         .macro-btn {
@@ -105,23 +94,29 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
-            transition: transform 0.1s, background 0.2s;
+            transition: transform 0.1s;
+            touch-action: manipulation;
         }
 
-        .macro-btn:active {
-            transform: scale(0.95);
-            background: #333;
+        .macro-btn.sorting {
+            touch-action: none;
+            border: 1px dashed #007AFF;
+            opacity: 0.8;
+            cursor: move;
         }
 
         .macro-btn.editing::after {
             content: "⚙️";
             position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 4px;
-            padding: 2px;
+            top: 4px;
+            right: 4px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+
+        .macro-btn:active {
+            transform: scale(0.96);
+            background: #252525;
         }
 
         .macro-btn .emoji {
@@ -139,13 +134,18 @@
             pointer-events: none;
         }
 
-        /* 拖拽占位符 */
+        /* Sortable Styles */
         .sortable-ghost {
-            opacity: 0.3;
-            background: #007AFF !important;
+            opacity: 0.4;
+            background: #333 !important;
         }
 
-        /* 触摸板 */
+        .sortable-swap-highlight {
+            background: #007AFF !important;
+            border: 2px solid #fff !important;
+            z-index: 10;
+        }
+
         #pad-area {
             flex: 1;
             margin: 10px 15px 20px;
@@ -157,11 +157,10 @@
             justify-content: center;
             color: #222;
             font-weight: bold;
-            letter-spacing: 5px;
             font-size: 12px;
+            letter-spacing: 5px;
         }
 
-        /* 弹窗通用样式 */
         .modal-outer {
             display: none;
             position: fixed;
@@ -169,7 +168,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 2000;
             align-items: center;
             justify-content: center;
@@ -177,16 +176,31 @@
 
         .modal-content {
             background: #1a1a1a;
-            width: 85%;
+            width: 90%;
             max-width: 400px;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 20px;
             border: 1px solid #333;
         }
 
         .modal-content h3 {
-            margin-top: 0;
+            margin: 0;
             color: #007AFF;
+            font-size: 16px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-delete-btn {
+            color: #FF3B30;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .input-group {
@@ -196,9 +210,10 @@
         .input-group label {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 12px;
             color: #888;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .input-group input,
@@ -207,23 +222,24 @@
             background: #000;
             border: 1px solid #333;
             color: #fff;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 16px;
         }
 
         .modal-actions {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         .modal-btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             border: none;
             font-weight: bold;
-            text-align: center;
+            font-size: 14px;
         }
 
         .btn-save {
@@ -243,72 +259,72 @@
     </style>
 </head>
 
-<body onclick="initAudio()">
+<body>
     <div class="header">
-        <div class="back-btn" onclick="v(); window.location.href='/'">BACK</div>
+        <div class="header-btn" onclick="v(); window.location.href='/'">BACK</div>
         <div class="profile-selector">
             <select id="profile-select" onchange="v(); switchProfile(this.value)"></select>
-            <div class="profile-ops" onclick="v(); addProfile()">+</div>
-            <div class="profile-ops" style="font-size: 16px; margin-left: -5px;" onclick="v(); showProfileConfig()">⚙️
-            </div>
+            <div class="header-btn" style="color:#666" onclick="v(); addProfile()">➕</div>
+            <div class="header-btn" style="color:#666" onclick="v(); showProfileConfig()">⚙️</div>
         </div>
-        <div class="fs-btn" onclick="v(); toggleFullScreen()">FULL</div>
-        <div class="edit-toggle" onclick="toggleEditMode()">EDIT</div>
+        <div class="header-btn" onclick="v(); toggleFullScreen()">FULL</div>
+        <div id="sort-toggle" class="header-btn" onclick="toggleSortMode()">SORT</div>
+        <div id="edit-toggle" class="header-btn" onclick="toggleEditMode()">EDIT</div>
     </div>
 
-    <!-- 按钮区 -->
     <div id="btn-grid" class="btn-grid"></div>
-
-    <!-- 触控板区 -->
     <div id="pad-area">TOUCHPAD</div>
 
-    <!-- 1. 配置模态框 (Profile Settings) -->
+    <!-- Modals -->
     <div id="profile-modal" class="modal-outer">
         <div class="modal-content">
-            <h3>Profile Config</h3>
+            <h3>Profile Settings</h3>
             <div class="input-group">
-                <label>Grid Columns (3, 4, 5)</label>
+                <label>Grid Size</label>
                 <select id="cfg-grid-size">
-                    <option value="3">3 x 3</option>
-                    <option value="4">4 x 4</option>
-                    <option value="5">5 x 5</option>
+                    <option value="3">3 x 3 (9 Buttons)</option>
+                    <option value="4">4 x 4 (16 Buttons)</option>
+                    <option value="5">5 x 5 (25 Buttons)</option>
                 </select>
             </div>
             <div class="modal-actions">
                 <button class="modal-btn btn-cancel" onclick="closeProfileConfig()">Cancel</button>
+                <button class="modal-btn btn-cancel" onclick="v(); duplicateProfile()">Copy</button>
                 <button class="modal-btn btn-delete" onclick="deleteCurrentProfile()">Delete</button>
                 <button class="modal-btn btn-save" onclick="saveProfileConfig()">Save</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. 按键配置弹窗 (Button Settings) -->
     <div id="btn-modal" class="modal-outer">
         <div class="modal-content">
-            <h3>Button Config</h3>
+            <div class="modal-header">
+                <h3>Edit Button</h3>
+                <div class="modal-delete-btn" onclick="deleteCurrentButton()">Delete</div>
+            </div>
             <div class="input-group">
-                <label>Label / Name</label>
+                <label>Button Label</label>
                 <input type="text" id="cfg-label" placeholder="e.g. Copy">
             </div>
             <div class="input-group">
                 <label>
                     Emoji Icon
-                    <a href="https://emojidb.org/" target="_blank" style="color: #007AFF; text-decoration: none;">Emoji
-                        DB ↗</a>
+                    <a href="https://emojidb.org/" target="_blank"
+                        style="color:#007AFF;text-decoration:none;font-size:10px;">Emoji DB ↗</a>
                 </label>
-                <input type="text" id="cfg-emoji" placeholder="e.g. 🚀">
+                <input type="text" id="cfg-emoji" placeholder="🚀">
             </div>
             <div class="input-group">
                 <label>
-                    Keys (comma separated)
+                    Macro Keys (comma separated)
                     <a href="https://pynput.readthedocs.io/en/latest/keyboard.html#pynput.keyboard.Key" target="_blank"
-                        style="color: #007AFF; text-decoration: none;">Doc ↗</a>
+                        style="color:#007AFF;text-decoration:none;font-size:10px;">Doc ↗</a>
                 </label>
                 <input type="text" id="cfg-keys" placeholder="ctrl,c">
             </div>
             <div class="modal-actions">
                 <button class="modal-btn btn-cancel" onclick="closeBtnConfig()">Cancel</button>
-                <button class="modal-btn btn-save" onclick="saveBtnConfig()">Save</button>
+                <button class="modal-btn btn-save" onclick="saveBtnConfig()">Apply</button>
             </div>
         </div>
     </div>
@@ -319,56 +335,39 @@
     <script>
         const socket = io();
         let audioCtx = null;
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
         const v = () => { if (navigator.vibrate) navigator.vibrate(25); };
 
         let editMode = false;
+        let sortMode = false;
         let currentEditIndex = -1;
         let currentProfile = "Default";
-        let sortable = null;
+        let sortInst = null;
 
         let macroData = {
             current: "Default",
-            profiles: {
-                "Default": {
-                    cols: 4,
-                    buttons: Array(16).fill(null).map(() => ({ label: "", emoji: "", keys: "" }))
-                }
-            }
+            profiles: { "Default": { cols: 4, buttons: Array(16).fill(null).map(() => ({ label: "", emoji: "", keys: "" })) } }
         };
 
-        // --- 数据加载与同步 ---
+        // --- Data Sync ---
         socket.emit('load_macros');
         socket.on('macros_loaded', (data) => {
             if (data && data.profiles) {
                 macroData = data;
-                // 数据结构迁移/补全
-                Object.keys(macroData.profiles).forEach(name => {
-                    if (Array.isArray(macroData.profiles[name])) {
-                        const btns = macroData.profiles[name];
-                        macroData.profiles[name] = { cols: 4, buttons: btns };
-                    }
-                });
                 currentProfile = macroData.current || Object.keys(macroData.profiles)[0] || "Default";
             }
             updateProfileUI();
             renderButtons();
         });
 
-        function saveToServer() {
-            socket.emit('save_macros', macroData);
-        }
+        function saveToServer() { socket.emit('save_macros', macroData); }
 
-        // --- 配置管理 ---
         function updateProfileUI() {
             const select = document.getElementById('profile-select');
             select.innerHTML = '';
             Object.keys(macroData.profiles).forEach(name => {
                 const opt = document.createElement('option');
-                opt.value = name;
-                opt.innerText = name;
+                opt.value = name; opt.innerText = name;
                 if (name === currentProfile) opt.selected = true;
                 select.appendChild(opt);
             });
@@ -382,75 +381,29 @@
         }
 
         function addProfile() {
-            const name = prompt("Enter Profile Name:");
+            const name = prompt("New Profile Name:");
             if (name && !macroData.profiles[name]) {
-                macroData.profiles[name] = {
-                    cols: 4,
-                    buttons: Array(16).fill(null).map(() => ({ label: "", emoji: "", keys: "" }))
-                };
+                macroData.profiles[name] = { cols: 4, buttons: Array(16).fill(null).map(() => ({ label: "", emoji: "", keys: "" })) };
                 currentProfile = name;
                 macroData.current = name;
-                updateProfileUI();
-                saveToServer();
-                renderButtons();
+                updateProfileUI(); saveToServer(); renderButtons();
             }
         }
 
-        function showProfileConfig() {
-            const profile = macroData.profiles[currentProfile];
-            document.getElementById('cfg-grid-size').value = profile.cols || 4;
-            document.getElementById('profile-modal').style.display = 'flex';
-        }
-
-        function closeProfileConfig() {
-            document.getElementById('profile-modal').style.display = 'none';
-        }
-
-        function deleteCurrentProfile() {
-            if (Object.keys(macroData.profiles).length <= 1) {
-                alert("Cannot delete last profile.");
-                return;
-            }
-            if (confirm(`Delete profile "${currentProfile}"?`)) {
-                delete macroData.profiles[currentProfile];
-                currentProfile = Object.keys(macroData.profiles)[0];
-                macroData.current = currentProfile;
-                updateProfileUI();
-                saveToServer();
-                closeProfileConfig();
-                renderButtons();
+        function duplicateProfile() {
+            const newName = prompt(`Copy current profile "${currentProfile}" to:`);
+            if (newName && !macroData.profiles[newName]) {
+                // 深拷贝当前配置
+                macroData.profiles[newName] = JSON.parse(JSON.stringify(macroData.profiles[currentProfile]));
+                currentProfile = newName;
+                macroData.current = newName;
+                updateProfileUI(); saveToServer(); renderButtons();
+            } else if (newName) {
+                alert("Profile name already exists!");
             }
         }
 
-        function saveProfileConfig() {
-            const newCols = parseInt(document.getElementById('cfg-grid-size').value);
-            const profile = macroData.profiles[currentProfile];
-            const target = newCols * newCols;
-
-            // 如果新格子更少，提示用户
-            if (profile.buttons.length > target) {
-                if (!confirm(`Switching to ${newCols}x${newCols} will remove ${profile.buttons.length - target} extra buttons. Continue?`)) {
-                    return;
-                }
-            }
-
-            profile.cols = newCols;
-
-            // 补全或截断格子
-            if (profile.buttons.length < target) {
-                while (profile.buttons.length < target) {
-                    profile.buttons.push({ label: "", emoji: "", keys: "" });
-                }
-            } else if (profile.buttons.length > target) {
-                profile.buttons = profile.buttons.slice(0, target);
-            }
-
-            saveToServer();
-            closeProfileConfig();
-            renderButtons();
-        }
-
-        // --- 按钮渲染与排序 ---
+        // --- Render ---
         function renderButtons() {
             const grid = document.getElementById('btn-grid');
             grid.innerHTML = '';
@@ -459,90 +412,170 @@
 
             profile.buttons.forEach((cfg, i) => {
                 const btn = document.createElement('div');
-                btn.className = 'macro-btn' + (editMode ? ' editing' : '');
+                btn.className = 'macro-btn';
+                if (editMode) btn.classList.add('editing');
+                if (sortMode) btn.classList.add('sorting');
 
                 if (cfg.emoji) {
                     const em = document.createElement('div');
-                    em.className = 'emoji';
-                    em.innerText = cfg.emoji;
+                    em.className = 'emoji'; em.innerText = cfg.emoji;
                     btn.appendChild(em);
                 }
-
                 if (cfg.label) {
                     const label = document.createElement('div');
-                    label.className = 'label';
-                    label.innerText = cfg.label;
+                    label.className = 'label'; label.innerText = cfg.label;
                     btn.appendChild(label);
                 }
 
-                btn.onpointerdown = (e) => handleBtnDown(i, e);
-                btn.onpointerup = (e) => handleBtnUp(i, e);
-                btn.onpointercancel = (e) => handleBtnUp(i, e);
-                btn.onclick = (e) => {
-                    if (editMode) {
-                        v();
-                        openBtnConfig(i);
-                    }
-                };
+                // Interactions
+                if (!editMode && !sortMode) {
+                    btn.onpointerdown = () => handleBtnDown(i);
+                    btn.onpointerup = () => handleBtnUp(i);
+                    btn.onpointercancel = () => handleBtnUp(i);
+                } else if (editMode) {
+                    btn.onclick = () => { v(); openBtnConfig(i); };
+                }
+
                 grid.appendChild(btn);
             });
 
             initSortable();
         }
 
+        // --- Sorting ---
         function initSortable() {
-            if (sortable) sortable.destroy();
+            console.log("[Sort] Function called. sortMode is:", sortMode);
             const grid = document.getElementById('btn-grid');
-            sortable = Sortable.create(grid, {
-                disabled: !editMode,
-                animation: 150,
-                swap: true, // 开启交换模式
-                swapClass: 'sortable-swap-highlight',
-                ghostClass: 'sortable-ghost',
-                delay: 100, // 增加延迟，防止误触发点击
-                delayOnTouchOnly: true,
-                onEnd: (evt) => {
-                    const buttons = macroData.profiles[currentProfile].buttons;
-                    // 直接交换两个位置的数据，不移动其他按键
-                    const temp = buttons[evt.oldIndex];
-                    buttons[evt.oldIndex] = buttons[evt.newIndex];
-                    buttons[evt.newIndex] = temp;
 
-                    saveToServer();
-                    renderButtons();
-                }
-            });
-        }
+            if (sortInst) {
+                console.log("[Sort] Destroying existing instance");
+                sortInst.destroy();
+                sortInst = null;
+            }
 
-        function toggleEditMode() {
-            v();
-            editMode = !editMode;
-            document.querySelector('.edit-toggle').innerText = editMode ? 'DONE' : 'EDIT';
-            renderButtons();
-        }
+            if (!sortMode) {
+                console.log("[Sort] Mode is OFF, stopping here.");
+                return;
+            }
 
-        // --- 按键执行与设置 ---
-        function handleBtnDown(i, e) {
-            if (editMode) return;
-            v();
-            const cfg = macroData.profiles[currentProfile].buttons[i];
-            if (cfg && cfg.keys) {
-                const keys = cfg.keys.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
-                keys.forEach(k => {
-                    socket.emit('key_action', { key: k, action: 'down' });
+            if (typeof Sortable === 'undefined') {
+                console.error("[Sort] ERROR: Sortable library is NOT defined in global scope.");
+                alert("拖放库加载失败，请刷新页面或检查网络。");
+                return;
+            }
+
+            console.log("[Sort] Starting initialization on grid...", grid);
+
+            try {
+                sortInst = new Sortable(grid, {
+                    animation: 200,
+                    swap: true,
+                    swapClass: 'sortable-swap-highlight',
+                    ghostClass: 'sortable-ghost',
+                    forceFallback: true,
+                    onStart: function () { console.log("[Sort] Dragging started"); v(); },
+                    onEnd: function (evt) {
+                        console.log(`[Sort] Dragging ended: ${evt.oldIndex} -> ${evt.newIndex}`);
+                        if (evt.oldIndex === undefined || evt.newIndex === undefined || evt.oldIndex === evt.newIndex) {
+                            console.log("[Sort] No position change");
+                            return;
+                        }
+
+                        const btns = macroData.profiles[currentProfile].buttons;
+                        console.log("[Sort] Array Swap triggered");
+                        const temp = btns[evt.oldIndex];
+                        btns[evt.oldIndex] = btns[evt.newIndex];
+                        btns[evt.newIndex] = temp;
+
+                        saveToServer();
+                        setTimeout(() => {
+                            console.log("[Sort] UI Refresh triggered");
+                            renderButtons();
+                        }, 50);
+                    }
                 });
+                console.log("[Sort] Sortable successfully initialized.");
+            } catch (err) {
+                console.error("[Sort] Exception during Sortable creation:", err);
             }
         }
 
-        function handleBtnUp(i, e) {
-            if (editMode) return;
+        // --- Mode Toggles ---
+        function toggleEditMode() {
+            v();
+            editMode = !editMode;
+            if (editMode) sortMode = false;
+            updateHeaderUI();
+            renderButtons();
+        }
+
+        function toggleSortMode() {
+            v();
+            sortMode = !sortMode;
+            if (sortMode) editMode = false;
+            updateHeaderUI();
+            renderButtons();
+        }
+
+        function updateHeaderUI() {
+            document.getElementById('edit-toggle').classList.toggle('active', editMode);
+            document.getElementById('sort-toggle').classList.toggle('active', sortMode);
+        }
+
+        // --- Handlers ---
+        function handleBtnDown(i) {
+            initAudio(); v();
             const cfg = macroData.profiles[currentProfile].buttons[i];
             if (cfg && cfg.keys) {
-                const keys = cfg.keys.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
-                // 逆序释放，确保如 ctrl+c 是先松开 c 再松开 ctrl
-                [...keys].reverse().forEach(k => {
-                    socket.emit('key_action', { key: k, action: 'up' });
-                });
+                cfg.keys.split(',').forEach(k => socket.emit('key_action', { key: k.trim().toLowerCase(), action: 'down' }));
+            }
+        }
+
+        function handleBtnUp(i) {
+            const cfg = macroData.profiles[currentProfile].buttons[i];
+            if (cfg && cfg.keys) {
+                cfg.keys.split(',').reverse().forEach(k => socket.emit('key_action', { key: k.trim().toLowerCase(), action: 'up' }));
+            }
+        }
+
+        // --- Config ---
+        function showProfileConfig() {
+            document.getElementById('cfg-grid-size').value = macroData.profiles[currentProfile].cols;
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+        function closeProfileConfig() { document.getElementById('profile-modal').style.display = 'none'; }
+
+        function saveProfileConfig() {
+            const newCols = parseInt(document.getElementById('cfg-grid-size').value);
+            const profile = macroData.profiles[currentProfile];
+            const target = newCols * newCols;
+            if (profile.buttons.length > target && !confirm(`This will truncate extra buttons. OK?`)) return;
+
+            profile.cols = newCols;
+            if (profile.buttons.length < target) {
+                while (profile.buttons.length < target) profile.buttons.push({ label: "", emoji: "", keys: "" });
+            } else {
+                profile.buttons = profile.buttons.slice(0, target);
+            }
+            saveToServer(); closeProfileConfig(); renderButtons();
+        }
+
+        function deleteCurrentProfile() {
+            if (Object.keys(macroData.profiles).length <= 1) return;
+            if (confirm(`Delete current profile?`)) {
+                delete macroData.profiles[currentProfile];
+                currentProfile = Object.keys(macroData.profiles)[0];
+                macroData.current = currentProfile;
+                updateProfileUI(); saveToServer(); closeProfileConfig(); renderButtons();
+            }
+        }
+
+        function deleteCurrentButton() {
+            if (confirm("Permanently clear this button's data?")) {
+                macroData.profiles[currentProfile].buttons[currentEditIndex] = { label: "", emoji: "", keys: "" };
+                saveToServer();
+                closeBtnConfig();
+                renderButtons();
             }
         }
 
@@ -554,20 +587,14 @@
             document.getElementById('cfg-keys').value = cfg.keys || '';
             document.getElementById('btn-modal').style.display = 'flex';
         }
-
-        function closeBtnConfig() {
-            document.getElementById('btn-modal').style.display = 'none';
-        }
-
+        function closeBtnConfig() { document.getElementById('btn-modal').style.display = 'none'; }
         function saveBtnConfig() {
             macroData.profiles[currentProfile].buttons[currentEditIndex] = {
                 label: document.getElementById('cfg-label').value.trim(),
                 emoji: document.getElementById('cfg-emoji').value.trim(),
                 keys: document.getElementById('cfg-keys').value.trim()
             };
-            saveToServer();
-            closeBtnConfig();
-            renderButtons();
+            saveToServer(); closeBtnConfig(); renderButtons();
         }
 
         function toggleFullScreen() {
@@ -575,12 +602,10 @@
             else if (document.exitFullscreen) document.exitFullscreen();
         }
 
-        // 触目板
         const touchpad = new TouchpadModule('pad-area', socket, {
             getSensitivity: () => parseFloat(localStorage.getItem('mouse_sense')) || 4.0,
             feedback: v
         });
-
     </script>
 </body>
 
