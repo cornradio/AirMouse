@@ -90,9 +90,9 @@
             "cols": 3,
             "buttons": [
                 {
-                    "label": "page",
-                    "emoji": "📄",
-                    "keys": "f"
+                    "label": "",
+                    "emoji": "F11",
+                    "keys": "f11"
                 },
                 {
                     "label": "up",
@@ -100,9 +100,9 @@
                     "keys": "up"
                 },
                 {
-                    "label": "",
-                    "emoji": "F11",
-                    "keys": "f11"
+                    "label": "dislike",
+                    "emoji": "🚫",
+                    "keys": "r"
                 },
                 {
                     "label": "left",
@@ -130,9 +130,9 @@
                     "keys": "down"
                 },
                 {
-                    "label": "dislike",
-                    "emoji": "👿",
-                    "keys": "r"
+                    "label": "page",
+                    "emoji": "📄",
+                    "keys": "f"
                 }
             ]
         },

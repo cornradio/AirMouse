@@ -161,6 +161,14 @@
             letter-spacing: 5px;
         }
 
+        /* 主布局容器 */
+        .main-layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
         .modal-outer {
             display: none;
             position: fixed;
@@ -256,6 +264,43 @@
             background: #FF3B30;
             color: #fff;
         }
+
+        /* 横屏适配：左右并排 */
+        @media (orientation: portrait) {
+            .btn-grid {
+                max-height: 48%;
+            }
+        }
+
+        @media (orientation: landscape) {
+            .main-layout {
+                flex-direction: row;
+            }
+
+            #pad-area {
+                display: flex;
+                margin: 10px 15px 10px 5px;
+                flex: 1;
+            }
+
+            .btn-grid {
+                max-width: 42%;
+                margin: 0;
+                flex: 1.5;
+                /* 按钮区占大头 */
+                padding: 10px;
+            }
+
+            .header {
+                height: 40px;
+                padding: 0 5px;
+            }
+
+            .header-btn {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 
@@ -272,8 +317,10 @@
         <div id="edit-toggle" class="header-btn" onclick="toggleEditMode()">EDIT</div>
     </div>
 
-    <div id="btn-grid" class="btn-grid"></div>
-    <div id="pad-area">TOUCHPAD</div>
+    <div class="main-layout">
+        <div id="btn-grid" class="btn-grid"></div>
+        <div id="pad-area">TOUCHPAD</div>
+    </div>
 
     <!-- Modals -->
     <div id="profile-modal" class="modal-outer">
