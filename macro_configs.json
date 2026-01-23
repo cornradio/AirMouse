@@ -90,24 +90,24 @@
             "cols": 3,
             "buttons": [
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "like",
+                    "emoji": "❤️",
+                    "keys": "z"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "up",
+                    "emoji": "⬆️",
+                    "keys": "up"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "comment",
+                    "emoji": "💬",
+                    "keys": "x"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "left",
+                    "emoji": "⬅️",
+                    "keys": "left"
                 },
                 {
                     "label": "pause",
@@ -115,14 +115,14 @@
                     "keys": "space"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "right",
+                    "emoji": "➡️",
+                    "keys": "right"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "page",
+                    "emoji": "📄",
+                    "keys": "f"
                 },
                 {
                     "label": "down",
@@ -130,9 +130,9 @@
                     "keys": "down"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "f11",
+                    "emoji": "F11",
+                    "keys": "f11"
                 }
             ]
         }

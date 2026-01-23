@@ -314,7 +314,7 @@
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/dist/sortable.full.js"></script>
     <script src="/static/js/touchpad.js"></script>
     <script>
         const socket = io();
@@ -475,7 +475,15 @@
                     btn.appendChild(label);
                 }
 
-                btn.onclick = (e) => handleBtnClick(i, e);
+                btn.onpointerdown = (e) => handleBtnDown(i, e);
+                btn.onpointerup = (e) => handleBtnUp(i, e);
+                btn.onpointercancel = (e) => handleBtnUp(i, e);
+                btn.onclick = (e) => {
+                    if (editMode) {
+                        v();
+                        openBtnConfig(i);
+                    }
+                };
                 grid.appendChild(btn);
             });
 
@@ -487,16 +495,21 @@
             const grid = document.getElementById('btn-grid');
             sortable = Sortable.create(grid, {
                 disabled: !editMode,
-                animation: 200,
+                animation: 150,
+                swap: true, // 开启交换模式
+                swapClass: 'sortable-swap-highlight',
                 ghostClass: 'sortable-ghost',
-                delay: 50,
+                delay: 100, // 增加延迟，防止误触发点击
                 delayOnTouchOnly: true,
                 onEnd: (evt) => {
                     const buttons = macroData.profiles[currentProfile].buttons;
-                    const item = buttons.splice(evt.oldIndex, 1)[0];
-                    buttons.splice(evt.newIndex, 0, item);
+                    // 直接交换两个位置的数据，不移动其他按键
+                    const temp = buttons[evt.oldIndex];
+                    buttons[evt.oldIndex] = buttons[evt.newIndex];
+                    buttons[evt.newIndex] = temp;
+
                     saveToServer();
-                    renderButtons(); // 重新渲染以刷新索引
+                    renderButtons();
                 }
             });
         }
@@ -509,21 +522,27 @@
         }
 
         // --- 按键执行与设置 ---
-        function handleBtnClick(i, e) {
+        function handleBtnDown(i, e) {
+            if (editMode) return;
             v();
-            if (editMode) {
-                openBtnConfig(i);
-            } else {
-                const cfg = macroData.profiles[currentProfile].buttons[i];
-                if (cfg && cfg.keys) {
-                    const keys = cfg.keys.split(',').map(k => k.trim().toLowerCase());
-                    if (keys.length === 1) {
-                        socket.emit('key_action', { key: keys[0], action: 'down' });
-                        setTimeout(() => socket.emit('key_action', { key: keys[0], action: 'up' }), 50);
-                    } else if (keys.length > 1) {
-                        socket.emit('key_combo', { keys: keys });
-                    }
-                }
+            const cfg = macroData.profiles[currentProfile].buttons[i];
+            if (cfg && cfg.keys) {
+                const keys = cfg.keys.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+                keys.forEach(k => {
+                    socket.emit('key_action', { key: k, action: 'down' });
+                });
+            }
+        }
+
+        function handleBtnUp(i, e) {
+            if (editMode) return;
+            const cfg = macroData.profiles[currentProfile].buttons[i];
+            if (cfg && cfg.keys) {
+                const keys = cfg.keys.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+                // 逆序释放，确保如 ctrl+c 是先松开 c 再松开 ctrl
+                [...keys].reverse().forEach(k => {
+                    socket.emit('key_action', { key: k, action: 'up' });
+                });
             }
         }
 
