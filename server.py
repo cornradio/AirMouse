@@ -52,6 +52,9 @@ def vibe_test():
 @app.route('/t')
 def air_mouse_test():
     return render_template('t.html')
+@app.route('/r')
+def real_mouse_page():
+    return render_template('realmouse.html')
 
 # --- 鼠标控制逻辑 ---
 @socketio.on('move')

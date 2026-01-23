@@ -89,11 +89,12 @@ python server.py
 ```bash
 @socketio.on('scroll')
 def handle_scroll(data):
-    # 处理双指滑动或按钮连发发来的滚动信号
-    mouse.scroll(0, -data['dy']) # 这里改成 -data['dy'] 就可以了
-```
-
+    
 ## 更新日志
+2026-01-23 Day3
+- [x]  两个手指快速抬起导致识别成鼠标跳转修复
+- [x]  “单指长按拖拽”功能
+
 
 2026-01-21 Day2
 - [x]  点击返回时强制清除所有长按功能，以防止影响触控

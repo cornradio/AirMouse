@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RealMouse | 动感摇杆</title>
+    <style>
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 滚轮样式 */
+        #scroll-container {
+            width: 80%;
+            height: 200px;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 2px solid #333;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scroll-texture {
+            width: 100%;
+            height: 200%;
+            position: absolute;
+            background-image: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 19px,
+                    #222 19px,
+                    #222 20px);
+            pointer-events: none;
+        }
+
+        #scroll-label {
+            z-index: 10;
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* 摇杆样式 */
+        #joystick-container {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
+            border-radius: 50%;
+            border: 3px solid #1a1a1a;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #joystick-knob {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            border-radius: 50%;
+            border: 2px solid #444;
+            position: absolute;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 0.2s;
+        }
+
+        #joystick-knob.active {
+            box-shadow: 0 0 20px rgba(0, 122, 255, 0.5);
+            border-color: #007AFF;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #888;
+            border: 1px solid #333;
+        }
+
+        .back-btn:active {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="back-btn" onclick="window.location.href='/'">BACK</div>
+
+    <div class="container">
+        <!-- 动量滚轮 -->
+        <div id="scroll-container">
+            <div class="scroll-texture" id="scroll-texture"></div>
+            <div id="scroll-label">Momentum Scroll</div>
+        </div>
+
+        <!-- 摇杆移动 -->
+        <div id="joystick-container">
+            <div id="joystick-knob"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        // 统一反馈系统
+        const feedback = () => { if (navigator.vibrate) navigator.vibrate(20); };
+
+        // --- 摇杆逻辑 ---
+        const jContainer = document.getElementById('joystick-container');
+        const jKnob = document.getElementById('joystick-knob');
+        let jActive = false;
+        let jBaseX, jBaseY;
+        let jScale = 0.15; // 速度系数
+        let jX = 0, jY = 0;
+        let moveTimer = null;
+
+        const startJoystick = (e) => {
+            feedback();
+            jActive = true;
+            jKnob.classList.add('active');
+            const touch = e.targetTouches[0];
+            const rect = jContainer.getBoundingClientRect();
+            jBaseX = rect.left + rect.width / 2;
+            jBaseY = rect.top + rect.height / 2;
+            moveTimer = setInterval(updateMove, 16);
+        };
+
+        const moveJoystick = (e) => {
+            if (!jActive) return;
+            e.preventDefault();
+            const touch = e.targetTouches[0];
+            let dx = touch.clientX - jBaseX;
+            let dy = touch.clientY - jBaseY;
+            const dist = Math.hypot(dx, dy);
+            const maxDist = 70;
+
+            if (dist > maxDist) {
+                dx = (dx / dist) * maxDist;
+                dy = (dy / dist) * maxDist;
+            }
+
+            jX = dx; jY = dy;
+            jKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+        };
+
+        const stopJoystick = () => {
+            jActive = false;
+            jKnob.classList.remove('active');
+            jKnob.style.transform = `translate(0px, 0px)`;
+            clearInterval(moveTimer);
+            jX = 0; jY = 0;
+        };
+
+        const updateMove = () => {
+            if (jX !== 0 || jY !== 0) {
+                socket.emit('move', {
+                    dx: jX * jScale,
+                    dy: jY * jScale
+                });
+            }
+        };
+
+        jContainer.addEventListener('touchstart', startJoystick);
+        jContainer.addEventListener('touchmove', moveJoystick);
+        jContainer.addEventListener('touchend', stopJoystick);
+        jContainer.addEventListener('touchcancel', stopJoystick);
+
+        // --- 滚轮逻辑 (动量) ---
+        const sContainer = document.getElementById('scroll-container');
+        const sTexture = document.getElementById('scroll-texture');
+        let sLastY = 0, sVelocity = 0, sScrolling = false;
+        let sVisualOffset = 0;
+        let momentumTimer = null;
+
+        const startScroll = (e) => {
+            sScrolling = true;
+            sVelocity = 0;
+            sLastY = e.targetTouches[0].clientY;
+            cancelAnimationFrame(momentumTimer);
+        };
+
+        const moveScroll = (e) => {
+            if (!sScrolling) return;
+            const cy = e.targetTouches[0].clientY;
+            const dy = cy - sLastY;
+
+            // 物理滚动
+            socket.emit('scroll', { dy: dy > 0 ? 1 : -1 });
+
+            // 计算瞬时速度用于动量
+            sVelocity = dy;
+            sLastY = cy;
+
+            // 视觉反馈
+            sVisualOffset += dy;
+            sTexture.style.transform = `translateY(${sVisualOffset % 20}px)`;
+        };
+
+        const stopScroll = () => {
+            sScrolling = false;
+            if (Math.abs(sVelocity) > 2) {
+                requestMomentum();
+            }
+        };
+
+        const requestMomentum = () => {
+            if (Math.abs(sVelocity) < 0.5) return;
+
+            // 发送滚动指令
+            socket.emit('scroll', { dy: sVelocity > 0 ? 1 : -1 });
+
+            // 衰减速度
+            sVelocity *= 0.92;
+
+            // 视觉反馈
+            sVisualOffset += sVelocity;
+            sTexture.style.transform = `translateY(${sVisualOffset % 20}px)`;
+
+            momentumTimer = requestAnimationFrame(requestMomentum);
+        };
+
+        sContainer.addEventListener('touchstart', startScroll);
+        sContainer.addEventListener('touchmove', moveScroll);
+        sContainer.addEventListener('touchend', stopScroll);
+        sContainer.addEventListener('touchcancel', stopScroll);
+
+    </script>
+</body>
+
+</html>

@@ -60,11 +60,11 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
             display: flex;
             flex-direction: column;
             gap: 4px;
             flex: 1;
+            padding: 2px;
         }
 
         /* 输入区 */
@@ -114,34 +114,41 @@
             font-weight: bold;
         }
 
-        .keyboard-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            width: 100%;
-        }
-
-        .row {
-            display: flex;
-            gap: 2px;
-            width: 100%;
-            justify-content: center;
-        }
-
         /* 基础按钮 */
         button {
             background: #1a1a1a;
             border: 1px solid #333;
             color: #eee;
-            border-radius: 4px;
-            font-size: 11px;
+            border-radius: 6px;
+            font-size: 13px;
             font-weight: bold;
-            height: 42px;
+            height: 100%;
+            /* 让按钮随行高自适应 */
+            min-height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex: 1;
+            transition: all 0.1s;
         }
+
+        .keyboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            flex: 1;
+            /* 占据剩余所有垂直空间 */
+        }
+
+        .row {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+            flex: 1;
+            /* 每一行平分垂直空间 */
+        }
+
 
         /* 交互反馈 */
         button:active {
@@ -156,11 +163,10 @@
 
         /* 键宽比例 */
         .k-f {
-            height: 36px;
-            font-size: 9px;
-            color: #666;
+            color: #888;
             background: #0d0d0d;
         }
+
 
         .esc {
             flex: 0.8;
@@ -207,19 +213,28 @@
         .footer-nav {
             width: 100%;
             display: flex;
-            justify-content: center;
-            padding: 10px 0;
+            justify-content: space-around;
+            padding: 5px 0;
+            background: #000;
         }
 
         .nav-btn {
-            background: transparent;
+            background: #333;
             border: none;
-            color: #666;
-            padding: 10px 30px;
-            border-radius: 20px;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 6px;
             font-size: 12px;
             font-weight: bold;
+            flex: 0 1 auto;
+            min-height: 36px;
         }
+
+        .tablet-mode button {
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
 
         /* 强制横屏逻辑 (针对手机) */
         @media screen and (orientation: portrait) and (max-width: 1000px) {
@@ -404,7 +419,8 @@
         </div>
 
         <div class="footer-nav">
-            <button onclick="v(); v(); goBack()" class="nav-btn">键盘已强制横置</button>
+            <button onclick="v(); goBack()" class="nav-btn">返回主页</button>
+            <button id="tablet-toggle" onclick="v(); toggleTablet()" class="nav-btn">平板模式</button>
         </div>
     </div>
 
@@ -539,6 +555,19 @@
                 window.location.href = '/';
             }, 50);
         }
+
+        function toggleTablet() {
+            document.body.classList.toggle('tablet-mode');
+            const isTablet = document.body.classList.contains('tablet-mode');
+            document.getElementById('tablet-toggle').innerText = isTablet ? '普通模式' : '平板模式';
+            localStorage.setItem('kb_tablet_mode', isTablet);
+        }
+
+        // 初始化平板模式
+        if (localStorage.getItem('kb_tablet_mode') === 'true') {
+            toggleTablet();
+        }
+
         // 1. 动态高度补丁 (防止键盘弹出时遮挡或布局跳动)
         function resetHeight() {
             let vh = window.innerHeight * 0.01;
