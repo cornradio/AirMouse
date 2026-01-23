@@ -3,6 +3,7 @@ from OpenSSL import crypto
 import socket
 import psutil
 import json
+import time
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pynput.mouse import Controller, Button
@@ -33,7 +34,9 @@ SPECIAL_KEYS = {
     'enter': Key.enter, 'esc': Key.esc, 'tab': Key.tab, 'backspace': Key.backspace,
     'space': Key.space, 'delete': Key.delete, 'up': Key.up, 'down': Key.down, 'left': Key.left, 'right': Key.right,
     'f1': Key.f1, 'f2': Key.f2, 'f3': Key.f3, 'f4': Key.f4, 'f5': Key.f5, 'f6': Key.f6,
-    'f7': Key.f7, 'f8': Key.f8, 'f9': Key.f9, 'f10': Key.f10, 'f11': Key.f11, 'f12': Key.f12
+    'f7': Key.f7, 'f8': Key.f8, 'f9': Key.f9, 'f10': Key.f10, 'f11': Key.f11, 'f12': Key.f12,
+    # 符号别名
+    'comma': ',', 'dot': '.', 'slash': '/', 'semicolon': ';', 'quote': "'", 'bracket_l': '[', 'bracket_r': ']'
 }
 
 @app.route('/')
@@ -153,14 +156,25 @@ def handle_key_action(data):
 
 @socketio.on('key_combo')
 def handle_combo(data):
-    # 处理组合快捷键（宏）
+    # 处理组合快捷键（原子操作）
     keys = data['keys']
-    for k in keys:
-        target = SPECIAL_KEYS.get(k.lower(), k.lower())
-        keyboard.press(target)
-    for k in reversed(keys):
-        target = SPECIAL_KEYS.get(k.lower(), k.lower())
-        keyboard.release(target)
+    if not keys: return
+    
+    pressed_keys = []
+    try:
+        # 按顺序按下所有键
+        for k in keys:
+            target = SPECIAL_KEYS.get(k.lower().strip(), k.lower().strip())
+            keyboard.press(target)
+            pressed_keys.append(target)
+            time.sleep(0.02) # 微小延迟，确保 OS 识别组合状态
+        
+        time.sleep(0.05) # 组合键维持一小段时间
+    finally:
+        # 逆序释放所有键
+        for target in reversed(pressed_keys):
+            keyboard.release(target)
+            time.sleep(0.01)
 
 
 # --- 自动获取局域网 IP 逻辑 ---

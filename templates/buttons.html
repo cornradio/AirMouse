@@ -574,14 +574,25 @@
             initAudio(); v();
             const cfg = macroData.profiles[currentProfile].buttons[i];
             if (cfg && cfg.keys) {
-                cfg.keys.split(',').forEach(k => socket.emit('key_action', { key: k.trim().toLowerCase(), action: 'down' }));
+                const keyList = cfg.keys.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+                if (keyList.length > 1) {
+                    // 组合键：直接发送完整列表，让服务端进行原子操作
+                    socket.emit('key_combo', { keys: keyList });
+                } else if (keyList.length === 1) {
+                    // 单按键：发送按下指令（支持长按）
+                    socket.emit('key_action', { key: keyList[0], action: 'down' });
+                }
             }
         }
 
         function handleBtnUp(i) {
             const cfg = macroData.profiles[currentProfile].buttons[i];
             if (cfg && cfg.keys) {
-                cfg.keys.split(',').reverse().forEach(k => socket.emit('key_action', { key: k.trim().toLowerCase(), action: 'up' }));
+                const keyList = cfg.keys.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+                if (keyList.length === 1) {
+                    // 仅对单按键发送抬起指令
+                    socket.emit('key_action', { key: keyList[0], action: 'up' });
+                }
             }
         }
 

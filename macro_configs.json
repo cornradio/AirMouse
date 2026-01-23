@@ -1,5 +1,5 @@
 {
-    "current": "douyin",
+    "current": "dy2",
     "profiles": {
         "Default": {
             "cols": 4,
@@ -140,79 +140,24 @@
             "cols": 5,
             "buttons": [
                 {
-                    "label": "page",
-                    "emoji": "📄",
-                    "keys": "f"
-                },
-                {
-                    "label": "",
+                    "label": "Close Tab",
                     "emoji": "",
-                    "keys": ""
+                    "keys": "ctrl,w"
                 },
                 {
-                    "label": "",
+                    "label": "New Tab",
                     "emoji": "",
-                    "keys": ""
+                    "keys": "ctrl,t"
                 },
                 {
-                    "label": "",
+                    "label": "Prev Tab",
                     "emoji": "",
-                    "keys": ""
+                    "keys": "ctrl,shift,tab"
                 },
                 {
-                    "label": "",
+                    "label": "Next Tab",
                     "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "dislike",
-                    "emoji": "👿",
-                    "keys": "r"
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "like",
-                    "emoji": "❤️",
-                    "keys": "z"
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "up",
-                    "emoji": "⬆️",
-                    "keys": "up"
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "keys": "ctrl,tab"
                 },
                 {
                     "label": "",
@@ -225,14 +170,39 @@
                     "keys": ""
                 },
                 {
-                    "label": "left",
-                    "emoji": "⬅️",
-                    "keys": "left"
+                    "label": "win1",
+                    "emoji": "",
+                    "keys": "win,1"
                 },
                 {
                     "label": "",
                     "emoji": "",
                     "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "left",
+                    "emoji": "⬅️",
+                    "keys": "left"
+                },
+                {
+                    "label": "space",
+                    "emoji": "🖐",
+                    "keys": "space"
                 },
                 {
                     "label": "right",
@@ -240,9 +210,19 @@
                     "keys": "right"
                 },
                 {
-                    "label": "comment",
-                    "emoji": "💬",
-                    "keys": "x"
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "mini",
+                    "emoji": "",
+                    "keys": "i"
+                },
+                {
+                    "label": "",
+                    "emoji": "?",
+                    "keys": "shift,/"
                 },
                 {
                     "label": "",
@@ -250,19 +230,39 @@
                     "keys": ""
                 },
                 {
-                    "label": "",
+                    "label": "slow",
                     "emoji": "",
-                    "keys": ""
+                    "keys": "shift,comma"
                 },
                 {
-                    "label": "down",
-                    "emoji": "⬇️",
-                    "keys": "down"
+                    "label": "fast",
+                    "emoji": "",
+                    "keys": "shift,dot"
                 },
                 {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "label": "caption",
+                    "emoji": "cc",
+                    "keys": "c"
+                },
+                {
+                    "label": "theater",
+                    "emoji": "T",
+                    "keys": "t"
+                },
+                {
+                    "label": "Previous",
+                    "emoji": "<<",
+                    "keys": "shift,p"
+                },
+                {
+                    "label": "Next",
+                    "emoji": ">>",
+                    "keys": "shift,n"
+                },
+                {
+                    "label": "fullscreen",
+                    "emoji": "F",
+                    "keys": "f"
                 }
             ]
         }
