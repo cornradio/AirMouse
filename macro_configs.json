@@ -90,9 +90,9 @@
             "cols": 3,
             "buttons": [
                 {
-                    "label": "dislike",
-                    "emoji": "👿",
-                    "keys": "r"
+                    "label": "page",
+                    "emoji": "📄",
+                    "keys": "f"
                 },
                 {
                     "label": "up",
@@ -101,8 +101,8 @@
                 },
                 {
                     "label": "",
-                    "emoji": "",
-                    "keys": ""
+                    "emoji": "F11",
+                    "keys": "f11"
                 },
                 {
                     "label": "left",
@@ -130,9 +130,139 @@
                     "keys": "down"
                 },
                 {
+                    "label": "dislike",
+                    "emoji": "👿",
+                    "keys": "r"
+                }
+            ]
+        },
+        "dy2": {
+            "cols": 5,
+            "buttons": [
+                {
                     "label": "page",
                     "emoji": "📄",
                     "keys": "f"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "dislike",
+                    "emoji": "👿",
+                    "keys": "r"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "like",
+                    "emoji": "❤️",
+                    "keys": "z"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "up",
+                    "emoji": "⬆️",
+                    "keys": "up"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "F11",
+                    "keys": "f11"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "left",
+                    "emoji": "⬅️",
+                    "keys": "left"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "right",
+                    "emoji": "➡️",
+                    "keys": "right"
+                },
+                {
+                    "label": "comment",
+                    "emoji": "💬",
+                    "keys": "x"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "down",
+                    "emoji": "⬇️",
+                    "keys": "down"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
                 }
             ]
         }

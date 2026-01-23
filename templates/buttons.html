@@ -267,8 +267,8 @@
             <div class="header-btn" style="color:#666" onclick="v(); addProfile()">➕</div>
             <div class="header-btn" style="color:#666" onclick="v(); showProfileConfig()">⚙️</div>
         </div>
-        <div class="header-btn" onclick="v(); toggleFullScreen()">FULL</div>
-        <div id="sort-toggle" class="header-btn" onclick="toggleSortMode()">SORT</div>
+        <div class="header-btn" onclick="v(); toggleFullScreen()">⛶</div>
+        <div id="sort-toggle" class="header-btn" onclick="toggleSortMode()">MOVE</div>
         <div id="edit-toggle" class="header-btn" onclick="toggleEditMode()">EDIT</div>
     </div>
 
@@ -330,7 +330,7 @@
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/dist/sortable.full.js"></script>
+    <script src="/static/js/sortablejs.js"></script>
     <script src="/static/js/touchpad.js"></script>
     <script>
         const socket = io();
