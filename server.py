@@ -4,6 +4,7 @@ import socket
 import psutil
 import json
 import time
+import threading
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pynput.mouse import Controller, Button
@@ -137,23 +138,46 @@ def handle_type(data):
     # 处理输入框发送的整段文字
     keyboard.type(data['text'])
 
+# 存储当前正在按下的键及其重复触发的标志
+active_repeats = {} # {key_code: stop_event}
+
+def repeat_key(key_obj, stop_event):
+    """模拟系统自动重复按键的线程"""
+    # 先发一次初始按下
+    keyboard.press(key_obj)
+    # 系统的第一个重复延迟通常较久 (500ms)
+    if stop_event.wait(0.4): return
+    
+    while not stop_event.is_set():
+        keyboard.press(key_obj)
+        # 之后的连发频率 (约 30Hz)
+        if stop_event.wait(0.05): break
+
 @socketio.on('key_action')
 def handle_key_action(data):
     # 处理单个按键的按下或抬起（如 Shift, Ctrl）
     action = data['action'] # 'down' 或 'up'
-    key_code = data['key'].lower()
+    key_code = data['key'].lower().strip()
     
-    if key_code in SPECIAL_KEYS:
-        target_key = SPECIAL_KEYS[key_code]
-        if action == 'down':
-            keyboard.press(target_key)
-        else:
-            keyboard.release(target_key)
-    elif len(key_code) == 1:
-        if action == 'down':
-            keyboard.press(key_code)
-        else:
-            keyboard.release(key_code)
+    # 确定目标按键对象
+    target_key = SPECIAL_KEYS.get(key_code, key_code)
+
+    if action == 'down':
+        # 如果这个键已经在连发了，先不管（或者你可以选择重新开始）
+        if key_code in active_repeats:
+            return
+            
+        # 所有的单键操作我们都开启“连发”模式，以模拟真实键盘行为
+        stop_event = threading.Event()
+        active_repeats[key_code] = stop_event
+        threading.Thread(target=repeat_key, args=(target_key, stop_event), daemon=True).start()
+    else:
+        # 抬起按键：停止连发线程
+        if key_code in active_repeats:
+            stop_event = active_repeats[key_code]
+            stop_event.set()
+            del active_repeats[key_code]
+        keyboard.release(target_key)
 
 @socketio.on('key_combo')
 def handle_combo(data):

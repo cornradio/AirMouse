@@ -1,5 +1,5 @@
 {
-    "current": "dy2",
+    "current": "Youtube",
     "profiles": {
         "Default": {
             "cols": 4,
@@ -136,7 +136,7 @@
                 }
             ]
         },
-        "dy2": {
+        "Youtube": {
             "cols": 5,
             "buttons": [
                 {
@@ -170,19 +170,14 @@
                     "keys": ""
                 },
                 {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
                     "label": "win1",
                     "emoji": "",
                     "keys": "win,1"
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
-                },
-                {
-                    "label": "",
-                    "emoji": "",
-                    "keys": ""
                 },
                 {
                     "label": "",
@@ -200,19 +195,24 @@
                     "keys": "left"
                 },
                 {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
                     "label": "space",
                     "emoji": "🖐",
                     "keys": "space"
                 },
                 {
-                    "label": "right",
-                    "emoji": "➡️",
-                    "keys": "right"
-                },
-                {
                     "label": "",
                     "emoji": "",
                     "keys": ""
+                },
+                {
+                    "label": "right",
+                    "emoji": "➡️",
+                    "keys": "right"
                 },
                 {
                     "label": "mini",
