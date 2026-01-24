@@ -318,6 +318,13 @@
                         <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
                     </svg>
                 </div>
+                <div class="icon-btn" id="mid-btn" ontouchstart="handleMid(true, this)"
+                    ontouchend="handleMid(false, this)" ontouchcancel="handleMid(false, this)">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12,20A2,2 0 0,1 10,18V14.82C8.83,14.43 8,13.32 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12C16,13.32 15.17,14.43 14,14.82V18A2,2 0 0,1 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" />
+                    </svg>
+                </div>
                 <div class="icon-btn" onclick="v(); socket.emit('click', {button:'x1'})">
                     <svg viewBox="0 0 24 24">
                         <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
@@ -330,20 +337,11 @@
                 </div>
             </div>
 
-
             <div class="sens-group" style="height: 100%; justify-content: space-around; padding: 5px 0;">
                 <div class="sens-container"><span>PAD</span><input type="range" id="sens-slider" min="1" max="10"
                         step="0.1"></div>
                 <div class="sens-container gyro-sens-row" style="color: #007AFF;"><span>GYRO</span><input type="range"
                         id="gyro-slider" min="0.1" max="5" step="0.1"></div>
-            </div>
-
-            <div class="icon-btn" ontouchstart="v(); socket.emit('mid_down')" ontouchend="socket.emit('mid_up')"
-                ontouchcancel="socket.emit('mid_up')">
-                <svg viewBox="0 0 24 24">
-                    <path
-                        d="M12,20A2,2 0 0,1 10,18V14.82C8.83,14.43 8,13.32 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12C16,13.32 15.17,14.43 14,14.82V18A2,2 0 0,1 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" />
-                </svg>
             </div>
         </div>
     </div>
@@ -470,6 +468,17 @@
             scrollTimer = setInterval(() => socket.emit('scroll', { dy: step }), 60);
         }
         function stopScroll() { if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; } }
+
+        function handleMid(down, el) {
+            v();
+            if (down) {
+                socket.emit('mid_down');
+                el.classList.add('active');
+            } else {
+                socket.emit('mid_up');
+                el.classList.remove('active');
+            }
+        }
 
         const touchpad = new TouchpadModule('pad', socket, {
             getSensitivity: () => sensitivity,
