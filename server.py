@@ -1,4 +1,21 @@
 import platform
+import os
+
+# macOS 隐藏 Dock 图标逻辑
+if platform.system() == 'Darwin':
+    try:
+        from AppKit import NSBundle, NSApplication, NSApplicationActivationPolicyProhibited
+        bundle = NSBundle.mainBundle()
+        if bundle:
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            if info:
+                info['LSUIElement'] = '1'
+        # 立即锁定激活策略，防止 Dock 栏图标跳跃或显示
+        NSApplication.sharedApplication().setActivationPolicy_(NSApplicationActivationPolicyProhibited)
+    except Exception:
+        # 如果没有安装相应的库或环境不支持，静默失败
+        pass
+
 from web_app import app, socketio, get_all_ip_addresses
 import mouse_service
 import keyboard_service
