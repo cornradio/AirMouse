@@ -91,8 +91,8 @@
             "buttons": [
                 {
                     "label": "",
-                    "emoji": "F11",
-                    "keys": "f11"
+                    "emoji": "ESC",
+                    "keys": "esc"
                 },
                 {
                     "label": "up",
@@ -237,7 +237,7 @@
                 {
                     "label": "fast",
                     "emoji": "",
-                    "keys": "shift,dot"
+                    "keys": "shift,."
                 },
                 {
                     "label": "caption",
@@ -263,6 +263,136 @@
                     "label": "fullscreen",
                     "emoji": "F",
                     "keys": "f"
+                }
+            ]
+        },
+        "抖音2": {
+            "cols": 5,
+            "buttons": [
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "page",
+                    "emoji": "📄",
+                    "keys": "f"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "full",
+                    "emoji": "FS",
+                    "keys": "ctrl,win,f"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "ESC",
+                    "keys": "esc"
+                },
+                {
+                    "label": "up",
+                    "emoji": "⬆️",
+                    "keys": "up"
+                },
+                {
+                    "label": "like",
+                    "emoji": "❤️",
+                    "keys": "z"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "left",
+                    "emoji": "⬅️",
+                    "keys": "left"
+                },
+                {
+                    "label": "pause",
+                    "emoji": "停",
+                    "keys": "space"
+                },
+                {
+                    "label": "right",
+                    "emoji": "➡️",
+                    "keys": "right"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "dislike",
+                    "emoji": "🚫",
+                    "keys": "r"
+                },
+                {
+                    "label": "down",
+                    "emoji": "⬇️",
+                    "keys": "down"
+                },
+                {
+                    "label": "comment",
+                    "emoji": "💬",
+                    "keys": "x"
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
+                },
+                {
+                    "label": "",
+                    "emoji": "",
+                    "keys": ""
                 }
             ]
         }

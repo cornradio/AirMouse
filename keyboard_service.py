@@ -53,17 +53,29 @@ def handle_combo(data):
             k_clean = k.lower().strip()
             target = special_keys.get(k_clean, k_clean)
             
-            # macOS 修复：对于单个字符，使用 KeyCode.from_char 避免 pynput 自动释放 Shift
-            # 这样 shift + . 就能正确产生 >
+            # macOS 修复：对于符号键，直接使用硬件虚拟键码同步位移标志
+            # 这样 shift + 47 (dot) 就能被系统和浏览器（如 YouTube）正确识别为 >
             if is_mac and isinstance(target, str) and len(target) == 1:
-                target = KeyCode.from_char(target)
+                # 常见符号的 Mac 虚拟键码 (ANSI 布局)
+                vk_map = {
+                    '.': 47, ',': 43, '/': 44, ';': 41, "'": 39, 
+                    '[': 33, ']': 30, '`': 50, '-': 27, '=': 24, '\\': 42
+                }
+                if target in vk_map:
+                    target = KeyCode.from_vk(vk_map[target])
+                else:
+                    target = KeyCode.from_char(target)
             
             keyboard.press(target)
             pressed_keys.append(target)
             
-            # macOS 需要稍长的延迟来确保系统识别到组合状态
-            delay = 0.05 if is_mac else 0.02
-            time.sleep(delay)
+            # macOS 下在按下 Shift 等修饰键后增加延迟，确保后续按键能识别到修饰状态
+            if is_mac and target in (Key.shift, Key.shift_r, Key.ctrl, Key.ctrl_r, Key.alt, Key.alt_r, Key.cmd):
+                time.sleep(0.1)
+            else:
+                # 维持组合键状态的时间
+                delay = 0.05 if is_mac else 0.02
+                time.sleep(delay)
         
         # 维持组合键状态的时间
         hold_time = 0.1 if is_mac else 0.05

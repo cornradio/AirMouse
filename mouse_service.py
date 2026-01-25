@@ -1,6 +1,18 @@
 import platform
 from pynput.mouse import Controller, Button
 
+# macOS 兼容性补丁：处理某些 pyobjc 版本缺失 CGDisplayPixelsHigh 的问题
+if platform.system() == 'Darwin':
+    try:
+        import Quartz
+        if not hasattr(Quartz, 'CGDisplayPixelsHigh'):
+            # 使用 Bounds 替代显示高度获取，解决部分 macOS 版本 pyobjc 缺失方法的问题
+            def CGDisplayPixelsHigh(display_id):
+                return int(Quartz.CGDisplayBounds(display_id).size.height)
+            Quartz.CGDisplayPixelsHigh = CGDisplayPixelsHigh
+    except Exception:
+        pass
+
 mouse = Controller()
 
 def handle_move(data):
