@@ -1,0 +1,322 @@
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: #111;
+    border-bottom: 1px solid #222;
+    gap: 5px;
+}
+
+.header-btn {
+    font-size: 13px;
+    color: #888;
+    padding: 8px 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.header-btn.active {
+    color: #007AFF !important;
+}
+
+.profile-selector {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#profile-select {
+    background: #111;
+    border: 1px solid #333;
+    color: rgb(136, 133, 133);
+    font-weight: bold;
+    padding: 4px 6px;
+    border-radius: 6px;
+    max-width: 90px;
+    font-size: 12px;
+}
+
+/* 按钮网格 */
+.btn-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 4), 1fr);
+    align-content: start;
+    gap: 15px;
+    padding: 20px;
+    flex: 1.5;
+    /* 增加权重，让它有空间撑开 */
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.macro-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    aspect-ratio: 1/1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s;
+    touch-action: manipulation;
+}
+
+.macro-btn.sorting {
+    touch-action: none;
+    border: 1px dashed #007AFF;
+    opacity: 0.8;
+    cursor: move;
+}
+
+.macro-btn.editing::after {
+    content: "⚙️";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.macro-btn:active {
+    transform: scale(0.96);
+    background: #252525;
+}
+
+.macro-btn .emoji {
+    /* 移除 vw 计算，改用变量，由 JS 根据布局动态设置 */
+    font-size: var(--emoji-fs, 32px);
+    max-width: 80%;
+    margin-bottom: 2px;
+    pointer-events: none;
+    line-height: 1;
+}
+
+.macro-btn .label {
+    /* 移除 vw 计算，改用变量 */
+    font-size: var(--label-fs, 13px);
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    padding: 0 4px;
+    pointer-events: none;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+/* Sortable Styles */
+.sortable-ghost {
+    opacity: 0.4;
+    background: #333 !important;
+}
+
+.sortable-swap-highlight {
+    background: #007AFF !important;
+    border: 2px solid #fff !important;
+    z-index: 10;
+}
+
+#pad-area {
+    flex: 1;
+    margin: 10px 15px 20px;
+    background: #080808;
+    border: 2px dashed #1a1a1a;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #222;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-align: center;
+}
+
+/* 主布局容器 */
+.main-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.modal-outer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid #333;
+}
+
+.modal-content h3 {
+    margin: 0;
+    color: #007AFF;
+    font-size: 16px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.modal-apply-btn {
+    color: #007AFF;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.modal-delete-btn {
+    color: #FF3B30;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-save {
+    background: #007AFF;
+    color: #fff;
+}
+
+.btn-cancel {
+    background: #333;
+    color: #eee;
+}
+
+.btn-delete {
+    background: #FF3B30;
+    color: #fff;
+}
+
+/* 横屏适配：左右并排 */
+@media (orientation: portrait) {
+    .btn-grid {
+        max-height: 55%;
+    }
+}
+
+@media (orientation: landscape) {
+    .main-layout {
+        flex-direction: row;
+    }
+
+    #pad-area {
+        display: flex;
+        margin: 10px 15px 10px 5px;
+        flex: 1;
+    }
+
+    .btn-grid {
+        max-width: 42%;
+        margin: 0;
+        flex: 1.5;
+        /* 按钮区占大头 */
+        padding: 10px;
+    }
+
+    .header {
+        height: 40px;
+        padding: 0 5px;
+    }
+
+    .header-btn {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+}
