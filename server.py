@@ -20,6 +20,10 @@ from web_app import app, socketio, get_all_ip_addresses
 import mouse_service
 import keyboard_service
 import config_manager
+import gamepad_service
+
+# 启动手柄后台服务 (如果已安装 inputs)
+gamepad_service.start_threads()
 
 # --- SocketIO 事件绑定 ---
 
@@ -36,6 +40,16 @@ def handle_load():
 @socketio.on('save_macros')
 def handle_save(data):
     config_manager.save_macros(data)
+
+@socketio.on('load_gp_macros')
+def handle_gp_load():
+    data = config_manager.load_gp_macros()
+    socketio.emit('gp_macros_loaded', data)
+
+@socketio.on('save_gp_macros')
+def handle_gp_save(data):
+    config_manager.save_gp_macros(data)
+    gamepad_service.update_config(data)
 
 # 鼠标事件
 @socketio.on('move')

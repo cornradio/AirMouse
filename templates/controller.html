@@ -5,68 +5,183 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Macro Deck | 手柄控制器 (Gamepad)</title>
-    <link rel="stylesheet" href="/static/controller/controller.css">
+    <title>手柄控制器 | Macro Deck</title>
+    <link rel="stylesheet" href="/static/controller/controller.css?v=2">
 </head>
 
 <body>
     <div class="header">
         <div class="header-btn" onclick="v(); window.location.href='/'">BACK</div>
-        <div class="status" id="gp-status">🔴 等待手柄连接 (按任意键)</div>
+        
+        <div class="profile-selector">
+            <select id="profile-select" onchange="v(); switchProfile(this.value)"></select>
+            <div class="header-btn" style="color:#666" onclick="v(); addProfile()">➕</div>
+            <div class="header-btn" style="color:#FF3B30" onclick="v(); deleteProfile()">🗑️</div>
+        </div>
+
+        <div class="status" id="gp-status">🟡 正在拉取运行状态...</div>
     </div>
 
     <div class="main-layout">
-        <div class="settings-panel">
-            <h2 class="panel-title">手柄映射配置</h2>
-            
+        
+        <div class="controls-wrapper">
             <div class="sens-group">
-                <label>摇杆灵敏度: <span id="sens-val">5.0</span></label>
-                <input type="range" id="param-sens" min="0.5" max="20" step="0.5" value="5">
+                <label>鼠标灵敏度: <span id="sens-val">5.0</span></label>
+                <input type="range" id="param-sens" min="1" max="20" step="1" value="5">
             </div>
-            
             <div class="sens-group">
-                <label>死区 (防止摇杆漂移): <span id="dead-val">0.15</span></label>
+                <label>摇杆死区 (防止漂移): <span id="dead-val">0.15</span></label>
                 <input type="range" id="param-deadzone" min="0.05" max="0.5" step="0.05" value="0.15">
             </div>
+            
+            <p style="text-align: center; font-size: 11px; color: #888; margin-top: -10px;">点击下方手柄元素分配按键及摇杆功能</p>
+        </div>
 
-            <div class="mapping-list" id="mapping-list">
-                <!-- 由 JS 动态渲染 -->
+        <!-- 可视化手柄 -->
+        <div class="gamepad-visual">
+            <!-- 扳机/肩键 -->
+            <div class="gb gb-lt" onclick="openEdit('btn_6', '左扳机 (LT/L2)')">
+                <span class="gb-name">LT</span><span class="gb-val" id="val-btn_6">无</span>
+            </div>
+            <div class="gb gb-rt" onclick="openEdit('btn_7', '右扳机 (RT/R2)')">
+                <span class="gb-name">RT</span><span class="gb-val" id="val-btn_7">无</span>
+            </div>
+            <div class="gb gb-l1" onclick="openEdit('btn_4', '左肩键 (LB/L1)')">
+                <span class="gb-name">LB</span><span class="gb-val" id="val-btn_4">无</span>
+            </div>
+            <div class="gb gb-r1" onclick="openEdit('btn_5', '右肩键 (RB/R1)')">
+                <span class="gb-name">RB</span><span class="gb-val" id="val-btn_5">无</span>
+            </div>
+
+            <!-- 十字键 -->
+            <div class="dpad-area">
+                <div class="gb gb-up" onclick="openEdit('btn_12', '十字键 上')">
+                    <span class="gb-name">▲</span><span class="gb-val" id="val-btn_12">无</span>
+                </div>
+                <div class="gb gb-down" onclick="openEdit('btn_13', '十字键 下')">
+                    <span class="gb-name">▼</span><span class="gb-val" id="val-btn_13">无</span>
+                </div>
+                <div class="gb gb-left" onclick="openEdit('btn_14', '十字键 左')">
+                    <span class="gb-name">◀</span><span class="gb-val" id="val-btn_14">无</span>
+                </div>
+                <div class="gb gb-right" onclick="openEdit('btn_15', '十字键 右')">
+                    <span class="gb-name">▶</span><span class="gb-val" id="val-btn_15">无</span>
+                </div>
+            </div>
+
+            <!-- 动作键 -->
+            <div class="act-area">
+                <div class="gb gb-y" onclick="openEdit('btn_3', 'Y 键 (Triangle)')">
+                    <span class="gb-name">Y</span><span class="gb-val" id="val-btn_3">无</span>
+                </div>
+                <div class="gb gb-a" onclick="openEdit('btn_0', 'A 键 (Cross)')">
+                    <span class="gb-name">A</span><span class="gb-val" id="val-btn_0">无</span>
+                </div>
+                <div class="gb gb-x" onclick="openEdit('btn_2', 'X 键 (Square)')">
+                    <span class="gb-name">X</span><span class="gb-val" id="val-btn_2">无</span>
+                </div>
+                <div class="gb gb-b" onclick="openEdit('btn_1', 'B 键 (Circle)')">
+                    <span class="gb-name">B</span><span class="gb-val" id="val-btn_1">无</span>
+                </div>
+            </div>
+
+            <!-- 中心键 -->
+            <div class="gb gb-sel" onclick="openEdit('btn_8', 'Select/View')">
+                <span class="gb-name">SEL</span><span class="gb-val" id="val-btn_8">无</span>
+            </div>
+            <div class="gb gb-guide" onclick="openEdit('btn_16', 'Guide/Home')">
+                <span class="gb-name">HOME</span><span class="gb-val" id="val-btn_16">无</span>
+            </div>
+            <div class="gb gb-start" onclick="openEdit('btn_9', 'Start/Menu')">
+                <span class="gb-name">START</span><span class="gb-val" id="val-btn_9">无</span>
+            </div>
+
+            <!-- 摇杆 -->
+            <div class="gb gb-ls" onclick="openEdit('stick_left', '左摇杆设置 (映射与方向)')">
+                <span class="gb-name" style="font-size: 16px;">左摇杆</span><span class="gb-val" id="val-stick_left">预设</span>
+            </div>
+            <div class="gb gb-ls-btn" onclick="openEdit('btn_10', '左摇杆按下 (L3)')">
+                <span class="gb-name">L3按下</span><span class="gb-val" id="val-btn_10">无</span>
+            </div>
+
+            <div class="gb gb-rs" onclick="openEdit('stick_right', '右摇杆设置 (映射与方向)')">
+                <span class="gb-name" style="font-size: 16px;">右摇杆</span><span class="gb-val" id="val-stick_right">预设</span>
+            </div>
+            <div class="gb gb-rs-btn" onclick="openEdit('btn_11', '右摇杆按下 (R3)')">
+                <span class="gb-name">R3按下</span><span class="gb-val" id="val-btn_11">无</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-outer">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="edit-title">Edit Mapping</h3>
+            </div>
+            
+            <div class="input-group" id="btn-options" style="display: none;">
+                <label>选择按下的动作</label>
+                <select id="btn-select">
+                    <optgroup label="基础">
+                        <option value="none">无动作 (空)</option>
+                    </optgroup>
+                    <optgroup label="鼠标">
+                        <option value="click_left">鼠标左键点击</option>
+                        <option value="click_right">鼠标右键点击</option>
+                        <option value="click_middle">鼠标中键点击</option>
+                        <option value="drag">长按拖拽 (左键)</option>
+                    </optgroup>
+                    <optgroup label="系统与导航键">
+                        <option value="key_esc">ESC 退出</option>
+                        <option value="key_enter">回车 Enter</option>
+                        <option value="key_space">空格 Space</option>
+                        <option value="key_backspace">退格 Backspace</option>
+                    </optgroup>
+                    <optgroup label="方向操作">
+                        <option value="key_up">↑ 向上</option>
+                        <option value="key_down">↓ 向下</option>
+                        <option value="key_left">← 向左</option>
+                        <option value="key_right">→ 向右</option>
+                    </optgroup>
+                    <optgroup label="常用字母键">
+                        <option value="key_w">W (前进)</option>
+                        <option value="key_a">A (向左)</option>
+                        <option value="key_s">S (后退)</option>
+                        <option value="key_d">D (向右)</option>
+                        <option value="key_e">E (交互)</option>
+                        <option value="key_q">Q</option>
+                        <option value="key_r">R (更换)</option>
+                        <option value="key_f">F (交互2)</option>
+                        <option value="key_shift">Shift (奔跑)</option>
+                        <option value="key_ctrl">Ctrl (蹲伏)</option>
+                        <option value="key_tab">Tab (背包)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="input-group" id="stick-options" style="display: none;">
+                <label>选择摇杆的功能预设</label>
+                <select id="stick-select">
+                    <option value="none">无动作</option>
+                    <option value="mouse">鼠标指针移动</option>
+                    <option value="scroll">四向鼠标滚轮</option>
+                    <option value="arrows">方向键 (上下左右)</option>
+                    <option value="wasd">WASD 移动键</option>
+                    <option value="hjkl">Vim HJKL 移动</option>    
+                </select>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="closeEdit()">取消</button>
+                <button class="modal-btn btn-save" onclick="saveEdit()">应用映射</button>
             </div>
         </div>
     </div>
 
-    <!-- 选择框模板用 -->
-    <template id="map-select-template">
-        <select class="map-sel">
-            <optgroup label="基础">
-                <option value="none">无动作</option>
-            </optgroup>
-            <optgroup label="鼠标 (仅用于摇杆)">
-                <option value="mouse_move">移动鼠标</option>
-                <option value="mouse_scroll">滚动页面</option>
-            </optgroup>
-            <optgroup label="鼠标 (仅用于按键)">
-                <option value="click_left">左键点击</option>
-                <option value="click_right">右键点击</option>
-                <option value="click_middle">中键点击</option>
-                <option value="drag">拖拽 (按住左键)</option>
-            </optgroup>
-            <optgroup label="键盘常用按键">
-                <option value="key_space">空格键 (Space)</option>
-                <option value="key_enter">回车键 (Enter)</option>
-                <option value="key_esc">退出键 (Esc)</option>
-                <option value="key_backspace">退格键 (Backspace)</option>
-                <option value="key_up">方向键 上</option>
-                <option value="key_down">方向键 下</option>
-                <option value="key_left">方向键 左</option>
-                <option value="key_right">方向键 右</option>
-            </optgroup>
-            <!-- 若需扩展组合键，可再加 -->
-        </select>
-    </template>
-
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="/static/controller/controller.js"></script>
+    <script src="/static/controller/controller.js?v=2"></script>
 </body>
 
 </html>

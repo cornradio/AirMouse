@@ -1,0 +1,13 @@
+{
+    "current": "Default",
+    "profiles": {
+        "Default": {
+            "stick_left": "mouse",
+            "btn_5": "click_left",
+            "btn_7": "click_right",
+            "stick_right": "scroll"
+        }
+    },
+    "sens": 9,
+    "deadzone": 0.15
+}

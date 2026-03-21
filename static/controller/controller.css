@@ -37,13 +37,30 @@ body {
     cursor: pointer;
 }
 
-.status {
+.profile-selector {
     flex: 1;
-    text-align: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#profile-select {
+    background: #111;
+    border: 1px solid #333;
+    color: rgb(136, 133, 133);
+    font-weight: bold;
+    padding: 4px 6px;
+    border-radius: 6px;
+    max-width: 90px;
+    font-size: 12px;
+}
+
+.status {
     font-size: 12px;
     font-weight: bold;
     color: #ff4d4f;
-    padding-right: 15px;
+    padding-right: 5px;
 }
 
 .status.connected {
@@ -59,22 +76,14 @@ body {
     align-items: center;
 }
 
-.settings-panel {
+.controls-wrapper {
+    width: 100%;
+    max-width: 600px;
+    padding: 10px 20px;
     background: #111;
     border: 1px solid #333;
     border-radius: 12px;
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
-}
-
-.panel-title {
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 18px;
-    color: #007AFF;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .sens-group {
@@ -94,45 +103,152 @@ body {
     accent-color: #007AFF;
 }
 
-.mapping-list {
+/* --- Gamepad Visual Layout --- */
+.gamepad-visual {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 16 / 9; /* Controller shape */
+    background: #1f1f1f;
+    border-radius: 40px;
+    box-shadow: inset 0 0 20px #000;
+    margin: 0 auto;
+    border: 2px solid #2a2a2a;
+}
+
+/* Generic button class */
+.gb {
+    position: absolute;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-}
-
-.map-row {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.1s, background 0.1s;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+.gb:active { transform: scale(0.9); background: #555; }
+
+.gb-name { font-size: 12px; font-weight: bold; }
+.gb-val { font-size: 9px; color: #007aff; margin-top: 4px; line-height: 1; background: #000; padding: 2px 4px; border-radius: 4px;}
+
+/* Triggers & Bumpers */
+.gb-rt, .gb-r1 { border-radius: 8px; height: 12%; width: 15%; right: 15%; }
+.gb-rt { top: -6%; background: #222; }
+.gb-r1 { top: 7%; }
+
+.gb-lt, .gb-l1 { border-radius: 8px; height: 12%; width: 15%; left: 15%; }
+.gb-lt { top: -6%; background: #222; }
+.gb-l1 { top: 7%; }
+
+/* D-Pad (Left cluster area) */
+.dpad-area { position: absolute; left: 15%; top: 40%; width: 18%; height: 32%; display: flex; align-items:center; justify-content:center; }
+.gb-up { position: absolute; top: 0; left: 33%; width: 34%; height: 34%; border-radius: 4px; }
+.gb-down { position: absolute; bottom: 0; left: 33%; width: 34%; height: 34%; border-radius: 4px; }
+.gb-left { position: absolute; top: 33%; left: 0; width: 34%; height: 34%; border-radius: 4px; }
+.gb-right { position: absolute; top: 33%; right: 0; width: 34%; height: 34%; border-radius: 4px; }
+
+/* Action Buttons (Right cluster) */
+.act-area { position: absolute; right: 15%; top: 35%; width: 18%; height: 32%; }
+.gb-y { position: absolute; top: 0; left: 33%; width: 34%; height: 34%; }
+.gb-a { position: absolute; bottom: 0; left: 33%; width: 34%; height: 34%; }
+.gb-x { position: absolute; top: 33%; left: 0; width: 34%; height: 34%; }
+.gb-b { position: absolute; top: 33%; right: 0; width: 34%; height: 34%; }
+
+/* Centers */
+.gb-sel { position: absolute; left: 38%; top: 25%; width: 6%; height: 10%; border-radius: 10px; font-size: 8px; }
+.gb-start { position: absolute; right: 38%; top: 25%; width: 6%; height: 10%; border-radius: 10px; font-size: 8px; }
+.gb-guide { position: absolute; left: 45%; top: 15%; width: 10%; height: 18%; background: #111; }
+.gb-guide .gb-name { font-size: 10px; color: #555; }
+
+/* Sticks */
+.gb-ls { position: absolute; left: 35%; bottom: 10%; width: 15%; height: 26%; background: #000; border: 2px solid #555; }
+.gb-rs { position: absolute; right: 35%; bottom: 10%; width: 15%; height: 26%; background: #000; border: 2px solid #555; }
+
+/* Stick buttons (L3/R3) */
+.gb-ls-btn { position: absolute; left: 36.5%; bottom: -4%; width: 12%; height: 12%; font-size:8px; border-radius: 6px; padding: 2px; }
+.gb-rs-btn { position: absolute; right: 36.5%; bottom: -4%; width: 12%; height: 12%; font-size:8px; border-radius: 6px; padding: 2px; }
+
+.gb-ls-btn .gb-name, .gb-rs-btn .gb-name { font-size: 8px; }
+
+/* Modal Edit */
+.modal-outer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
     background: #1a1a1a;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid #2a2a2a;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid #333;
 }
 
-.map-label {
+.modal-header h3 {
+    margin: 0;
+    color: #007AFF;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.input-group label {
+    display: flex;
     font-size: 14px;
-    color: #eee;
-    font-weight: 500;
+    color: #aaa;
+    margin-bottom: 8px;
 }
 
-.map-sel {
+.input-group select {
+    width: 100%;
     background: #000;
     border: 1px solid #444;
     color: #fff;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
     font-size: 14px;
-    width: 50%;
-    max-width: 150px;
+    cursor: pointer;
 }
 
-optgroup {
-    background: #000;
-    color: #888;
-}
+.btn-save { background: #007AFF; color: #fff; }
+.btn-cancel { background: #333; color: #eee; }
 
-option {
-    background: #000;
-    color: #fff;
+/* 横屏适配优化 */
+@media (orientation: landscape) {
+    .gamepad-visual {
+        max-width: 700px;
+        aspect-ratio: 2.2 / 1;
+    }
 }

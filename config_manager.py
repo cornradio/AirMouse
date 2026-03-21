@@ -17,6 +17,25 @@ def save_macros(data):
         json.dump(data, f, ensure_ascii=False, indent=4)
     print("宏按键配置已保存到服务端")
 
+GP_CONFIG_FILE = "gamepad_configs.json"
+
+def load_gp_macros():
+    default_cfg = {
+        "current": "Default",
+        "profiles": { "Default": {} }
+    }
+    if os.path.exists(GP_CONFIG_FILE):
+        try:
+            with open(GP_CONFIG_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return default_cfg
+
+def save_gp_macros(data):
+    with open(GP_CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
 # 特殊按键映射表
 def get_special_keys():
     os_type = platform.system()
