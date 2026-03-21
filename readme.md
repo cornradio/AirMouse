@@ -20,6 +20,11 @@
   </tr>
 </table>
 
+2026 03 22
+增加手柄映射功能
+<img width="2274" height="1263" alt="image" src="https://github.com/user-attachments/assets/64ea98af-8477-4033-88f0-90103079fd03" />
+
+
 ## 🌟 项目亮点
 
 ### 1. 简单启动
