@@ -6,6 +6,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>手柄控制器 | Macro Deck</title>
+    <link rel="icon" type="image/png" href="/static/controller/favicon.png">
     <link rel="stylesheet" href="/static/controller/controller.css?v=3">
 </head>
 
@@ -203,7 +204,19 @@
                             style="flex: 1; background: transparent; border: none; color: #00ff00; font-size: 11px; padding: 0 4px; outline: none; min-width: 0;">
                         <button onclick="v(); assignManualKey()"
                             style="height: 100%; padding: 0 6px; background: #007AFF; color: white; border: none; font-size: 10px; border-radius: 4px; flex-shrink: 0; min-width:35px;">绑定</button>
+                        <button onclick="v(); toggleKeyHelp()"
+                            style="height: 100%; padding: 0 4px; background: #444; color: #fff; border: none; font-size: 12px; border-radius: 4px; flex-shrink: 0; cursor:pointer;">❔</button>
                     </div>
+                </div>
+
+                <!-- 手动输入按键名提示面板 -->
+                <div id="key-help-panel" style="display:none; background:#222; border:1px solid #444; border-radius:8px; padding:10px; margin-bottom:10px; max-height:150px; overflow-y:auto; font-size:11px; color:#ccc; line-height:1.6;">
+                    <b style="color:#007AFF;">支持的特殊按键名:</b><br/>
+                    <span style="color:#888;">修饰键:</span> ctrl, shift, alt, win, command, cmd, meta<br/>
+                    <span style="color:#888;">导航:</span> up, down, left, right, page_up, page_down, home, end, insert, delete<br/>
+                    <span style="color:#888;">功能:</span> enter, esc, tab, backspace, space, caps_lock, print_screen, f1-f20<br/>
+                    <span style="color:#888;">多媒体:</span> media_play_pause, media_volume_mute, media_volume_up, media_volume_down, media_next, media_previous<br/>
+                    <span style="color:#888;">符号:</span> comma(,), dot(.), slash(/), semicolon(;), quote('), bracket_l([), bracket_r(]), backslash(\), backtick(`), minus(-), equal(=)
                 </div>
 
                 <!-- 键盘复刻 -->
@@ -301,9 +314,14 @@
         </div>
     </div>
 
-    <!-- 浮动在右下角的总开关：更加触手可及 -->
-    <div id="master-switch-btn" class="master-switch floating-switch active" onclick="v(); toggleMapping()">
-        🎯 驱动状态: 开启
+    <!-- 浮动在右下角的总开关与工具提示 -->
+    <div style="position: fixed; bottom: 25px; right: 25px; z-index: 1500; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+        <a href="https://joyxoff.com/en/" target="_blank" style="font-size: 10px; color: #666; text-decoration: none; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 4px; border: 1px solid #333;">
+            💡 遇到双重输入？试试 JoyXoff (屏蔽工具)
+        </a>
+        <div id="master-switch-btn" class="master-switch floating-switch active" onclick="v(); toggleMapping()" style="margin:0;">
+            🎯 驱动状态: 开启
+        </div>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>

@@ -242,6 +242,7 @@ function openEdit(keyId, title) {
     toggleComboMode(false);
     
     document.getElementById('manual-key-input').value = '';
+    document.getElementById('key-help-panel').style.display = 'none';
     document.getElementById('vkb-modal').style.display = 'flex';
 }
 
@@ -318,6 +319,11 @@ function assignManualKey() {
     if (!val) return;
     assignVKey(val);
     inputEl.value = '';
+}
+
+function toggleKeyHelp() {
+    const el = document.getElementById('key-help-panel');
+    el.style.display = (el.style.display === 'none') ? 'block' : 'none';
 }
 
 // 虚拟键盘直接绑定回调
