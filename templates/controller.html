@@ -13,24 +13,24 @@
 <body>
     <div class="header">
         <div class="header-btn" onclick="v(); window.location.href='/'">BACK</div>
-
-        <div class="profile-selector" style="flex:1; justify-content: flex-end; gap:5px;">
-            <select id="gp-select" style="max-width:120px; font-size:11px;" onchange="v(); selectGamepad(this.value)">
-                <option value="0">等待刷新...</option>
-            </select>
-            <div class="header-btn" style="color:#007AFF" onclick="v(); refreshGamepads()">🔄</div>
-            
-            <div style="width:1px; background:#333; height:20px; margin:0 5px;"></div>
-            
-            <select id="profile-select" onchange="v(); switchProfile(this.value)"></select>
-            <div class="header-btn" style="color:#666" onclick="v(); addProfile()">➕</div>
-            <div class="header-btn" style="color:#FF3B30" onclick="v(); deleteProfile()">🗑️</div>
+        <div style="flex:1; display:flex; justify-content:flex-end; gap:8px; align-items:center;">
+             <select id="gp-select" onchange="v(); selectGamepad(this.value)"></select>
+             <div class="header-btn" style="color:#007AFF" onclick="v(); refreshGamepads()">🔄</div>
+             <div class="status" id="gp-status">🟡 正在连接...</div>
         </div>
-
-        <div class="status" id="gp-status">🟡 正在连接手柄...</div>
     </div>
 
-    <div class="main-layout">
+    <div class="app-container">
+        <!-- 左侧侧边栏：配置管理 -->
+        <div class="sidebar">
+            <div class="sidebar-header">配置列表</div>
+            <div id="profile-list" class="profile-list"></div>
+            <div class="sidebar-footer">
+                <button class="add-p-btn" onclick="v(); addProfile()">+ 新建配置</button>
+            </div>
+        </div>
+
+        <div class="main-layout flex-1">
         <div class="controls-wrapper">
 
             <div class="sens-group" style="margin-bottom:12px; display: flex; align-items:center; gap:10px;">
@@ -318,6 +318,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
         </div>
     </div>
 

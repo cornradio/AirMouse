@@ -177,7 +177,7 @@ function initUI() {
         saveToServer();
     };
 
-    updateProfileSelect();
+    updateProfileList();
 
     // 点击外部关弹窗
     window.onclick = function(event) {
@@ -213,14 +213,39 @@ function updateUIValues() {
 }
 
 // === Profiles (多套配置) ===
-function updateProfileSelect() {
-    const sel = document.getElementById('profile-select');
-    sel.innerHTML = '';
+function updateProfileList() {
+    const listEl = document.getElementById('profile-list');
+    if(!listEl) return;
+    listEl.innerHTML = '';
+    
     for (let p in ctrlData.profiles) {
-        const opt = document.createElement('option');
-        opt.value = p; opt.innerText = p;
-        if (p === ctrlData.current) opt.selected = true;
-        sel.appendChild(opt);
+        const item = document.createElement('div');
+        item.className = 'profile-item' + (p === ctrlData.current ? ' active' : '');
+        item.onclick = (e) => {
+            if(e.target.classList.contains('action-btn')) return;
+            v(); switchProfile(p);
+        };
+
+        const nameSpan = document.createElement('span');
+        nameSpan.innerText = p;
+        item.appendChild(nameSpan);
+
+        const actions = document.createElement('div');
+        actions.className = 'item-actions';
+
+        const editBtn = document.createElement('span');
+        editBtn.className = 'action-btn'; editBtn.innerText = '✏️';
+        editBtn.onclick = () => renameProfile(p);
+        actions.appendChild(editBtn);
+
+        const delBtn = document.createElement('span');
+        delBtn.className = 'action-btn'; delBtn.innerText = '🗑️';
+        delBtn.style.color = '#ff3b30';
+        delBtn.onclick = () => deleteProfile(p);
+        actions.appendChild(delBtn);
+
+        item.appendChild(actions);
+        listEl.appendChild(item);
     }
 }
 
@@ -230,6 +255,23 @@ function switchProfile(name) {
     currentMap = ctrlData.profiles[name];
     saveToServer();
     updateUIValues();
+    updateProfileList(); // 刷新高亮
+}
+
+function renameProfile(oldName) {
+    const newName = prompt("重命名配置:", oldName);
+    if (!newName || newName === oldName) return;
+    if (ctrlData.profiles[newName]) { alert("该名称已存在！"); return; }
+    
+    ctrlData.profiles[newName] = ctrlData.profiles[oldName];
+    delete ctrlData.profiles[oldName];
+    
+    if (ctrlData.current === oldName) {
+        ctrlData.current = newName;
+    }
+    
+    saveToServer();
+    updateProfileList();
 }
 
 function addProfile() {
@@ -237,22 +279,28 @@ function addProfile() {
     if (name && !ctrlData.profiles[name]) {
         ctrlData.profiles[name] = JSON.parse(JSON.stringify(currentMap)); 
         switchProfile(name);
-        updateProfileSelect();
+        updateProfileList();
     } else if (name) {
         alert("名称已存在！");
     }
 }
 
-function deleteProfile() {
+function deleteProfile(name) {
     if (Object.keys(ctrlData.profiles).length <= 1) {
         alert("至少需要保留一个配置！");
         return;
     }
-    if (confirm(`删除配置 "${ctrlData.current}"?`)) {
-        delete ctrlData.profiles[ctrlData.current];
-        switchProfile(Object.keys(ctrlData.profiles)[0]);
-        updateProfileSelect();
+    if (!confirm(`确定要删除配置 "${name}" 吗？`)) return;
+    
+    delete ctrlData.profiles[name];
+    if (ctrlData.current === name) {
+        ctrlData.current = Object.keys(ctrlData.profiles)[0];
+        currentMap = ctrlData.profiles[ctrlData.current];
     }
+    
+    saveToServer();
+    updateUIValues();
+    updateProfileList();
 }
 
 // === 编辑 Modal ===

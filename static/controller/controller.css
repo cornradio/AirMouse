@@ -18,6 +18,103 @@ body {
     overflow: hidden;
 }
 
+.app-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 180px;
+    background: #111;
+    border-right: 1px solid #222;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 15px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #888;
+    background: #0a0a0a;
+}
+
+.profile-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.profile-item {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    font-size: 13px;
+    color: #aaa;
+}
+
+.profile-item:hover {
+    background: #1a1a1a;
+}
+
+.profile-item.active {
+    background: #1a1a1a;
+    color: #007AFF;
+    border-left-color: #007AFF;
+    font-weight: bold;
+}
+
+.sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #222;
+}
+
+.add-p-btn {
+    width: 100%;
+    background: #222;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.add-p-btn:hover {
+    background: #333;
+    border-color: #444;
+}
+
+.item-actions {
+    display: none;
+    gap: 8px;
+}
+
+.profile-item:hover .item-actions, .profile-item.active .item-actions {
+    display: flex;
+}
+
+.action-btn {
+    font-size: 12px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+    opacity: 1;
+}
+
+.flex-1 { flex: 1; }
+.overflow-auto { overflow-y: auto; }
+
+
 .header {
     height: 50px;
     display: flex;
