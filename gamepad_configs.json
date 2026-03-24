@@ -42,6 +42,27 @@
             "btn_16": "none",
             "btn_3": "none",
             "btn_2": "none"
+        },
+        "x": {
+            "stick_left": "arrows",
+            "btn_5": "click_left",
+            "btn_7": "click_right",
+            "stick_right": "mouse",
+            "btn_4": "key_tab",
+            "btn_11": "key_enter",
+            "btn_10": "key_win",
+            "btn_1": "key_esc",
+            "btn_12": "key_up",
+            "btn_13": "key_down",
+            "btn_14": "key_left",
+            "btn_15": "key_right",
+            "btn_0": "key_d",
+            "btn_9": "key_f11",
+            "btn_6": "key_ctrl+key_w",
+            "btn_8": "key_alt+key_tab",
+            "btn_16": "none",
+            "btn_3": "key_s",
+            "btn_2": "key_z"
         }
     },
     "sens": 3,
