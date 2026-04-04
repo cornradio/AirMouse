@@ -1,5 +1,5 @@
 {
-    "current": "小红书",
+    "current": "抖音",
     "profiles": {
         "Default": {
             "stick_left": "scroll_rev",
@@ -25,9 +25,9 @@
         "抖音": {
             "stick_left": "scroll_rev",
             "btn_5": "click_left",
-            "btn_7": "click_right",
+            "btn_7": "click_left",
             "stick_right": "mouse",
-            "btn_4": "key_tab",
+            "btn_4": "key_x",
             "btn_11": "key_enter",
             "btn_10": "key_win",
             "btn_1": "key_esc",
@@ -37,10 +37,10 @@
             "btn_15": "key_right",
             "btn_0": "click_left",
             "btn_9": "key_enter",
-            "btn_6": "key_ctrl",
+            "btn_6": "click_right",
             "btn_8": "key_win+key_tab",
             "btn_16": "none",
-            "btn_3": "key_space",
+            "btn_3": "key_r",
             "btn_2": "key_f"
         },
         "x": {
@@ -67,19 +67,19 @@
         "小红书": {
             "stick_left": "scroll_rev",
             "btn_5": "key_right",
-            "btn_7": "scroll_down",
+            "btn_7": "click_left",
             "stick_right": "mouse",
-            "btn_4": "key_left",
-            "btn_11": "key_enter",
-            "btn_10": "key_win",
+            "btn_4": "key_up",
+            "btn_11": "key_left",
+            "btn_10": "key_down",
             "btn_1": "key_esc",
             "btn_12": "key_k",
             "btn_13": "key_j",
             "btn_14": "key_h",
             "btn_15": "key_l",
-            "btn_0": "key_space",
+            "btn_0": "key_s",
             "btn_9": "key_enter",
-            "btn_6": "scroll_up",
+            "btn_6": "click_right",
             "btn_8": "key_win+key_tab",
             "btn_16": "none",
             "btn_3": "key_d",

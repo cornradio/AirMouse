@@ -187,9 +187,6 @@ def windows_loop():
             lx, ly = apply_dz(gp.sThumbLX, 32767.0), apply_dz(gp.sThumbLY, 32767.0)
             rx, ry = apply_dz(gp.sThumbRX, 32767.0), apply_dz(gp.sThumbRY, 32767.0)
             # LT/RT 映射 (消抖)
-            t_lt, t_rt = (gp.bLeftTrigger > 45), (gp.bRightTrigger > 45)
-            if t_lt != prev_lt: handle_btn('BTN_TL2', t_lt); prev_lt = t_lt # 借用 inputs 名或自定义
-            # 这里统一使用 execute_action 方便
             lt_p = True if gp.bLeftTrigger > 45 else (False if gp.bLeftTrigger < 20 else prev_lt)
             rt_p = True if gp.bRightTrigger > 45 else (False if gp.bRightTrigger < 20 else prev_rt)
             if lt_p != prev_lt: execute_action(cur_map.get('btn_6', 'none'), lt_p); prev_lt = lt_p
