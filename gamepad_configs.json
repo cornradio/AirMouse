@@ -28,7 +28,7 @@
             "btn_7": "click_right",
             "stick_right": "mouse",
             "btn_4": "key_x",
-            "btn_11": "key_enter",
+            "btn_11": "click_middle",
             "btn_10": "key_win",
             "btn_1": "key_esc",
             "btn_12": "key_up",

@@ -1,4 +1,6 @@
 import platform
+import ctypes
+import time
 from pynput.mouse import Controller, Button
 
 # macOS 兼容性补丁：处理某些 pyobjc 版本缺失 CGDisplayPixelsHigh 的问题
@@ -6,7 +8,6 @@ if platform.system() == 'Darwin':
     try:
         import Quartz
         if not hasattr(Quartz, 'CGDisplayPixelsHigh'):
-            # 使用 Bounds 替代显示高度获取，解决部分 macOS 版本 pyobjc 缺失方法的问题
             def CGDisplayPixelsHigh(display_id):
                 return int(Quartz.CGDisplayBounds(display_id).size.height)
             Quartz.CGDisplayPixelsHigh = CGDisplayPixelsHigh
@@ -15,9 +16,16 @@ if platform.system() == 'Darwin':
 
 mouse = Controller()
 
+def wake_up_cursor():
+    if platform.system() == 'Windows':
+        MOUSEEVENTF_MOVE = 0x0001
+        ctypes.windll.user32.mouse_event(MOUSEEVENTF_MOVE, 1, 1, 0, 0)
+        time.sleep(0.01)
+        ctypes.windll.user32.mouse_event(MOUSEEVENTF_MOVE, -1, -1, 0, 0)
+
 def handle_move(data):
-    # dx, dy 由前端根据灵敏度计算后传入
     mouse.move(data['dx'], data['dy'])
+    wake_up_cursor()
 
 def handle_click(data):
     button_type = data.get('button')
