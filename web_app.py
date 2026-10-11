@@ -3,8 +3,13 @@ import socket
 import psutil
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
+from app_paths import resource_path
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=resource_path('templates'),
+    static_folder=resource_path('static'),
+)
 # 允许所有来源跨域，确保手机能连上
 socketio = SocketIO(app, cors_allowed_origins="*")
 

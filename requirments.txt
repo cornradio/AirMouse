@@ -4,3 +4,5 @@ flask-socketio
 pyautogui
 pynput
 pyopenssl
+pystray
+pillow

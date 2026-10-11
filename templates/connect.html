@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>扫码连接 | AirMouse</title>
+    <link rel="icon" type="image/png" href="/static/app-icon.png">
+    <link rel="apple-touch-icon" href="/static/app-icon.png">
     <style>
         :root {
             color-scheme: dark;
@@ -44,6 +46,26 @@
             justify-content: space-between;
             gap: 24px;
             margin-bottom: 28px;
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(27, 33, 30, 0.9);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .home-link:hover {
+            border-color: rgba(89, 227, 145, 0.45);
+            color: var(--accent);
         }
 
         .brand {
@@ -403,9 +425,12 @@
                     <p class="subtitle">让手机和电脑处在同一局域网，然后扫描下方二维码</p>
                 </div>
             </div>
-            <div class="status">
-                <span class="status-dot"></span>
-                <span>已检测到 {{ target_count }} 个可用地址</span>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end;">
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span>已检测到 {{ target_count }} 个可用地址</span>
+                </div>
+                <a class="home-link" href="/">返回主页</a>
             </div>
         </header>
 

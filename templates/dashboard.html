@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AirMouse | 远程控制中心</title>
+    <link rel="icon" type="image/png" href="/static/app-icon.png">
+    <link rel="apple-touch-icon" href="/static/app-icon.png">
     <style>
         * {
             -webkit-tap-highlight-color: transparent;
@@ -33,8 +35,12 @@
         }
 
         .logo {
-            font-size: 64px;
-            margin-bottom: 16px;
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            background: url('/static/app-icon.png') center / cover no-repeat;
+            box-shadow: 0 10px 28px rgba(120, 60, 200, 0.35);
         }
 
         .header h1 {
@@ -160,12 +166,72 @@
             color: #333;
             font-size: 12px;
         }
+
+        .qr-entry {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 20;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+            background: rgba(22, 22, 29, 0.92);
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .qr-entry:active {
+            transform: scale(0.97);
+            background: rgba(34, 34, 48, 0.95);
+        }
+
+        .qr-entry-icon {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid #59e391;
+            border-radius: 4px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .qr-entry-icon::before,
+        .qr-entry-icon::after {
+            content: "";
+            position: absolute;
+            background: #59e391;
+        }
+
+        .qr-entry-icon::before {
+            width: 5px;
+            height: 5px;
+            top: 2px;
+            left: 2px;
+        }
+
+        .qr-entry-icon::after {
+            width: 5px;
+            height: 5px;
+            right: 2px;
+            bottom: 2px;
+        }
     </style>
 </head>
 <body onclick="initAudio()">
+    <a class="qr-entry" href="/connect" onclick="v()">
+        <span class="qr-entry-icon" aria-hidden="true"></span>
+        <span>扫码连接</span>
+    </a>
     <div class="container">
         <div class="header">
-            <div class="logo">🖱️</div>
+            <div class="logo" role="img" aria-label="AirMouse"></div>
             <h1>AirMouse</h1>
             <p>远程控制中心</p>
         </div>

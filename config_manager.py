@@ -2,9 +2,10 @@ import os
 import json
 import platform
 from pynput.keyboard import Key
+from app_paths import app_path
 
-# 宏按键配置存储逻辑
-CONFIG_FILE = "macro_configs.json"
+# 宏按键配置存储逻辑（可执行文件旁可写目录）
+CONFIG_FILE = app_path("macro_configs.json")
 
 def load_macros():
     if os.path.exists(CONFIG_FILE):
@@ -17,7 +18,7 @@ def save_macros(data):
         json.dump(data, f, ensure_ascii=False, indent=4)
     print("宏按键配置已保存到服务端")
 
-GP_CONFIG_FILE = "gamepad_configs.json"
+GP_CONFIG_FILE = app_path("gamepad_configs.json")
 
 def load_gp_macros():
     default_cfg = {
