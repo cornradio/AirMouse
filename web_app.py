@@ -13,6 +13,11 @@ app = Flask(
 # 允许所有来源跨域，确保手机能连上
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+
+def get_default_input_mode():
+    """Choose Mac or Windows interaction defaults from the server OS."""
+    return 'mac' if platform.system() == 'Darwin' else 'windows'
+
 WIRELESS_HINTS = ("wlan", "wi-fi", "wifi", "wireless", "en0", "en1")
 WIRED_HINTS = ("ethernet", "eth", "enp", "eno", "realtek", "intel")
 VIRTUAL_HINTS = (
@@ -79,13 +84,14 @@ def get_interface_score(interface, ip, outbound_ip, stats):
     return score
 
 
-def get_connection_targets(port):
+def get_connection_targets(port, http_mode=False):
     try:
         stats = psutil.net_if_stats()
     except Exception:
         stats = {}
 
     outbound_ip = get_outbound_ip()
+    scheme = 'http' if http_mode else 'https'
     seen = set()
     targets = []
 
@@ -93,11 +99,11 @@ def get_connection_targets(port):
         if ip in seen:
             continue
         seen.add(ip)
-        url = f"https://{ip}:{port}/"
+        url = f"{scheme}://{ip}:{port}/"
         targets.append({
             "interface": interface,
             "ip": ip,
-            "kind": get_interface_kind(interface),
+            "kind": get_interface_kind(interface, ip, outbound_ip, stats),
             "url": url,
             "score": get_interface_score(interface, ip, outbound_ip, stats),
         })
@@ -111,8 +117,11 @@ def index():
 
 @app.route('/connect')
 def connect_page():
-    port = request.environ.get('SERVER_PORT', 5888)
-    targets = get_connection_targets(int(port))
+    port = int(request.environ.get('SERVER_PORT', 5888))
+    # 自动检测协议：Werkzeug 下 SSL 握手由 socketio 处理，
+    # 若请求是 http:// 进来的则 http_mode=True
+    http_mode = request.environ.get('wsgi.url_scheme') == 'http'
+    targets = get_connection_targets(port, http_mode=http_mode)
     return render_template(
         'connect.html',
         recommended=targets[0] if targets else None,
@@ -126,7 +135,7 @@ def healthz():
 
 @app.route('/touchpad')
 def touchpad_page():
-    return render_template('index.html')
+    return render_template('index.html', default_input_mode=get_default_input_mode())
 
 @app.route('/k')
 def keyboard_page(): 
@@ -134,7 +143,7 @@ def keyboard_page():
 
 @app.route('/v')
 def voice_page():
-    return render_template('voice.html')
+    return render_template('voice.html', default_input_mode=get_default_input_mode())
 
 @app.route('/test')
 def vibe_test():
@@ -155,3 +164,7 @@ def buttons_page():
 @app.route('/controller')
 def controller_page():
     return render_template('controller.html')
+
+@app.route('/settings')
+def settings_page():
+    return render_template('settings.html', os_type=platform.system())

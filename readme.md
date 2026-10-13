@@ -61,6 +61,12 @@ pip install -r requirments.txt
 python server.py
 ```
 
+**调试输入事件**：
+```bash
+DEBUG=1 python server.py
+```
+设置 `DEBUG=1` 后，控制台会记录收到的鼠标/键盘 Socket.IO 事件及实际发送的 Quartz 事件；文本输入只记录字符数，不记录内容。Windows PowerShell 可先运行 `$env:DEBUG="1"`，再启动 `python server.py`。
+
 
 
 

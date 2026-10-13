@@ -54,44 +54,53 @@ def get_special_keys():
     #     'comma': ',', 'dot': '.', 'slash': '/', 'semicolon': ';', 'quote': "'", 'bracket_l': '[', 'bracket_r': ']'
     # }
 
+    # macOS 的 pynput Key 枚举缺少 insert / num_lock / scroll_lock / print_screen
+    # 等键（这些键在 macOS 键盘上不存在），统一用 getattr 安全获取。
+    def _k(name, default=None):
+        return getattr(Key, name, default)
+
     keys = {
         # 修饰键 (Modifiers)
-        'ctrl': Key.ctrl, 'ctrl_l': Key.ctrl_l, 'ctrl_r': Key.ctrl_r,
-        'shift': Key.shift, 'shift_l': Key.shift_l, 'shift_r': Key.shift_r,
-        'alt': Key.alt, 'alt_l': Key.alt_l, 'alt_r': Key.alt_r,
-        'win': Key.cmd, 'command': Key.cmd, 'meta': Key.cmd, 'cmd': Key.cmd,
+        'ctrl': _k('ctrl'), 'ctrl_l': _k('ctrl_l'), 'ctrl_r': _k('ctrl_r'),
+        'shift': _k('shift'), 'shift_l': _k('shift_l'), 'shift_r': _k('shift_r'),
+        'alt': _k('alt'), 'alt_l': _k('alt_l'), 'alt_r': _k('alt_r'),
+        'win': _k('cmd'), 'command': _k('cmd'), 'meta': _k('cmd'), 'cmd': _k('cmd'),
 
-        # 导航键 (Navigation) - 你的错误就在这里补全
-        'up': Key.up, 'down': Key.down, 'left': Key.left, 'right': Key.right,
-        'page_up': Key.page_up, 'page_down': Key.page_down, 
-        'home': Key.home, 'end': Key.end,
-        'insert': Key.insert, 'delete': Key.delete,
+        # 导航键 (Navigation)
+        'up': _k('up'), 'down': _k('down'), 'left': _k('left'), 'right': _k('right'),
+        'page_up': _k('page_up'), 'page_down': _k('page_down'),
+        'home': _k('home'), 'end': _k('end'),
+        'insert': _k('insert'), 'delete': _k('delete'),
 
         # 常用功能键 (Standard Keys)
-        'enter': Key.enter, 'esc': Key.esc, 'tab': Key.tab, 
-        'backspace': Key.backspace, 'space': Key.space,
-        'caps_lock': Key.caps_lock, 'num_lock': Key.num_lock,
-        'scroll_lock': Key.scroll_lock, 'print_screen': Key.print_screen,
-        'pause': Key.pause,
+        'enter': _k('enter'), 'esc': _k('esc'), 'tab': _k('tab'),
+        'backspace': _k('backspace'), 'space': _k('space'),
+        'caps_lock': _k('caps_lock'), 'num_lock': _k('num_lock'),
+        'scroll_lock': _k('scroll_lock'), 'print_screen': _k('print_screen'),
+        'pause': _k('pause'),
 
         # F1-F20 (Function Keys)
-        **{f'f{i}': getattr(Key, f'f{i}') for i in range(1, 21)},
+        **{f'f{i}': getattr(Key, f'f{i}') for i in range(1, 21)
+           if hasattr(Key, f'f{i}')},
 
         # 符号别名 (Symbols & Punctuation)
-        'comma': ',', 'dot': '.', 'slash': '/', 'semicolon': ';', 
+        'comma': ',', 'dot': '.', 'slash': '/', 'semicolon': ';',
         'quote': "'", 'bracket_l': '[', 'bracket_r': ']',
         'backslash': '\\', 'backtick': '`', 'minus': '-', 'equal': '=',
-        
+
         # 额外补充可能用到的媒体键 (Media Keys)
-        'media_play_pause': Key.media_play_pause,
-        'media_volume_mute': Key.media_volume_mute,
-        'media_volume_up': Key.media_volume_up,
-        'media_volume_down': Key.media_volume_down,
-        'media_next': Key.media_next,
-        'media_previous': Key.media_previous
+        'media_play_pause': _k('media_play_pause'),
+        'media_volume_mute': _k('media_volume_mute'),
+        'media_volume_up': _k('media_volume_up'),
+        'media_volume_down': _k('media_volume_down'),
+        'media_next': _k('media_next'),
+        'media_previous': _k('media_previous'),
     }
+    # 移除值为 None 的键（当前平台不支持的按键）
+    keys = {k: v for k, v in keys.items() if v is not None}
+
     # Windows 特有
     if os_type == 'Windows':
-        keys['prtsc'] = Key.print_screen
-        
+        keys['prtsc'] = _k('print_screen')
+
     return keys

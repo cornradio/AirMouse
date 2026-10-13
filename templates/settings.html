@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AirMouse | macOS 设置</title>
+<link rel="icon" type="image/png" href="/static/app-icon.png">
+<style>
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+    margin: 0;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+.container { max-width: 480px; margin: 0 auto; padding: 24px 20px 60px; }
+.header { text-align: center; margin-bottom: 28px; }
+.header .back {
+    position: fixed; top: 16px; left: 16px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #aaa; font-size: 18px;
+}
+.header h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0 0 4px; }
+.header p { font-size: 13px; color: #666; margin: 0; }
+
+.card {
+    background: linear-gradient(145deg, #16161d, #1a1a24);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+}
+.card-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.card-desc { font-size: 12px; color: #777; line-height: 1.5; }
+
+.status-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.status-row:last-child { border-bottom: none; }
+.status-label { flex: 1; font-size: 13px; color: #ccc; }
+.status-val { font-size: 13px; font-weight: 600; }
+
+.dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    display: inline-block;
+}
+.dot.ok { background: #34C759; box-shadow: 0 0 8px rgba(52,199,89,0.5); }
+.dot.bad { background: #FF453A; box-shadow: 0 0 8px rgba(255,69,58,0.5); }
+.dot.warn { background: #FFD60A; }
+
+.btn {
+    display: block; width: 100%; padding: 14px;
+    background: #7b4dff; color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; margin-top: 10px;
+    transition: background 0.2s;
+}
+.btn:active { background: #6a3de6; }
+.btn.secondary { background: #2a2a35; color: #ccc; }
+.btn.danger { background: #4a1515; color: #ff6b6b; }
+
+.tip {
+    background: rgba(123,77,255,0.1);
+    border: 1px solid rgba(123,77,255,0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px; color: #9d8bff;
+    line-height: 1.7;
+    margin-top: 12px;
+}
+.tip code {
+    background: rgba(255,255,255,0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+.os-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.08);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #888;
+    margin-left: 8px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <button class="header back" onclick="window.location.href='/'">←</button>
+    <div class="header">
+        <h1>macOS 设置</h1>
+        <p>权限检测与手势配置</p>
+    </div>
+
+    <!-- 权限状态 -->
+    <div class="card" id="perm-card">
+        <div class="card-title">系统权限状态</div>
+        <div class="card-desc">检测到当前操作系统：{{ os_type }}</div>
+        <div style="margin-top: 14px">
+            <div class="status-row">
+                <span class="status-label">辅助功能（鼠标点击 / 拖拽 / 滚动 / 键盘）</span>
+                <span id="perm-access" class="status-val"><span class="dot warn"></span> 检测中…</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">SSL 证书信任（陀螺仪 gyro）</span>
+                <span id="perm-ssl" class="status-val"><span class="dot warn"></span> 检测中…</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">服务器模式</span>
+                <span id="perm-mode" class="status-val">—</span>
+            </div>
+        </div>
+
+        <div class="tip" id="perm-tip" style="display:none"></div>
+
+        <button class="btn" id="btn-open-settings" style="display:none" onclick="openAccessibility()">
+            打开系统设置 → 辅助功能
+        </button>
+    </div>
+
+    <!-- 手势说明 -->
+    <div class="card">
+        <div class="card-title">触摸板手势对照表</div>
+        <div class="card-desc">当前手势与电脑端操作映射</div>
+        <div style="margin-top:10px">
+            <div class="status-row">
+                <span class="status-label">1 指滑动</span>
+                <span class="status-val" style="color:#888">鼠标移动 / 单击</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">1 指长按</span>
+                <span class="status-val" style="color:#888">开始拖拽</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">2 指滑动</span>
+                <span class="status-val" style="color:#888">滚动（标准）</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">2 指轻点</span>
+                <span class="status-val" style="color:#888">右键点击</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">3 指滑动</span>
+                <span class="status-val" style="color:#888">拖拽 / 中键</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">3 指轻点</span>
+                <span class="status-val" style="color:#888">中键点击</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">4 指滑动</span>
+                <span class="status-val" style="color:#888">快速滚动（2x）</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">4 指轻点</span>
+                <span class="status-val" style="color:#888">侧键 1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 陀螺仪（需 HTTPS） -->
+    <div class="card" id="gyro-card">
+        <div class="card-title">陀螺仪（Gyro）<span class="os-badge">需要 HTTPS</span></div>
+        <div class="card-desc">Chrome 安全策略限制，陀螺仪数据只能在 HTTPS 页面采集。如果使用 HTTP 模式，此功能不可用。</div>
+        <div class="tip" id="gyro-tip" style="display:none"></div>
+    </div>
+
+    <div class="card" style="text-align:center; padding:12px;">
+        <button class="btn secondary" onclick="location.reload()">刷新检测</button>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const socket = io();
+
+let isHTTPS = location.protocol === 'https:';
+
+// --- 检测 URL 是否为 HTTPS（判断 gyro 是否可用） ---
+document.getElementById('perm-mode').textContent =
+    isHTTPS ? 'HTTPS（完整功能）' : 'HTTP（陀螺仪不可用）';
+document.getElementById('perm-mode').style.color = isHTTPS ? '#34C759' : '#FFD60A';
+
+// --- gyro 提示 ---
+const gyroTip = document.getElementById('gyro-tip');
+if (!isHTTPS) {
+    gyroTip.style.display = 'block';
+    gyroTip.innerHTML = '当前为 HTTP 模式，陀螺仪功能不可用。<br>如需 gyro，请改用 HTTPS 模式重启服务（去掉 <code>AIRMOUSE_HTTP=1</code>）。';
+}
+
+// --- 通过 socket 检测服务端权限 ---
+socket.on('connect', () => {
+    socket.emit('check_permissions');
+});
+
+socket.on('permissions_status', (data) => {
+    // data: { accessibility: bool, os: string, is_https: bool }
+
+    const accessEl = document.getElementById('perm-access');
+    const sslEl = document.getElementById('perm-ssl');
+    const tipEl = document.getElementById('perm-tip');
+    const openBtn = document.getElementById('btn-open-settings');
+
+    if (data.os !== 'Darwin') {
+        // 非 macOS 隐藏权限检测
+        document.getElementById('perm-card').style.display = 'none';
+        return;
+    }
+
+    if (data.accessibility) {
+        accessEl.innerHTML = '<span class="dot ok"></span> 已授权';
+        accessEl.style.color = '#34C759';
+    } else {
+        accessEl.innerHTML = '<span class="dot bad"></span> 未授权';
+        accessEl.style.color = '#FF453A';
+        tipEl.style.display = 'block';
+        tipEl.innerHTML =
+            '辅助功能未授权时，鼠标点击、拖拽、滚动和键盘输入将不生效；触控板变蓝只表示手势已识别。<br>' +
+            '步骤：系统设置 → 隐私与安全性 → 辅助功能 → 添加 <code>Python</code>（路径见下方）并重启服务。';
+        openBtn.style.display = 'block';
+    }
+
+    // SSL 状态（仅 HTTPS 模式）
+    if (data.is_https) {
+        sslEl.innerHTML = '<span class="dot ok"></span> HTTPS 模式（陀螺仪可用）';
+        sslEl.style.color = '#34C759';
+    } else {
+        sslEl.innerHTML = '<span class="dot warn"></span> HTTP 模式（陀螺仪不可用）';
+        sslEl.style.color = '#FFD60A';
+    }
+});
+
+function openAccessibility() {
+    // 用 x-apple.system-settings URL 打开 macOS 辅助功能面板
+    const url = 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility';
+    // 手机端无法直接打开电脑系统设置，提示用户手动操作
+    alert(
+        '请在电脑上打开：\n' +
+        '系统设置 → 隐私与安全性 → 辅助功能\n\n' +
+        '添加路径（勾选 uv 管理的 Python）：\n' +
+        '  .venv/bin/python3\n\n' +
+        '授权后重启 AirMouse 服务即可。'
+    );
+}
+</script>
+</body>
+</html>
