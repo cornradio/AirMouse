@@ -43,6 +43,21 @@ class WebModeDefaultTests(unittest.TestCase):
         self.assertIn('快速滚动', touchpad)
         self.assertIn('切换拖拽按键', touchpad)
 
+    def test_touchpad_page_has_mac_system_shortcut_buttons(self):
+        touchpad = self.client.get('/touchpad').get_data(as_text=True)
+
+        self.assertIn('id="mac-shortcuts"', touchpad)
+        self.assertIn('调度中心', touchpad)
+        self.assertIn('应用窗口', touchpad)
+        self.assertIn('显示桌面', touchpad)
+        self.assertIn('上一个全屏应用', touchpad)
+        self.assertIn('下一个全屏应用', touchpad)
+        self.assertIn("emitMacShortcut(['ctrl', 'up'])", touchpad)
+        self.assertIn("emitMacShortcut(['ctrl', 'down'])", touchpad)
+        self.assertIn("emitMacShortcut(['fn', 'f11'])", touchpad)
+        self.assertIn("emitMacShortcut(['ctrl', 'left'])", touchpad)
+        self.assertIn("emitMacShortcut(['ctrl', 'right'])", touchpad)
+
     def test_landscape_sensitivity_controls_are_in_a_collapsible_panel(self):
         touchpad = self.client.get('/touchpad').get_data(as_text=True)
 
@@ -51,6 +66,33 @@ class WebModeDefaultTests(unittest.TestCase):
         self.assertIn('id="sens-settings"', touchpad)
         self.assertIn('function toggleSensitivityPanel()', touchpad)
         self.assertIn('id="gyro-slider"', touchpad)
+
+    def test_touchpad_has_collapsible_sensitivity_and_mac_floating_actions(self):
+        touchpad = self.client.get('/touchpad').get_data(as_text=True)
+
+        self.assertIn('id="sens-toggle"', touchpad)
+        self.assertIn('#mouse-page.mac-mode.mac-shortcuts-enabled #mac-floating-actions', touchpad)
+        self.assertIn('aria-label="打开调度中心"', touchpad)
+        self.assertIn('aria-label="显示桌面"', touchpad)
+        self.assertIn("localStorage.getItem('show_mac_shortcuts')", touchpad)
+
+    def test_settings_page_can_disable_mac_floating_actions(self):
+        settings = self.client.get('/settings').get_data(as_text=True)
+
+        self.assertIn('id="show-mac-shortcuts"', settings)
+        self.assertIn("localStorage.setItem('show_mac_shortcuts'", settings)
+
+    def test_landscape_more_menu_can_scroll_and_has_quick_scroll_button(self):
+        touchpad = self.client.get('/touchpad').get_data(as_text=True)
+
+        self.assertIn('id="more-menu"', touchpad)
+        self.assertIn('max-height: calc(100dvh', touchpad)
+        self.assertIn('overflow-y: auto', touchpad)
+        self.assertIn('touch-action: pan-y', touchpad)
+        self.assertIn('html, body, #mouse-page, .top-nav, .menu-container, .menu-dropdown, .menu-dropdown *', touchpad)
+        self.assertIn('.quick-scroll-up-button', touchpad)
+        self.assertIn('aria-label="快速滚动向上"', touchpad)
+        self.assertIn('onclick="quickScroll(4)"', touchpad)
 
 
 if __name__ == '__main__':

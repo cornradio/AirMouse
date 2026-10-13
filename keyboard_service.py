@@ -67,6 +67,8 @@ if _IS_MAC:
         'alt': 58, 'alt_l': 58, 'alt_r': 61,
         'cmd': 55, 'cmd_l': 55, 'cmd_r': 54,
         'command': 55, 'meta': 55,
+        # macOS Fn/Globe 键的虚拟键码，用于组合触发 F11 等功能键快捷键。
+        'fn': 63,
         # symbols
         ',': 43, '.': 47, '/': 44, ';': 41, "'": 39,
         '[': 33, ']': 30, '\\': 42, '`': 50,
@@ -172,7 +174,7 @@ if _IS_MAC:
             _post_unicode_character(ch)
             time.sleep(0.02)
 
-    _MODIFIER_KEYS = frozenset({59, 62, 56, 60, 58, 61, 55, 54})
+    _MODIFIER_KEYS = frozenset({59, 62, 56, 60, 58, 61, 55, 54, 63})
 
     def _is_modifier(target) -> bool:
         vk = _resolve_keycode(target)

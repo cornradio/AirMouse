@@ -12,6 +12,10 @@ class KeyboardServiceMacTests(unittest.TestCase):
         special_keys = keyboard_service.get_special_keys()
         self.assertEqual(keyboard_service._resolve_keycode(special_keys['f1']), 122)
 
+    def test_fn_key_uses_macos_virtual_key_code_and_is_a_modifier(self):
+        self.assertEqual(keyboard_service._resolve_keycode('fn'), 63)
+        self.assertTrue(keyboard_service._is_modifier('fn'))
+
     def test_unknown_key_does_not_fall_through_to_keycode_zero(self):
         self.assertIsNone(keyboard_service._resolve_keycode('not-a-real-key'))
 

@@ -46,6 +46,23 @@ body {
 .status-label { flex: 1; font-size: 13px; color: #ccc; }
 .status-val { font-size: 13px; font-weight: 600; }
 
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0 0;
+    color: #ccc;
+    font-size: 13px;
+    line-height: 1.5;
+    cursor: pointer;
+}
+.setting-row span { flex: 1; }
+.setting-row input {
+    width: 20px;
+    height: 20px;
+    accent-color: #7b4dff;
+}
+
 .dot {
     width: 10px; height: 10px; border-radius: 50%;
     display: inline-block;
@@ -98,6 +115,15 @@ body {
     <div class="header">
         <h1>macOS 设置</h1>
         <p>权限检测与手势配置</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">触摸板快捷按钮</div>
+        <div class="card-desc">按钮只在触摸板切换到 Mac 模式时显示，设置保存在当前浏览器。</div>
+        <label class="setting-row" for="show-mac-shortcuts">
+            <span>显示右下角 Mac 快捷小按钮</span>
+            <input id="show-mac-shortcuts" type="checkbox">
+        </label>
     </div>
 
     <!-- 权限状态 -->
@@ -181,6 +207,12 @@ body {
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 const socket = io();
+
+const macShortcutVisibility = document.getElementById('show-mac-shortcuts');
+macShortcutVisibility.checked = localStorage.getItem('show_mac_shortcuts') !== 'false';
+macShortcutVisibility.addEventListener('change', () => {
+    localStorage.setItem('show_mac_shortcuts', String(macShortcutVisibility.checked));
+});
 
 let isHTTPS = location.protocol === 'https:';
 
