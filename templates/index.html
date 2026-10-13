@@ -810,6 +810,7 @@
         const touchpad = new TouchpadModule('pad', socket, {
             getSensitivity: () => sensitivity,
             getMode: () => inputMode,
+            getScrollDirection: () => localStorage.getItem('touch_scroll_direction') === 'reverse' ? 'reverse' : 'normal',
             feedback: feedback
         });
 

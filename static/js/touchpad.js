@@ -17,6 +17,7 @@ class Touchpad {
         this.getSensitivity = options.getSensitivity || (() => 4.0);
         this.feedback = options.feedback || (() => { });
         this.getMode = options.getMode || (() => 'windows');
+        this.getScrollDirection = options.getScrollDirection || (() => 'normal');
         this.now = options.now || (() => Date.now());
         this.requestFrame = options.requestFrame || (callback => requestAnimationFrame(callback));
         this.cancelFrame = options.cancelFrame || (id => cancelAnimationFrame(id));
@@ -154,8 +155,10 @@ class Touchpad {
             this.ly = cy;
         } else if (this.tCount === 2) {
             const center = this._touchCenter(e.targetTouches);
-            const dx = center.x - this.lx;
-            const dy = center.y - this.ly;
+            // 在原始触摸增量处翻转方向，让离手后的惯性也继承同一方向。
+            const direction = this.getScrollDirection() === 'reverse' ? -1 : 1;
+            const dx = (center.x - this.lx) * direction;
+            const dy = (center.y - this.ly) * direction;
             this.lastMultiTouchTime = this.now();
             if (this.getMode() === 'mac') {
                 // Mac 模式发送像素级增量，并按触摸速度计算抬手后的惯性。

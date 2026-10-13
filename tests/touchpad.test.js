@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function createTouchpad(mode) {
+function createTouchpad(mode, scrollDirection = 'normal') {
     let now = 0;
     let nextFrameId = 1;
     const frames = new Map();
@@ -35,7 +35,7 @@ function createTouchpad(mode) {
     );
     const touchpad = new context.window.TouchpadModule('pad', {
         emit: (name, data) => events.push({ name, data })
-    }, { getMode: () => mode, now: () => now });
+    }, { getMode: () => mode, getScrollDirection: () => scrollDirection, now: () => now });
 
     const finger = (x, y) => ({ clientX: x, clientY: y });
     return {
@@ -86,6 +86,33 @@ test('Windows mode converts two-finger motion to wheel steps without momentum', 
 
     pad.end();
     assert.equal(pad.frames.size, 0);
+});
+
+test('reverse direction inverts smooth Mac two-finger scrolling and momentum', () => {
+    const pad = createTouchpad('mac', 'reverse');
+    pad.start([pad.finger(40, 50), pad.finger(60, 50)]);
+    pad.setTime(20);
+    pad.move([pad.finger(40, 70), pad.finger(60, 70)]);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(pad.events[0])), {
+        name: 'scroll', data: { dx: 0, dy: -20, smooth: true }
+    });
+
+    pad.end();
+    const firstFrame = [...pad.frames.keys()][0];
+    pad.flushFrame(firstFrame, 36);
+    assert.ok(pad.events[1].data.dy < 0);
+});
+
+test('reverse direction inverts Windows two-finger wheel steps', () => {
+    const pad = createTouchpad('windows', 'reverse');
+    pad.start([pad.finger(40, 50), pad.finger(60, 50)]);
+    pad.setTime(20);
+    pad.move([pad.finger(40, 80), pad.finger(60, 80)]);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(pad.events)), [
+        { name: 'scroll', data: { dx: 0, dy: -1 } }
+    ]);
 });
 
 test('a new touch cancels pending Mac momentum', () => {

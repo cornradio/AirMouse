@@ -139,7 +139,7 @@ def touchpad_page():
 
 @app.route('/k')
 def keyboard_page(): 
-    return render_template('keyboard.html')
+    return render_template('keyboard.html', default_input_mode=get_default_input_mode())
 
 @app.route('/v')
 def voice_page():

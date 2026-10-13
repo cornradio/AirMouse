@@ -35,6 +35,27 @@ class WebModeDefaultTests(unittest.TestCase):
 
         self.assertIn('let inputMode = "windows";', touchpad)
 
+    def test_keyboard_uses_server_default_and_exposes_mac_mode_switch(self):
+        with patch('web_app.platform.system', return_value='Darwin'):
+            mac_keyboard = self.client.get('/k').get_data(as_text=True)
+        with patch('web_app.platform.system', return_value='Windows'):
+            windows_keyboard = self.client.get('/k').get_data(as_text=True)
+
+        self.assertIn('let keyboardMode = "mac";', mac_keyboard)
+        self.assertIn('id="keyboard-mode-toggle"', mac_keyboard)
+        self.assertIn('let keyboardMode = "windows";', windows_keyboard)
+        self.assertIn("isMac ? '⌥' : 'ALT'", mac_keyboard)
+        self.assertIn("isMac ? 'Option' : 'Alt'", mac_keyboard)
+        self.assertIn('WIN', windows_keyboard)
+
+    def test_settings_page_has_two_finger_scroll_direction_setting(self):
+        settings = self.client.get('/settings').get_data(as_text=True)
+
+        self.assertIn('id="touch-scroll-direction"', settings)
+        self.assertIn('<option value="normal">正常</option>', settings)
+        self.assertIn('<option value="reverse">反向</option>', settings)
+        self.assertIn("localStorage.setItem('touch_scroll_direction'", settings)
+
     def test_touchpad_page_has_home_navigation_and_mac_gesture_shortcuts(self):
         touchpad = self.client.get('/touchpad').get_data(as_text=True)
 

@@ -62,6 +62,15 @@ body {
     height: 20px;
     accent-color: #7b4dff;
 }
+.setting-row select {
+    min-width: 92px;
+    padding: 8px 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    background: #24242e;
+    color: #eee;
+    font: inherit;
+}
 
 .dot {
     width: 10px; height: 10px; border-radius: 50%;
@@ -123,6 +132,18 @@ body {
         <label class="setting-row" for="show-mac-shortcuts">
             <span>显示右下角 Mac 快捷小按钮</span>
             <input id="show-mac-shortcuts" type="checkbox">
+        </label>
+    </div>
+
+    <div class="card">
+        <div class="card-title">触摸滚动方向</div>
+        <div class="card-desc">设置双指滑动对应的页面滚动方向；反向会翻转横向和纵向滚动。设置保存在当前浏览器。</div>
+        <label class="setting-row" for="touch-scroll-direction">
+            <span>双指滚动方向</span>
+            <select id="touch-scroll-direction" aria-label="双指滚动方向">
+                <option value="normal">正常</option>
+                <option value="reverse">反向</option>
+            </select>
         </label>
     </div>
 
@@ -212,6 +233,15 @@ const macShortcutVisibility = document.getElementById('show-mac-shortcuts');
 macShortcutVisibility.checked = localStorage.getItem('show_mac_shortcuts') !== 'false';
 macShortcutVisibility.addEventListener('change', () => {
     localStorage.setItem('show_mac_shortcuts', String(macShortcutVisibility.checked));
+});
+
+// 方向在当前浏览器保存，触摸板页读取相同的 localStorage 配置。
+const touchScrollDirection = document.getElementById('touch-scroll-direction');
+touchScrollDirection.value = localStorage.getItem('touch_scroll_direction') === 'reverse'
+    ? 'reverse'
+    : 'normal';
+touchScrollDirection.addEventListener('change', () => {
+    localStorage.setItem('touch_scroll_direction', touchScrollDirection.value);
 });
 
 let isHTTPS = location.protocol === 'https:';
