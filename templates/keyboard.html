@@ -38,6 +38,16 @@
             background: #222;
         }
 
+        .kb-mode-toggle {
+            flex: 0 0 54px;
+            height: 40px;
+            min-height: 40px;
+            padding: 0 6px;
+            border-color: #3a3a3a;
+            color: #ddd;
+            background: #222;
+        }
+
         * {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -293,6 +303,8 @@
                         d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
                 </svg>
             </div>
+            <button id="keyboard-mode-toggle" class="kb-mode-toggle" type="button"
+                aria-label="切换键盘模式" onclick="v(); toggleKeyboardMode()">Mac</button>
         </div>
         <div class="keyboard-grid">
             <div class="row">
@@ -446,6 +458,8 @@
             }
         };
         const v = feedback;
+        // 默认模式来自服务端平台；用户也可以在键盘页临时切换修饰键布局。
+        let keyboardMode = {{ default_input_mode|default('windows')|tojson }};
         let locks = {
             ctrl: false, ctrl_r: false,
             win: false,
@@ -455,6 +469,27 @@
         };
         let rT, rI, lockTimer;
         let didLock = false;
+
+        function updateKeyboardModeUI() {
+            const isMac = keyboardMode === 'mac';
+            const modeButton = document.getElementById('keyboard-mode-toggle');
+            modeButton.textContent = isMac ? 'Mac' : 'Win';
+            modeButton.setAttribute('aria-pressed', String(isMac));
+            modeButton.title = isMac ? '当前为 Mac 键盘模式' : '当前为 Windows 键盘模式';
+            document.getElementById('win-key').textContent = isMac ? '⌘' : 'WIN';
+            document.getElementById('win-key').setAttribute('aria-label', isMac ? 'Command' : 'Windows');
+            document.getElementById('alt-key').textContent = isMac ? '⌥' : 'ALT';
+            document.getElementById('alt_r-key').textContent = isMac ? '⌥' : 'ALT';
+            document.getElementById('alt-key').setAttribute('aria-label', isMac ? 'Option' : 'Alt');
+            document.getElementById('alt_r-key').setAttribute('aria-label', isMac ? 'Option' : 'Alt');
+        }
+
+        function toggleKeyboardMode() {
+            keyboardMode = keyboardMode === 'mac' ? 'windows' : 'mac';
+            updateKeyboardModeUI();
+        }
+
+        updateKeyboardModeUI();
 
         function hPS(norm, shft) { hP(locks.shift || locks.shift_r ? shft : norm); }
 

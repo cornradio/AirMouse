@@ -200,6 +200,10 @@ body {
     margin-bottom: 20px;
 }
 
+.mobile-mapping-grid {
+    display: none;
+}
+
 .sens-group {
     margin-bottom: 25px;
 }
@@ -414,6 +418,237 @@ body {
 }
 .master-switch:active {
     transform: scale(0.95);
+}
+
+/* 手机上仍保留横向手柄本体；配置区铺满宽度，避免侧栏挤压映射按钮。 */
+@media (max-width: 760px) {
+    body {
+        height: 100dvh;
+        overflow: auto;
+    }
+
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: 50px;
+        flex-shrink: 0;
+        gap: 8px;
+    }
+
+    .header > div:last-child {
+        min-width: 0;
+    }
+
+    #gp-select {
+        max-width: min(36vw, 150px);
+        min-height: 38px;
+    }
+
+    .status {
+        max-width: 38vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 10px;
+    }
+
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        height: auto;
+        overflow: visible;
+        min-height: calc(100dvh - 50px);
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        flex: 0 0 auto;
+        border-right: 0;
+        border-bottom: 1px solid #222;
+    }
+
+    .sidebar-header {
+        padding: 8px 12px 4px;
+    }
+
+    .profile-list {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 100px 10px 10px;
+        scrollbar-width: thin;
+    }
+
+    .profile-item {
+        flex: 0 0 auto;
+        min-height: 42px;
+        gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid #333;
+        border-radius: 9px;
+        white-space: nowrap;
+    }
+
+    .profile-item.active {
+        border-color: #007AFF;
+    }
+
+    .item-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        min-height: 30px;
+    }
+
+    .sidebar-footer {
+        position: absolute;
+        top: 2px;
+        right: 8px;
+        padding: 0;
+        border: 0;
+    }
+
+    .add-p-btn {
+        min-height: 38px;
+        width: auto;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .main-layout {
+        width: 100%;
+        flex: 0 0 auto;
+        min-width: 0;
+        overflow: visible;
+        padding: 12px 10px 24px;
+    }
+
+    .controls-wrapper {
+        max-width: none;
+        margin-bottom: 12px;
+        padding: 12px;
+    }
+
+    .controls-wrapper .sens-group {
+        margin-bottom: 10px !important;
+    }
+
+    .gamepad-visual {
+        display: none;
+    }
+
+    .mobile-mapping-grid {
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        gap: 10px;
+    }
+
+    .mobile-mapping-group {
+        min-width: 0;
+        padding: 10px;
+        border: 1px solid #292929;
+        border-radius: 12px;
+        background: #111;
+    }
+
+    .mobile-mapping-group h3 {
+        margin: 0 0 8px;
+        color: #8f9bad;
+        font-size: 12px;
+    }
+
+    .mobile-mapping-rows {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .mobile-mapping-item {
+        display: flex;
+        min-width: 0;
+        min-height: 48px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+        padding: 7px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background: #1a1a1a;
+        color: #ddd;
+        text-align: left;
+    }
+
+    .mobile-mapping-name {
+        overflow: hidden;
+        font-size: 11px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobile-mapping-value {
+        max-width: 55%;
+        overflow: hidden;
+        color: #58a6ff;
+        font-size: 10px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobile-mapping-item:active {
+        border-color: #007AFF;
+        background: #001a33;
+    }
+
+    #corner-hints {
+        position: static !important;
+        align-self: flex-end;
+        margin: 8px 12px calc(12px + env(safe-area-inset-bottom));
+    }
+
+    #corner-hints .floating-switch {
+        position: static;
+    }
+
+    .floating-switch {
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        min-height: 48px;
+        min-width: 170px;
+        padding: 12px 16px;
+    }
+
+    .modal-outer {
+        align-items: flex-end;
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: none;
+        max-height: 88dvh;
+        overflow: auto;
+        padding: 14px 12px calc(16px + env(safe-area-inset-bottom));
+        border-radius: 18px 18px 0 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-mapping-rows {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 /* Virtual Keyboard Grid (Recovered from keyboard.html) */

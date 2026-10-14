@@ -77,13 +77,16 @@
                 padding: 0 10px;
             }
 
-            .sens-group {
-                width: 45%;
-            }
-
             .btn-group {
                 display: flex;
                 gap: 10px;
+            }
+
+            /* 竖屏也折叠 PAD/GYRO；展开面板浮在底栏上方。 */
+            .bottom-nav > #sens-settings.expanded {
+                right: calc(60px + 12px + env(safe-area-inset-right));
+                bottom: calc(75px + 12px + env(safe-area-inset-bottom));
+                width: min(280px, calc(100vw - 90px));
             }
         }
 
@@ -108,11 +111,11 @@
                 padding: 15px 0;
             }
 
-            .sens-group {
-                height: 100px;
-                margin: 15px 0;
-                writing-mode: vertical-lr;
-                transform: rotate(180deg);
+            /* 横屏浮层向左避开右侧工具栏和右下角快捷按钮。 */
+            .bottom-nav > #sens-settings.expanded {
+                right: calc(80px + 68px + env(safe-area-inset-right));
+                bottom: calc(12px + env(safe-area-inset-bottom));
+                width: min(280px, calc(100vw - 180px));
             }
 
             .btn-group {
@@ -121,9 +124,8 @@
                 gap: 10px;
             }
 
-            /* 横屏自动隐藏飞鼠 UI */
-            #gyro-btn,
-            .gyro-sens-row {
+            /* 横屏把陀螺仪开关收进与 PAD 灵敏度相同的折叠面板。 */
+            #gyro-btn {
                 display: none !important;
             }
         }
@@ -136,6 +138,50 @@
             justify-content: center;
             border-radius: 12px;
             transition: all 0.2s;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        .back-btn svg { fill: currentColor; width: 24px; height: 24px; }
+
+        .sens-toggle {
+            display: flex;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #292929;
+            border-radius: 12px;
+            background: #151515;
+            color: #aaa;
+        }
+
+        .sens-toggle svg { width: 22px; height: 22px; fill: currentColor; }
+        .sens-toggle[aria-expanded="true"] { color: #fff; border-color: #007AFF; background: #001a33; }
+
+        .mode-btn {
+            min-width: 48px;
+            height: 40px;
+            padding: 0 7px;
+            border: 1px solid #292929;
+            border-radius: 10px;
+            background: #151515;
+            color: #888;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .mode-btn[aria-pressed="true"] {
+            color: #fff;
+            border-color: #007AFF;
+            background: #001a33;
         }
 
         .icon-btn:active {
@@ -174,6 +220,147 @@
             flex-direction: column;
             justify-content: center;
             gap: 8px;
+        }
+
+        .bottom-nav > #sens-settings {
+            display: none;
+        }
+
+        .bottom-nav > .sens-toggle {
+            display: flex;
+        }
+
+        /* 竖屏、横屏共用横向 PAD/GYRO 折叠浮层。 */
+        .bottom-nav > #sens-settings.expanded {
+            display: flex;
+            position: fixed;
+            height: auto !important;
+            margin: 0;
+            padding: 14px !important;
+            writing-mode: horizontal-tb;
+            transform: none;
+            gap: 14px;
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+            z-index: 1200;
+        }
+
+        .bottom-nav > #sens-settings.expanded .sens-container {
+            width: 100%;
+            color: #aaa;
+            font-size: 11px;
+        }
+
+        .bottom-nav > #sens-settings.expanded .sens-container span {
+            width: 42px;
+        }
+
+        .bottom-nav > #sens-settings.expanded input[type=range] {
+            width: 170px;
+            height: 24px;
+        }
+
+        .mac-floating-actions {
+            display: none;
+            position: fixed;
+            right: calc(80px + 14px + env(safe-area-inset-right));
+            bottom: calc(14px + env(safe-area-inset-bottom));
+            flex-direction: column;
+            gap: 9px;
+            z-index: 1100;
+        }
+
+        #mouse-page.mac-mode.mac-shortcuts-enabled #mac-floating-actions {
+            display: flex;
+        }
+
+        .mac-floating-action {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: rgba(26, 26, 26, 0.92);
+            border: 1px solid #424242;
+            border-radius: 13px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+        }
+
+        .mac-floating-action:active {
+            background: #003d80;
+            border-color: #007AFF;
+            transform: scale(0.94);
+        }
+
+        .mac-floating-action svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        @media (orientation: portrait) {
+            .mac-floating-actions {
+                right: calc(14px + env(safe-area-inset-right));
+                bottom: calc(75px + 14px + 42px + 12px + env(safe-area-inset-bottom));
+            }
+        }
+
+        .quick-scroll-up-button {
+            display: none;
+            position: fixed;
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            right: calc(80px + 14px + env(safe-area-inset-right));
+            bottom: calc(14px + env(safe-area-inset-bottom));
+            color: #fff;
+            background: rgba(26, 26, 26, 0.92);
+            border: 1px solid #424242;
+            border-radius: 13px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            touch-action: manipulation;
+        }
+
+        .quick-scroll-up-button svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .quick-scroll-up-button:active {
+            background: #003d80;
+            border-color: #007AFF;
+            transform: scale(0.94);
+        }
+
+        @media (orientation: portrait) {
+            .quick-scroll-up-button {
+                display: flex;
+                right: calc(14px + env(safe-area-inset-right));
+                bottom: calc(75px + 14px + env(safe-area-inset-bottom));
+            }
+        }
+
+        @media (orientation: landscape) {
+            .quick-scroll-up-button {
+                display: flex;
+            }
+
+            /* 常用滚动按钮占据最下方，Mac 快捷按钮上移一格避免遮挡。 */
+            .mac-floating-actions {
+                bottom: calc(14px + 42px + 12px + env(safe-area-inset-bottom));
+            }
         }
 
         .sens-container {
@@ -224,7 +411,19 @@
             padding: 8px 0;
             z-index: 1000;
             min-width: 120px;
+            max-height: calc(100vh - 24px);
+            max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            overflow-y: auto;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scrollbar-width: thin;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 全局 touch-action:none 会阻止滚动容器的手势，菜单链路单独允许纵向触摸滚动。 */
+        html, body, #mouse-page, .top-nav, .menu-container, .menu-dropdown, .menu-dropdown * {
+            touch-action: pan-y;
         }
 
         @media (orientation: portrait) {
@@ -236,8 +435,10 @@
 
         @media (orientation: landscape) {
             .menu-dropdown {
-                left: 60px;
-                top: 0;
+                position: fixed;
+                left: calc(65px + 8px + env(safe-area-inset-left));
+                top: calc(8px + env(safe-area-inset-top));
+                max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
             }
         }
 
@@ -256,12 +457,33 @@
             background: #333;
             color: #fff;
         }
+
+        .menu-separator {
+            height: 1px;
+            margin: 5px 12px;
+            background: #333;
+        }
+
+        /* macOS 的系统空间快捷键只在 Mac 输入模式下展示。 */
+        .mac-only {
+            display: none;
+        }
+
+        #mouse-page.mac-mode .mac-only {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
     <div id="mouse-page" onclick="handleFirstInteraction()">
         <div class="top-nav">
+            <div class="icon-btn back-btn" role="button" tabindex="0" aria-label="返回主页"
+                title="返回主页" onclick="feedback(); window.location.href='/'">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
+            </div>
+            <button class="mode-btn" id="os-mode-btn" type="button" aria-pressed="false"
+                onclick="v(); toggleInputMode()">Win</button>
             <div class="icon-btn" onclick="feedback(); window.location.href = '/k';">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -294,6 +516,20 @@
                     </svg>
                 </div>
                 <div id="more-menu" class="menu-dropdown">
+                    <div class="menu-item" onclick="v(); socket.emit('click', {button:'middle'})">中键单击</div>
+                    <div class="menu-item" onclick="quickScroll(4)">快速滚动 ↑</div>
+                    <div class="menu-item" onclick="quickScroll(-4)">快速滚动 ↓</div>
+                    <div class="menu-item" id="drag-shortcut" onclick="toggleDragShortcut(this)">切换拖拽按键</div>
+                    <div id="mac-shortcuts" class="mac-only">
+                        <div class="menu-separator" role="separator"></div>
+                        <div class="menu-item" onclick="emitMacShortcut(['ctrl', 'up'])">调度中心</div>
+                        <div class="menu-item" onclick="emitMacShortcut(['ctrl', 'down'])">应用窗口</div>
+                        <div class="menu-item" onclick="emitMacShortcut(['fn', 'f11'])">显示桌面</div>
+                        <div class="menu-item" onclick="emitMacShortcut(['ctrl', 'left'])">上一个全屏应用</div>
+                        <div class="menu-item" onclick="emitMacShortcut(['ctrl', 'right'])">下一个全屏应用</div>
+                        <div class="menu-item" onclick="emitMacClick('x1')">上一页</div>
+                        <div class="menu-item" onclick="emitMacClick('x2')">下一页</div>
+                    </div>
                     <!-- <div class="menu-item" onclick="v(); window.location.href='/r'">RealMouse (摇杆)</div> -->
                     <div class="menu-item" onclick="v(); window.location.href='/controller'">controller (手柄映射)</div>
                     <div class="menu-item" onclick="v(); window.location.href='/b'">Macro Deck (快捷键)</div>
@@ -339,19 +575,59 @@
                 </div>
             </div>
 
-            <div class="sens-group" style="height: 100%; justify-content: space-around; padding: 5px 0;">
+            <button class="sens-toggle" id="sens-toggle" type="button" aria-label="展开灵敏度设置"
+                aria-expanded="false" aria-controls="sens-settings" title="灵敏度设置"
+                onclick="toggleSensitivityPanel()">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h9v2H3V7zm13 0h5v2h-5V7zM3 15h5v2H3v-2zm9 0h9v2h-9v-2zM12 5h2v6h-2V5zm-6 8h2v6H6v-6z" /></svg>
+            </button>
+            <div class="sens-group" id="sens-settings" style="height: 100%; justify-content: space-around; padding: 5px 0;">
                 <div class="sens-container"><span>PAD</span><input type="range" id="sens-slider" min="1" max="10"
                         step="0.1"></div>
                 <div class="sens-container gyro-sens-row" style="color: #007AFF;"><span>GYRO</span><input type="range"
                         id="gyro-slider" min="0.1" max="5" step="0.1"></div>
             </div>
         </div>
+
+        <div class="mac-floating-actions" id="mac-floating-actions" aria-label="Mac 快捷操作">
+            <button class="mac-floating-action" type="button" aria-label="打开调度中心"
+                title="调度中心" onclick="emitMacShortcut(['ctrl', 'up'])">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></svg>
+            </button>
+            <button class="mac-floating-action" type="button" aria-label="显示桌面"
+                title="显示桌面" onclick="emitMacShortcut(['fn', 'f11'])">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-6v2h3v2H7v-2h3v-2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 2v11h16V5H4z"/></svg>
+            </button>
+        </div>
+        <button class="quick-scroll-up-button" type="button" aria-label="快速滚动向上"
+            title="快速滚动 ↑" onclick="quickScroll(4)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+        </button>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="/static/js/touchpad.js"></script>
+    <script src="/static/js/touchpad.js?v=2"></script>
     <script>
         const socket = io();
+
+        // 默认模式由启动网页服务的电脑系统决定；用户仍可在本页临时切换。
+        let inputMode = {{ default_input_mode|default('windows')|tojson }};
+        function updateInputModeButton() {
+            const button = document.getElementById('os-mode-btn');
+            const page = document.getElementById('mouse-page');
+            page.classList.toggle('mac-mode', inputMode === 'mac');
+            page.classList.toggle(
+                'mac-shortcuts-enabled',
+                localStorage.getItem('show_mac_shortcuts') !== 'false'
+            );
+            button.innerText = inputMode === 'mac' ? 'Mac' : 'Win';
+            button.setAttribute('aria-pressed', inputMode === 'mac' ? 'true' : 'false');
+            button.setAttribute('aria-label', `当前输入模式：${inputMode === 'mac' ? 'Mac' : 'Windows'}，点击切换`);
+        }
+        function toggleInputMode() {
+            inputMode = inputMode === 'mac' ? 'windows' : 'mac';
+            updateInputModeButton();
+        }
+        updateInputModeButton();
 
         // 统一反馈系统：震动 + 音效
         let audioCtx = null;
@@ -383,6 +659,7 @@
         const v = feedback; // 兼容旧代码引用
 
         let isGyroIntent = localStorage.getItem('gyro_active') === 'true';
+        let isGyroActive = false;
 
         function resetHeight() {
             let vh = window.innerHeight * 0.01;
@@ -409,7 +686,6 @@
         slider.oninput = (e) => { sensitivity = parseFloat(e.target.value); localStorage.setItem('mouse_sense', sensitivity); };
         gyroSlider.oninput = (e) => { gyroSensitivity = parseFloat(e.target.value); localStorage.setItem('gyro_sense', gyroSensitivity); };
 
-        let isGyroActive = false;
         async function toggleGyro() {
             const btn = document.getElementById('gyro-btn');
             if (!isGyroActive) {
@@ -432,7 +708,8 @@
         }
 
         function handleGyro(e) {
-            const rot = e.rotationRate; if (!rot) return;
+            const rot = e.rotationRate;
+            if (!rot || !Number.isFinite(rot.gamma) || !Number.isFinite(rot.alpha)) return;
             // 获取原始增量
             let rx = -rot.gamma * gyroSensitivity;
             let ry = -rot.alpha * gyroSensitivity;
@@ -456,6 +733,32 @@
         function toggleMenu() {
             document.getElementById('more-menu').classList.toggle('show');
         }
+
+        // macOS provides these system keyboard shortcuts for Mission Control,
+        // App Exposé, showing the desktop, and moving between Spaces.
+        function emitMacShortcut(keys) {
+            if (inputMode !== 'mac') return;
+            v();
+            socket.emit('key_combo', { keys });
+            document.getElementById('more-menu').classList.remove('show');
+        }
+
+        // X buttons map to back/forward navigation in apps that support them.
+        function emitMacClick(button) {
+            if (inputMode !== 'mac') return;
+            v();
+            socket.emit('click', { button });
+            document.getElementById('more-menu').classList.remove('show');
+        }
+
+        function toggleSensitivityPanel() {
+            const panel = document.getElementById('sens-settings');
+            const button = document.getElementById('sens-toggle');
+            const expanded = panel.classList.toggle('expanded');
+            button.setAttribute('aria-expanded', String(expanded));
+            button.setAttribute('aria-label', `${expanded ? '收起' : '展开'}灵敏度设置`);
+        }
+
         // 点击外部关闭菜单
         window.addEventListener('click', (e) => {
             if (!e.target.closest('.menu-container')) {
@@ -471,6 +774,28 @@
         }
         function stopScroll() { if (scrollTimer) { clearInterval(scrollTimer); scrollTimer = null; } }
 
+        // 触屏不便完成三指中键和三指拖拽时，可用菜单中的单击快捷操作代替。
+        function quickScroll(step) {
+            v();
+            socket.emit('scroll', { dy: step, speed: 4 });
+            document.getElementById('more-menu').classList.remove('show');
+        }
+
+        let dragShortcutActive = false;
+        function toggleDragShortcut(button) {
+            v();
+            dragShortcutActive = !dragShortcutActive;
+            socket.emit(dragShortcutActive ? 'drag_start' : 'drag_end');
+            button.classList.toggle('active', dragShortcutActive);
+            button.textContent = dragShortcutActive ? '释放拖拽按键' : '切换拖拽按键';
+            if (dragShortcutActive) document.getElementById('more-menu').classList.remove('show');
+        }
+
+        // 页面离开时松开快捷键，避免鼠标左键保持按下。
+        window.addEventListener('pagehide', () => {
+            if (dragShortcutActive) socket.emit('drag_end');
+        });
+
         function handleMid(down, el) {
             v();
             if (down) {
@@ -484,6 +809,8 @@
 
         const touchpad = new TouchpadModule('pad', socket, {
             getSensitivity: () => sensitivity,
+            getMode: () => inputMode,
+            getScrollDirection: () => localStorage.getItem('touch_scroll_direction') === 'reverse' ? 'reverse' : 'normal',
             feedback: feedback
         });
 

@@ -43,28 +43,82 @@ python一键启动，无需安装手机客户端。
 
 ## 🛠️ 要求
 
-* **Python 3.x**
+* **uv**（推荐，由 uv 按项目配置管理 Python 和依赖）
+* 手动使用系统 Python 时需要 **Python 3.10 或更高版本**；默认版本见 `.python-version`（当前为 Python 3.11）
 
 ## 🚀 快速启动
-> 1 安装python3.11 ， 2 双击直接启动 AirMouseserver.bat ，会自动检查依赖并以托盘形式启动服务器。  
-> 3 如果需要控制高权限程序，需要使用管理员权限启动。
-> 4 首次依赖检查成功后会生成 `deps_ok.txt`，之后启动会跳过耗时的包检查；需要重新检查时删除该文件即可。
-> 5 托盘图标可打开主页；主页右上角“扫码连接”进入二维码页面。
 
- **安装依赖**：
+### 使用 uv（推荐）
+
+先根据 [uv 官方安装说明](https://docs.astral.sh/uv/getting-started/installation/)安装 uv，然后在项目根目录运行：
+
 ```bash
-pip install -r requirments.txt
+uv sync
 ```
 
- **运行服务端**：
+`uv sync` 会读取 `pyproject.toml` 和 `uv.lock`，创建项目虚拟环境 `.venv` 并安装锁定的依赖；项目中的 `.python-version` 指定 Python 3.11。之后启动服务：
+
 ```bash
-python server.py
+uv run python server.py
 ```
 
+也可以通过 `pyproject.toml` 声明的命令启动：
 
+```bash
+uv run airmouse
+```
 
+在 macOS/Linux 上打开控制台并禁用托盘：
 
- **连接**：
+```bash
+AIRMOUSE_NO_TRAY=1 AIRMOUSE_SHOW_CONSOLE=1 uv run python server.py
+```
+
+Windows PowerShell 对应写法：
+
+```powershell
+$env:AIRMOUSE_NO_TRAY = "1"
+$env:AIRMOUSE_SHOW_CONSOLE = "1"
+uv run python server.py
+```
+
+### 调试与运行选项
+
+开启输入事件调试日志：
+
+```bash
+DEBUG=1 AIRMOUSE_NO_TRAY=1 AIRMOUSE_SHOW_CONSOLE=1 uv run python server.py
+```
+
+Windows PowerShell：
+
+```powershell
+$env:DEBUG = "1"
+$env:AIRMOUSE_NO_TRAY = "1"
+$env:AIRMOUSE_SHOW_CONSOLE = "1"
+uv run python server.py
+```
+
+`DEBUG=1` 时控制台会记录鼠标/键盘 Socket.IO 事件及实际发送的 Quartz 事件；文本输入只记录字符数，不记录文本内容。调试结束后，可在 PowerShell 用 `$env:DEBUG = $null` 清除变量。
+
+默认使用 HTTPS；如果仅需 HTTP（陀螺仪 gyro 将不可用），macOS/Linux 可运行：
+
+```bash
+AIRMOUSE_HTTP=1 uv run python server.py
+```
+
+PowerShell 可先运行 `$env:AIRMOUSE_HTTP = "1"`，然后执行 `uv run python server.py`。
+
+### 其他启动方式
+
+* Windows 桌面托盘：安装 Python 3.11 后双击 `AirMouseserver.bat`，脚本会检查依赖并启动服务。首次检查会生成 `deps_ok.txt`；需要重新检查时删除此文件。
+* 手动使用系统 Python：`python -m pip install -r requirments.txt`，然后运行 `python server.py`。
+* 添加或移除项目依赖：使用 `uv add 包名` 或 `uv remove 包名`，并保持 `pyproject.toml` 与 `uv.lock` 同步。
+* 安装打包用的可选开发依赖：`uv sync --extra dev`。
+
+如需控制高权限程序，请使用管理员权限启动服务。
+
+**连接**：
 确保手机与电脑在同一局域网，访问电脑 IP 的端口（默认 5888）。
 
 从主页右上角进入扫码连接页；页面使用 qrcodejs CDN 在浏览器端生成二维码，不会在手机端安装任何应用。

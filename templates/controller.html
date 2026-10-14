@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>手柄控制器 | Macro Deck</title>
     <link rel="icon" type="image/png" href="/static/controller/favicon.png">
-    <link rel="stylesheet" href="/static/controller/controller.css?v=3">
+    <link rel="stylesheet" href="/static/controller/controller.css?v=4">
 </head>
 
 <body>
@@ -64,6 +64,9 @@
 
             <p style="text-align: center; font-size: 11px; color: #888; margin-top: 5px;">点击下方手柄元素分配按键功能</p>
         </div>
+
+        <!-- 窄屏使用横向分组卡片，保留与桌面手柄图相同的映射编辑入口。 -->
+        <div class="mobile-mapping-grid" id="mobile-mapping-grid" aria-label="手柄按键映射"></div>
 
         <!-- 可视化手柄 -->
         <div class="gamepad-visual">
@@ -331,7 +334,7 @@
     </div>
 
     <!-- 浮动在右下角的总开关与工具提示 -->
-    <div style="position: fixed; bottom: 25px; right: 25px; z-index: 1500; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+    <div id="corner-hints" style="position: fixed; bottom: 25px; right: 25px; z-index: 1500; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
         <a href="https://joyxoff.com/en/" target="_blank" style="font-size: 10px; color: #666; text-decoration: none; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 4px; border: 1px solid #333;">
             💡 遇到双重输入？试试 JoyXoff (屏蔽工具)
         </a>
@@ -341,7 +344,7 @@
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="/static/controller/controller.js?v=5"></script>
+    <script src="/static/controller/controller.js?v=6"></script>
 </body>
 
 </html>

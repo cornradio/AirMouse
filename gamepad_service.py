@@ -6,9 +6,6 @@ import keyboard_service
 import config_manager
 import platform
 from ctypes import wintypes
-from pynput.mouse import Controller as MouseController, Button as MouseButton
-
-pmouse = MouseController()
 OS_TYPE = platform.system()
 
 # --- 驱动探测与加载 ---
@@ -108,11 +105,11 @@ def handle_btn(btn_code, pressed):
 def execute_action(action, pressed):
     if action == 'none': return
     if action.startswith('click_'):
-        btn_map = {'left': MouseButton.left, 'right': MouseButton.right, 'middle': MouseButton.middle}
         btn_str = action.split('_')[1]
         try:
-            if pressed: pmouse.press(btn_map[btn_str])
-            else: pmouse.release(btn_map[btn_str])
+            # Keep gamepad button holds on the same backend as touchpad mouse
+            # input; this uses Quartz on macOS and pyautogui on Windows/Linux.
+            mouse_service.handle_button_action(btn_str, pressed)
         except Exception: pass
     elif action.startswith('key_'):
         if '+' in action:

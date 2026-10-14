@@ -104,6 +104,14 @@
             min-height: 0;
         }
 
+        .ime-voice-tip {
+            flex: 0 0 auto;
+            margin: 0 2px 8px;
+            color: #8f9bad;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
         #input-window {
             flex: 1;
             background: var(--card-bg);
@@ -366,6 +374,7 @@
 
     <div class="main-content">
         <div class="input-container" id="container">
+            <p class="ime-voice-tip">💡 可使用豆包、搜狗、微信等输入法的语音输入，识别后的文字会出现在这里。</p>
             <textarea id="input-window" ...></textarea>
             <div class="box-actions" style="position: absolute; right: 35px; bottom: 25px; display: flex; gap: 12px;">
                 <button class="box-btn btn-clear" onclick="v(); clearText()"
@@ -405,7 +414,7 @@
     <div class="hint" style="margin-bottom: 5px;">混合模式：语音输入 + 鼠标控制</div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="/static/js/touchpad.js"></script>
+    <script src="/static/js/touchpad.js?v=2"></script>
     <script>
         const socket = io();
         let audioCtx = null;
@@ -449,11 +458,11 @@
             localStorage.setItem('voice_sync_delay', syncDelay);
         };
 
-        // 系统修饰键逻辑 (Win: ctrl, Mac: meta)
+        // 默认修饰键跟随服务端系统；已保存的用户手动选择继续优先。
         let modifierKey = localStorage.getItem('modifier_key');
         if (!modifierKey) {
-            const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
-            modifierKey = isMac ? 'meta' : 'ctrl';
+            const defaultInputMode = {{ default_input_mode|default('windows')|tojson }};
+            modifierKey = defaultInputMode === 'mac' ? 'meta' : 'ctrl';
         }
 
         function updateModifierUI() {
@@ -595,6 +604,7 @@
         // --- 触目板模块化加载 ---
         const touchpad = new TouchpadModule('pad', socket, {
             getSensitivity: () => sensitivity,
+            getMode: () => modifierKey === 'meta' ? 'mac' : 'windows',
             feedback: feedback
         });
 

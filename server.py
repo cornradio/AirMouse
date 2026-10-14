@@ -7,23 +7,20 @@ import threading
 import time
 import webbrowser
 
-# macOS 隐藏 Dock 图标逻辑
+# macOS 隐藏 Dock 图标逻辑 — 仅在打包模式或显式开启时执行，
+# 在脚本模式下调用 setActivationPolicy_(Prohibited) 会干扰 AppKit 事件循环，
+# 与 pystray NSStatusItem 线程共存时会触发 SIGILL。
 if platform.system() == 'Darwin':
+    _TRAY_MODE_AVAILABLE = False
     try:
-        from AppKit import NSBundle, NSApplication, NSApplicationActivationPolicyProhibited
-        bundle = NSBundle.mainBundle()
-        if bundle:
-            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
-            if info:
-                info['LSUIElement'] = '1'
-        # 立即锁定激活策略，防止 Dock 栏图标跳跃或显示
-        NSApplication.sharedApplication().setActivationPolicy_(NSApplicationActivationPolicyProhibited)
-    except Exception:
-        # 如果没有安装相应的库或环境不支持，静默失败
+        import AppKit
+        _TRAY_MODE_AVAILABLE = True
+    except ImportError:
         pass
 
 from web_app import app, socketio, get_all_ip_addresses
 from app_paths import app_dir, is_frozen, resource_path
+from debug_logging import debug_socket_event
 import mouse_service
 import keyboard_service
 import config_manager
@@ -60,8 +57,9 @@ def hide_console_window():
         pass
 
 
-def open_page(path='/'):
-    webbrowser.open(f'https://127.0.0.1:{PORT}{path}', new=2)
+def open_page(path='/', http_mode=False):
+    scheme = 'http' if http_mode else 'https'
+    webbrowser.open(f'{scheme}://127.0.0.1:{PORT}{path}', new=2)
 
 
 def show_info_dialog(title, message, error=False):
@@ -168,12 +166,15 @@ def create_tray_image():
         return image
 
 
-def start_server():
+def start_server(http_mode=False):
+    ssl_ctx = None
+    if not http_mode:
+        ssl_ctx = (resource_path('cert.pem'), resource_path('key.pem'))
     socketio.run(
         app,
         host='0.0.0.0',
         port=PORT,
-        ssl_context=(resource_path('cert.pem'), resource_path('key.pem')),
+        ssl_context=ssl_ctx,
         allow_unsafe_werkzeug=True,
     )
 
@@ -274,15 +275,28 @@ def show_startup_dialog():
     root.mainloop()
 
 
-def run_with_tray():
+def _tray_available():
+    """Detect whether pystray can run in the current environment without crashing."""
+    if platform.system() == 'Darwin' and not is_frozen():
+        # 脚本模式下 macOS 的 AppKit NSApplication 与 pystray NSStatusItem 线程
+        # 共存会触发 SIGILL，无法被 Python except 捕获，直接跳过。
+        return False
+    try:
+        import pystray  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def run_with_tray(http_mode=False):
     import pystray
     from pystray import MenuItem as Item
 
     def on_open_home(icon, item):
-        open_page('/')
+        open_page('/', http_mode=http_mode)
 
     def on_open_qr(icon, item):
-        open_page('/connect')
+        open_page('/connect', http_mode=http_mode)
 
     def on_trust_cert(icon, item):
         threading.Thread(target=trust_ssl_certificate, daemon=True).start()
@@ -299,7 +313,7 @@ def run_with_tray():
     )
     icon = pystray.Icon('AirMouse', create_tray_image(), 'AirMouse 已在后台运行', menu)
 
-    server = threading.Thread(target=start_server, daemon=True)
+    server = threading.Thread(target=lambda: start_server(http_mode=http_mode), daemon=True)
     server.start()
 
     # Keep tkinter on the main thread; run the tray icon beside it.
@@ -353,68 +367,142 @@ def handle_select_gp(index):
     gamepad_service.selected_index = index
     handle_get_gps() # 刷新状态
 
+@socketio.on('check_permissions')
+def on_check_permissions():
+    import platform
+    from mouse_service import is_accessibility_granted
+    import os as _os
+    socketio.emit('permissions_status', {
+        'accessibility': is_accessibility_granted() if platform.system() == 'Darwin' else True,
+        'os': platform.system(),
+        'is_https': not (_os.environ.get('AIRMOUSE_HTTP') == '1'),
+    })
+
 # 鼠标事件
 @socketio.on('move')
-def on_move(data): mouse_service.handle_move(data)
+def on_move(data):
+    debug_socket_event('move', data)
+    mouse_service.handle_move(data)
 
 @socketio.on('click')
-def on_click(data): mouse_service.handle_click(data)
+def on_click(data):
+    debug_socket_event('click', data)
+    mouse_service.handle_click(data)
 
 @socketio.on('drag_start')
-def on_drag_start(): mouse_service.handle_drag_start()
+def on_drag_start():
+    debug_socket_event('drag_start')
+    mouse_service.handle_drag_start()
 
 @socketio.on('drag_end')
-def on_drag_end(): mouse_service.handle_drag_end()
+def on_drag_end():
+    debug_socket_event('drag_end')
+    mouse_service.handle_drag_end()
 
 @socketio.on('mid_down')
-def on_mid_down(): mouse_service.handle_mid_down()
+def on_mid_down():
+    debug_socket_event('mid_down')
+    mouse_service.handle_mid_down()
 
 @socketio.on('mid_up')
-def on_mid_up(): mouse_service.handle_mid_up()
+def on_mid_up():
+    debug_socket_event('mid_up')
+    mouse_service.handle_mid_up()
 
 @socketio.on('scroll')
-def on_scroll(data): mouse_service.handle_scroll(data)
+def on_scroll(data):
+    debug_socket_event('scroll', data)
+    mouse_service.handle_scroll(data)
 
 # 键盘事件
 @socketio.on('type_text')
-def on_type(data): keyboard_service.handle_type_text(data)
+def on_type(data):
+    debug_socket_event('type_text', data)
+    keyboard_service.handle_type_text(data)
 
 @socketio.on('key_action')
-def on_key(data): keyboard_service.handle_key_action(data)
+def on_key(data):
+    debug_socket_event('key_action', data)
+    keyboard_service.handle_key_action(data)
 
 @socketio.on('key_combo')
-def on_combo(data): keyboard_service.handle_combo(data)
+def on_combo(data):
+    debug_socket_event('key_combo', data)
+    keyboard_service.handle_combo(data)
 
-if __name__ == '__main__':
+
+@socketio.on('disconnect')
+def on_disconnect(reason=None):
+    debug_socket_event('disconnect', {'reason': str(reason)} if reason else None)
+    # A dropped browser connection can skip the matching drag_end packet.
+    # Release any held Mac buttons so the next single-finger move is a warp.
+    mouse_service.release_all_buttons()
+
+def _check_mac_permissions():
+    """On macOS, ensure the current process has Accessibility permission.
+    Without it, CGEventPost (keyboard / click / scroll) is silently dropped.
+    Mouse move (CGWarpMouseCursorPosition) still works without the permission.
+    """
+    if platform.system() != 'Darwin':
+        return
+    try:
+        from mouse_service import is_accessibility_granted
+        if is_accessibility_granted():
+            return
+        print("\n⚠️  未检测到 macOS 辅助功能权限！键盘 / 鼠标点击 / 滚动功能将不生效。", flush=True)
+        print("   请打开：系统设置 → 隐私与安全性 → 辅助功能 → 添加 Python", flush=True)
+        print("   （uv 管理的 Python 路径：", end="", flush=True)
+        import shutil
+        print(shutil.which('python3') or sys.executable, "）", flush=True)
+        print("   授权后重启 AirMouse 即可正常使用。", flush=True)
+        print("═"*60 + "\n", flush=True)
+    except Exception:
+        pass
+
+
+def main():
     use_tray = os.environ.get('AIRMOUSE_NO_TRAY') != '1'
     hide_console = os.environ.get('AIRMOUSE_SHOW_CONSOLE') != '1'
+    http_mode = os.environ.get('AIRMOUSE_HTTP') == '1'
+    scheme = 'http' if http_mode else 'https'
 
     if hide_console:
         hide_console_window()
 
     if use_tray:
-        try:
-            run_with_tray()
-            sys.exit(0)
-        except Exception:
-            # Fall back to console mode if tray dependencies are unavailable.
-            pass
+        if _tray_available():
+            try:
+                run_with_tray(http_mode=http_mode)
+                sys.exit(0)
+            except Exception:
+                # Fall back to console mode if tray dependencies are unavailable.
+                pass
+        else:
+            print("⚠️  托盘不可用（当前环境不支持），使用控制台模式。", flush=True)
+
+    _check_mac_permissions()
 
     ips = get_all_ip_addresses()
 
     print("\n" + "═"*60)
-    print("🚀 Remote Pro Server 已启动！")
+    print("🚀 Remote Pro Server 已启动！" + ("  [HTTP 模式]" if http_mode else ""))
     print(f"🏠 当前系统: {platform.system()}")
     print("📱 请在浏览器访问以下地址:")
-    print(f"🖥️  本机主页: https://127.0.0.1:{PORT}/")
-    print(f"📷  扫码连接: https://127.0.0.1:{PORT}/connect")
+    print(f"🖥️  本机主页: {scheme}://127.0.0.1:{PORT}/")
+    print(f"📷  扫码连接: {scheme}://127.0.0.1:{PORT}/connect")
+    if http_mode:
+        print("💡 当前为 HTTP 模式，陀螺仪（gyro）功能不可用。", flush=True)
 
     for interface, ip in ips:
         tag = ""
         if any(keyword in interface.lower() for keyword in ["wlan", "wi-fi", "eth", "en0", "en1"]):
             tag = " [推荐]"
-        print(f"  ➤  https://{ip}:{PORT}{tag}")
+        print(f"  ➤  {scheme}://{ip}:{PORT}{tag}")
 
     print("═"*60 + "\n")
 
-    start_server()
+    start_server(http_mode=http_mode)
+
+
+if __name__ == '__main__':
+    main()

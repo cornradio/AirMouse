@@ -26,6 +26,15 @@ const MAPPING_NAMES = {
     "drag": "拖拽"
 };
 
+// 手机上按手柄的左右区域分组，横向并排呈现，避免把所有绑定压到手柄轮廓上。
+const MOBILE_MAPPING_GROUPS = [
+    { title: '方向键', keys: [['btn_12', '上'], ['btn_13', '下'], ['btn_14', '左'], ['btn_15', '右']] },
+    { title: 'ABXY', keys: [['btn_3', 'Y'], ['btn_0', 'A'], ['btn_2', 'X'], ['btn_1', 'B']] },
+    { title: '肩键与扳机', keys: [['btn_4', 'LB'], ['btn_6', 'LT'], ['btn_5', 'RB'], ['btn_7', 'RT']] },
+    { title: '中间按键', keys: [['btn_8', 'Select'], ['btn_16', 'Home'], ['btn_9', 'Start']] },
+    { title: '摇杆', keys: [['stick_left', '左摇杆'], ['btn_10', 'L3 按下'], ['stick_right', '右摇杆'], ['btn_11', 'R3 按下']] }
+];
+
 // 预处理部分预设快捷名，剩下的通过 fallback 原文大写显示
 ['space', 'enter', 'esc', 'backspace', 'up', 'down', 'left', 'right', 'shift', 'ctrl', 'tab', 'alt', 'win', 'delete'].forEach(k => {
     MAPPING_NAMES['key_'+k] = k.toUpperCase();
@@ -212,6 +221,51 @@ function updateUIValues() {
             el.style.background = '';
         }
     }
+    renderMobileMappings();
+}
+
+function formatMappingValue(value) {
+    let display = MAPPING_NAMES[value] || value;
+    if (value && value.includes('+')) {
+        display = value.split('+').map(k => MAPPING_NAMES[k] || k.replace('key_', '').toUpperCase()).join('+');
+        MAPPING_NAMES[value] = display;
+    }
+    return display;
+}
+
+function renderMobileMappings() {
+    const container = document.getElementById('mobile-mapping-grid');
+    if (!container || !currentMap) return;
+    container.innerHTML = '';
+
+    MOBILE_MAPPING_GROUPS.forEach(group => {
+        const card = document.createElement('section');
+        card.className = 'mobile-mapping-group';
+        const heading = document.createElement('h3');
+        heading.innerText = group.title;
+        card.appendChild(heading);
+
+        const rows = document.createElement('div');
+        rows.className = 'mobile-mapping-rows';
+        group.keys.forEach(([key, label]) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'mobile-mapping-item';
+            button.setAttribute('aria-label', `${label}，当前映射：${formatMappingValue(currentMap[key] || 'none')}`);
+            button.onclick = () => openEdit(key, label);
+
+            const name = document.createElement('span');
+            name.className = 'mobile-mapping-name';
+            name.innerText = label;
+            const value = document.createElement('span');
+            value.className = 'mobile-mapping-value';
+            value.innerText = formatMappingValue(currentMap[key] || 'none');
+            button.append(name, value);
+            rows.appendChild(button);
+        });
+        card.appendChild(rows);
+        container.appendChild(card);
+    });
 }
 
 // === Profiles (多套配置) ===

@@ -1,0 +1,37 @@
+[project]
+name = "airmouse"
+version = "0.1.0"
+description = "将移动设备（Android/iOS）转化为电脑的触控板、键盘、语音输入工具和宏按键面板"
+requires-python = ">=3.10"
+dependencies = [
+    "psutil",
+    "flask",
+    "flask-socketio",
+    "pyautogui",
+    "pynput",
+    "pyopenssl",
+    "pystray",
+    "pillow",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyinstaller",
+]
+
+[project.scripts]
+airmouse = "server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+only-include = ["server.py", "web_app.py", "mouse_service.py", "keyboard_service.py",
+                "gamepad_service.py", "config_manager.py", "app_paths.py",
+                "templates", "static", "*.pem", "*.json"]
+
+[tool.uv]
+# 固定 Python 版本范围
+python-preference = "only-managed"
